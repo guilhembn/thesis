@@ -1,0 +1,39 @@
+\ifdefined\included
+\else
+\documentclass[a4paper,11pt,twoside]{StyleThese}
+\include{formatAndDefs}
+\sloppy
+\begin{document}
+\setcounter{chapter}{2} %% Numéro du chapitre précédent ;)
+\dominitoc
+\faketableofcontents
+\fi
+
+\chapter{Evaluating communication needs at task planning level}
+\minitoc
+
+\section{Related Work}
+\subsection{Referring Expression Generation}
+
+Il faut utilizer au moins une citation (exemple: \cite{goossens93}) pour bien
+compiler le document. Regardez le document These.bib pour les details de
+comment organizer la bibliographie.
+
+\subsection{Task Planning with Communication Actions}
+
+Pour ajouter un symbole à la liste des abréviations il faut utiliser
+\verb|\nomenclature{<symbole>}{<description>}|. Par exemple, je peux ajouter
+$\beta$\nomenclature{$\beta$}{La deuxième lettre de l'alphabet grec} et
+$\alpha$\nomenclature{$\alpha$}{La première lettre de l'alphabet grec} comme
+symboles dans ce document.
+
+\section{Ontology based Referring Expression Generation}
+
+\section{Planning Communication Actions Using Referring Expression Generation}
+
+\ifdefined\included
+\else
+\bibliographystyle{acm}
+\bibliography{These}
+\end{document}
+\fi

@@ -1,0 +1,274 @@
+###### HOW-TO ######
+
+To add a new entry in your bibliography chose the proper template below, copy-
+paste it in the end of this file, replace the "_" by an "at-symbol" (this
+symbol cannot be typed here otherwise the bibliography processing program
+would think there's an entry inside this how-to), and fill its fields. Check
+an proper entry example in the end of this file.
+
+You can use the month macros (jan, feb, mar, apr, may, jun, jul, aug, sep,
+oct, nov, dec) WITHOUT QUOTES to let the bib-style handle the language of the
+month (French or English), like in the example in the end of the file.
+
+Optional fields in the templates are commented out with a '%'. Note that not
+all external programs that process bibliography information in .bib files
+support comments inside the reference entry (notably bibtex doesn't), so you
+may need to remove the fields you don't want/need in your entry instead of
+leaving it commented out. Moreover, anything not starting with a "at-symbol"
+is normally not processed by the bibliography processing program (like it was
+just comments).
+
+
+
+###### TEMPLATES ######
+
+Source: https://en.wikibooks.org/wiki/LaTeX/Bibliography_Management
+
+_article{Xarticle,
+    author    = "",
+    title     = "",
+    journal   = "",
+    %volume   = "",
+    %number   = "",
+    %pages    = "",
+    year      = "XXXX",
+    %month    = "",
+    %note     = "",
+}
+
+_book{Xbook,
+    author    = "",
+    title     = "",
+    publisher = "",
+    %volume   = "",
+    %number   = "",
+    %series   = "",
+    %address  = "",
+    %edition  = "",
+    year      = "XXXX",
+    %month    = "",
+    %note     = "",
+}
+
+_booklet{Xbooklet,
+    %author   = "",
+    title     = "",
+    %howpublished   = "",
+    %address  = "",
+    %year      = "XXXX",
+    %month    = "",
+    %note     = "",
+}
+
+_conference{Xconference,
+    author    = "",
+    title     = "",
+    booktitle = "",
+    %editor   = "",
+    %volume   = "",
+    %number   = "",
+    %series   = "",
+    %pages    = "",
+    %address  = "",
+    year      = "XXXX",
+    %month    = "",
+    %publisher= "",
+    %note     = "",
+}
+
+_inbook{Xinbook,
+	author	= "",
+	editor	= "",
+	title	= "",
+	chapter	= "",
+	pages	= "",
+	publisher= "",
+	%volume	= "",
+	%number	= "",
+	%series	= "",
+	%type	= "",
+	%address= "",
+	%edition= "",
+	year	= "",
+	%month	= "",
+	%note	= "",
+}
+
+_incollection{Xincollection,
+	author	= "",
+	title	= "",
+	booktitle= "",
+	publisher= "",
+	%editor	= "",
+	%volume	= "",
+	%number	= "",
+	%series	= "",
+	%type	= "",
+	%chapter= "",
+	%pages	= "",
+	%address= "",
+	%edition= "",
+	year	= "",
+	%month	= "",
+	%note	= "",
+}
+
+_inproceedings{Xinproceedings,
+	author		= "",
+	title		= "",
+	booktitle	= "",
+	%editor		= "",
+	%volume		= "",
+	%number		= "",
+	%series		= "",
+	%pages		= "",
+	%address	= "",
+	%organization	= "",
+	%publisher	= "",
+	year		= "",
+	%month		= "",
+	%note		= "",
+}
+
+_manual{Xmanual,
+	title		= "",
+	%author		= "",
+	%organization	= "",
+	%address	= "",
+	%edition	= "",
+	year		= "",
+	%month		= "",
+	%note		= "",
+}
+
+_mastersthesis{Xthesis,
+    author    = "",
+    title     = "",
+    school    = "",
+    %type     = "diploma thesis",
+    %address  = "",
+    year      = "XXXX",
+    %month    = "",
+    %note     = "",
+}
+
+_misc{Xmisc,
+    %author    = "",
+    %title     = "",
+    %howpublished = "",
+    %year     = "XXXX",
+    %month    = "",
+    %note     = "",
+}
+
+_phdthesis{Xphdthesis,
+	author		= "",
+	title		= "",
+	school		= "",
+	%address	= "",
+	year		= "",
+	%month		= "",
+	%keywords	= "",
+	%note		= "",
+}
+
+_proceedings{Xproceedings,
+	title		= "",
+	%editor		= "",
+	%volume		= "",
+	%number		= "",
+	%series		= "",
+	%address	= "",
+	%organization	= "",
+	%publisher	= "",
+	year		= "",
+	%month		= "",
+	%note		= "",
+}
+
+_techreport{Xtreport,
+    author    = "",
+    title     = "",
+    institution = "",
+    %type     = "", 
+    %number   = "",
+    %address  = "",
+    year      = "XXXX",
+    %month    = "",
+    %note     = "",
+}
+
+_unpublished{Xunpublished,
+	author	= "",
+	title	= "",
+	%year	= "",
+	%month	= "",
+	note	= "",
+}
+
+###### EXAMPLE ######
+
+This entry can be cited in the document using \cite{goossens93}, or other
+similar citing command.
+@book{goossens93,
+    author    = "Michel Goossens and Frank Mittelbach and Alexander Samarin",
+    title     = "The LaTeX Companion",
+    month     = dec,
+    year      = "1993",
+    publisher = "Addison-Wesley",
+    address   = "Reading, Massachusetts",
+}
+
+
+Introduction
+
+@book{fitts_human_1951,
+	address = {Oxford, England},
+	series = {Human engineering for an effective air-navigation and traffic-control system},
+	title = {Human engineering for an effective air-navigation and traffic-control system},
+	abstract = {The report surveys the most critical human factor problems in the design of an air-navigation and traffic-control system, indicates applicable existing psychological knowledge, and points out the direction for future research. The chapter headings are as follows: I. Objectives; II. The Air-Traffic Control Problem; III. Some Basic Questions in Designing an Air-Navigation and Traffic-Control System; IV. A General Approach to the Human Operator as Part of a Communication System; V. Visual Information Displays; VI. Problems of Direct Vision from Aircraft; VII. Voice Communication; VIII. System Research, Analysis, and Evaluation; IX. Putting Human-Engineering Data to Use. (PsycINFO Database Record (c) 2016 APA, all rights reserved)},
+	publisher = {National Research Council, Div. of},
+	author = {Fitts, Paul M.},
+	year = {1951},
+	note = {Pages: xxii, 84},
+	keywords = {Engineering},
+	file = {Snapshot:/home/gbuisan/Zotero/storage/EW6U9KNU/1952-01751-000.html:text/html}
+}
+
+
+Chapter 1
+
+
+Chapter 2
+
+
+@article{kruse_human-aware_2013,
+	title = {Human-aware robot navigation: {A} survey},
+	volume = {61},
+	issn = {0921-8890},
+	shorttitle = {Human-aware robot navigation},
+	url = {http://www.sciencedirect.com/science/article/pii/S0921889013001048},
+	doi = {10.1016/j.robot.2013.05.007},
+	abstract = {Navigation is a basic skill for autonomous robots. In the last years human–robot interaction has become an important research field that spans all of the robot capabilities including perception, reasoning, learning, manipulation and navigation. For navigation, the presence of humans requires novel approaches that take into account the constraints of human comfort as well as social rules. Besides these constraints, putting robots among humans opens new interaction possibilities for robots, also for navigation tasks, such as robot guides. This paper provides a survey of existing approaches to human-aware navigation and offers a general classification scheme for the presented methods.},
+	number = {12},
+	urldate = {2018-01-04},
+	journal = {Robotics and Autonomous Systems},
+	author = {Kruse, Thibault and Pandey, Amit Kumar and Alami, Rachid and Kirsch, Alexandra},
+	month = dec,
+	year = {2013},
+	keywords = {Autonomous robot, Autonomous Robot, Human-aware, Human-Aware, Human-centered environment, Navigation, Survey},
+	pages = {1726--1743},
+	file = {Kruse et al. - 2013 - Human-aware robot navigation A survey.pdf:/home/gbuisan/Zotero/storage/HYHC76SP/Kruse et al. - 2013 - Human-aware robot navigation A survey.pdf:application/pdf;kruse et al.pdf:/home/gbuisan/Zotero/storage/J5G4PI2L/kruse et al.pdf:application/pdf;ScienceDirect Full Text PDF:/home/gbuisan/Zotero/storage/GRCXCNYM/Kruse et al. - 2013 - Human-aware robot navigation A survey.pdf:application/pdf;ScienceDirect Snapshot:/home/gbuisan/Zotero/storage/6GEUEWUL/S0921889013001048.html:text/html}
+}
+
+@article{sisbot_human_2007,
+	title = {A {Human} {Aware} {Mobile} {Robot} {Motion} {Planner}},
+	volume = {23},
+	issn = {1552-3098},
+	number = {5},
+	journal = {Transactions on Robotics},
+	author = {Sisbot, Emrah Akin and Marin-Urias, Luis F. and Alami, Rachid and Siméon, Thierry},
+	year = {2007},
+	note = {bibtex: sisbot\_tr\_2007},
+	pages = {874--883}
+}

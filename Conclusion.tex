@@ -1,0 +1,19 @@
+\ifdefined\included
+\else
+\documentclass[a4paper,11pt,twoside]{StyleThese}
+\include{formatAndDefs}
+\sloppy
+\begin{document}
+\fi
+
+
+\chapter*{Conclusion}
+\addstarredchapter{Conclusion} %Sinon cela n'apparait pas dans la table des matières
+Ce manuscrit de thèse rapporte 
+
+\ifdefined\included
+\else
+\bibliographystyle{acm}
+\bibliography{These}
+\end{document}
+\fi

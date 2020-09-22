@@ -1,0 +1,35 @@
+\ifdefined\included
+\else
+\documentclass[a4paper,11pt,twoside]{StyleThese}
+\include{formatAndDefs}
+\sloppy
+\begin{document}
+\setcounter{chapter}{0} %% Numéro du chapitre précédent ;)
+\dominitoc
+\faketableofcontents
+\fi
+
+\chapter{Contexte scientifique \& État~de~l'art}
+\minitoc
+
+\section{section1}
+\subsection{subsection1a}
+
+Il faut utilizer au moins une citation (exemple: \cite{goossens93}) pour bien
+compiler le document. Regardez le document These.bib pour les details de
+comment organizer la bibliographie.
+
+\subsection{subsection1b}
+
+Pour ajouter un symbole à la liste des abréviations il faut utiliser
+\verb|\nomenclature{<symbole>}{<description>}|. Par exemple, je peux ajouter
+$\beta$\nomenclature{$\beta$}{La deuxième lettre de l'alphabet grec} et
+$\alpha$\nomenclature{$\alpha$}{La première lettre de l'alphabet grec} comme
+symboles dans ce document.
+
+\ifdefined\included
+\else
+\bibliographystyle{acm}
+\bibliography{These}
+\end{document}
+\fi
