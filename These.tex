@@ -2,12 +2,34 @@
 % \documentclass option.
 % Note1: The 'page de garde' will always be written in French.
 % Note2: You will have an error if you change the language of the document and
-%        compile it without cleaning the auxiliary files. Compiling it again
+%        compisecrets.GITHUB_TOKENle it without cleaning the auxiliary files. Compiling it again
 %        should solve the problem.
 \documentclass[english,a4paper,11pt,twoside]{StyleThese}
 \newcommand{\included}{}
 
+
+
+
 \include{formatAndDefs}
+
+\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+\usepackage{xcolor}  % Coloured text etc.
+% 
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+
+
+%%%%% Chapter 2
+\newcommand{\realset}{\mathbb{R}}
+\newcommand{\intset}{\mathbb{N}}
+\newcommand{\robotband}{B_\mathcal{R}}
+\newcommand{\humanband}{B_\mathcal{H}}
+
+
 \sloppy
 \begin{document}
 
@@ -65,6 +87,9 @@ A faire en dernier :-)
 \include{Chapter3}
 \include{Chapter4}
 \include{Conclusion}
+
+\newpage
+\listoftodos[Notes]
 
 
 \appendix
