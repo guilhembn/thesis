@@ -51,7 +51,9 @@ This planner has been integrated has a local planner in the ROS architecture. Pr
 
 In the human aware timed elastic band approach, multiple timed band are considered. In addition to the robot band $\robotband$ represents the robot trajectory, it also considers multiple human bands $B_{\mathcal{H}_k}$ with $k in \intset$ the number of humans in vicinity of the robot. For simplicity purpose, in this thesis we will only consider one human in the vicinity of the robot, and thus one human band $\humanband$. However, the approach has been shown working successfully up to three humans.
 Moreover, the weighted-sum cost function becomes:
-\[f(\robotband, \humanband) = \sum_a \gamma_a f_a(\robotband) + \sum_b \gamma_b f_b(\humanband) + \sum_c \gamma_c f_c(\robotband, \humanband) \]
+\begin{equation} \label{eq:hateb_obj_function}
+f(\robotband, \humanband) = \sum_a \gamma_a f_a(\robotband) + \sum_b \gamma_b f_b(\humanband) + \sum_c \gamma_c f_c(\robotband, \humanband)
+\end{equation}   
 
 where $fa$, $fb$ and $fc$ represent respectively cost functions associated with robot trajectory constraints, human trajectory constraints and human-robot social constraints. Then, the optimization process consist in finding the optimal robot and human trajectories $\robotband, \humanband$ such as:
 \[\{\robotband^*, \humanband^*\} = \mathop{\mathrm{argmin}}_{\{\robotband, \humanband\}}\,f(\robotband, \humanband)\]
@@ -122,16 +124,40 @@ The experiment was conducted in a L-shaped corridor (Fig.~\ref{experiment_adream
 
 We used a \textit{ETG 2w} eyetracker from SMI to collect the eye movement data of the participant. It is a portable device, allowing, after a short calibration process, to track the user gaze, and measuring where the user looks at. The data were analyzed using the \textit{BeGaze 3.6} software from SMI.
 
-Three questionnaires were used to collect the subjective measures.
+Three questionnaires and an interview were used to collect the subjective measures. \improvement{Add questionnaires in appendix}
 \begin{itemize}
-\item PeRDITA: 
-\end{itemize}	
+\item Pertinence of robot decision: The PeRDITA questionnaire \cite{devin_evaluating_2018}, jointly developed between the LAAS-CNRS and the CLLE in Toulouse, France, aims at evaluating the participant perceived pertinence of robot decision during a human robot collaborative task. In its complete form, it measures 5 dimensions: interaction, competence perception, verbal, acting and collaboration. However, in this study the robot is mute, and as the dimensions are independent we chose to remove the verbal dimension.
+\item Situation Awareness: Several techniques exists to measure the situation awareness during a task \cite{endsley_design_1988}. However, they require to freeze and hide the situation to the user, and probe their working memory by questioning them about its near future. In our setup, we can't stop the robot and make it disappear while it is navigating. Thus, we have developed a series of 6 questions for measuring the user situation awareness. These questions are presented to the user just after the navigation, and ask them to rank on a 6 points Likert scale each 3 stages (2 questions per stage) of the Endsley's model: perception, comprehension and projection.
+\item User satisfaction: For measuring the user satisfaction we used the AttrakDiff questionnaire. It is a standardized UX (User Experience) questionnaire measuring both hedonic qualities and global attractiveness. We used the french translation of this questionnaire \cite{lallemand_creation_2015}.
+\item Interview: The interview was constituted of 8 semi directed questions always asked in the same order. These questions aimed at qualitatively evaluate the user experience, behavior and perception of the user during the navigation. The interviewer was only allowed to read the questions and to make the participant elaborate by asking neutral questions like \"why?\" or \"can you tell me more?\".
+\end{itemize}
+
 
 \subsubsection{Experimental design}
+The user study was a 2 $\times$ 2 within-participants user study to evaluate how the time-to-collision constraint and the head behavior impact the robot navigation effectiveness efficiency and satisfaction. The independent variables were the HATEB time-to-collision cost parameters (both weight and threshold) and the head behavior. The conditions for the time-to-collision variable were $\gamma_ttc = 0.01$ (in Eq.~\ref{eq:hateb_obj_function}) with $\tau = 1s$ for the \textit{low TTC} condition and $\gamme_ttc = 15$ (in Eq.~\ref{eq:hateb_obj_function}) with $\tau = 4s$ for the \textit{high TTC} condition. For the both \textit{continuous} and \textit{alternated} head behavior conditions the robot head was pointing towards a the robot planned position in 1.5s in the future at 1m above the ground. In addition, in the \textit{alternated} head behavior, the robot pointed its head towards the human when they entered the long part of the corridor during 1.5s and again during 1.2s when the robot and human were 3.5m apart.
+The participant goal position was marked with a square on the ground, and was the starting point of the robot. The robot final position was 10m straight ahead of its starting position. So, the participant was able to reach their natural walking speed before turning at the corner of the L shaped corridor. The robot was only started when the participant was about to turn (2m before the turn), giving the impression that the robot was coming from further away while ensuring that the crossing happened around the same place independently of the participant walking speed.
 
 \subsubsection{Study procedure}
+The evaluation was cut into 4 blocks. A block consisted in two same condition crossing followed by questionnaires filling. A crossing was composed by the placement of the participant and the robot on their respective starting positions, then the participant was free to go to their previously indicated goal location while crossing the robot. The three questionnaires were filled next to the participant starting location and were concerning only the two crossings made in the current block. The 4 conditions order were randomized between participants and the condition change was made between two block but never between the two crossings inside the same block.
+
+Before starting the experiment trials, a training trial was made with the robot starting shifted to one side of the corridor and going in straight line with its head fixed looking straight. Just after this training trial, the participant was brought close to the robot and invited to inspect it. A specific head behavior was triggered making the robot head to follow the human allowing the participant to notice without being told that the robot was able to know their position and that its head could move. Moreover, the experimenter showed that robot arms were locked in place in a tucked position, and that they kept the emergency stop remote and was able to stop the robot at any time.
+
+After the 4 blocks have been passed by the participant, the experimenter interviewed them. The audio was recorded and the answer written down.
+
+The whole study lasted around 45 minutes per participant.
 
 \subsubsection{Measures}
+The analysis of the data was made on 27 participants because one did not fill all the questionnaires and their data were thus removed from the study. The quantitative data (questionnaires and oculometry) were analyzed using a non parametric two-way repeated measures Friedman ANOVA test.
+\subsubsection{Questionnaires}
+The three questionnaires have been passed 5 times each (one trial + four blocks). The results were codified from 1 to 7 for the PeRDITA, from 0 to 6 for the AttrakDiff and from 1 to 6 for the situation awareness questionnaire while taking care of reordering inverted items.
+
+The PeRDITA Cronbach's alphas were for each dimension: $\alpha = 0.89$ for the interaction, $\alpha = 0.87$ for the competence, $\alpha = 0.85$ for the acting and $\alpha = 0.86$ for the collaboration.
+
+For the situation assessment questionnaire, the Cronbach's alphas were: $\alpha = 0.93$ for the perception, $\alpha = 0.88$ for the comprehension and $\alpha = 0.87$ for the projection.
+
+\subsubsection{Oculometry}
+
+
 
 \subsection{Results}
 
