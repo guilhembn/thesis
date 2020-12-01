@@ -134,7 +134,7 @@ Three questionnaires and an interview were used to collect the subjective measur
 
 
 \subsubsection{Experimental design}
-The user study was a 2 $\times$ 2 within-participants user study to evaluate how the time-to-collision constraint and the head behavior impact the robot navigation effectiveness efficiency and satisfaction. The independent variables were the HATEB time-to-collision cost parameters (both weight and threshold) and the head behavior. The conditions for the time-to-collision variable were $\gamma_ttc = 0.01$ (in Eq.~\ref{eq:hateb_obj_function}) with $\tau = 1s$ for the \textit{low TTC} condition and $\gamme_ttc = 15$ (in Eq.~\ref{eq:hateb_obj_function}) with $\tau = 4s$ for the \textit{high TTC} condition. For the both \textit{continuous} and \textit{alternated} head behavior conditions the robot head was pointing towards a the robot planned position in 1.5s in the future at 1m above the ground. In addition, in the \textit{alternated} head behavior, the robot pointed its head towards the human when they entered the long part of the corridor during 1.5s and again during 1.2s when the robot and human were 3.5m apart.
+The user study was a 2 $\times$ 2 within-participants user study to evaluate how the time-to-collision constraint and the head behavior impact the robot navigation effectiveness efficiency and satisfaction. The independent variables were the HATEB time-to-collision cost parameters (both weight and threshold) and the head behavior. The conditions for the time-to-collision variable were $\gamma_ttc = 0.01$ (in Eq.~\ref{eq:hateb_obj_function}) with $\tau = 1s$ for the \textit{low TTC} condition and $\gamma_ttc = 15$ (in Eq.~\ref{eq:hateb_obj_function}) with $\tau = 4s$ for the \textit{high TTC} condition. For the both \textit{continuous} and \textit{alternated} head behavior conditions the robot head was pointing towards a the robot planned position in 1.5s in the future at 1m above the ground. In addition, in the \textit{alternated} head behavior, the robot pointed its head towards the human when they entered the long part of the corridor during 1.5s and again during 1.2s when the robot and human were 3.5m apart.
 The participant goal position was marked with a square on the ground, and was the starting point of the robot. The robot final position was 10m straight ahead of its starting position. So, the participant was able to reach their natural walking speed before turning at the corner of the L shaped corridor. The robot was only started when the participant was about to turn (2m before the turn), giving the impression that the robot was coming from further away while ensuring that the crossing happened around the same place independently of the participant walking speed.
 
 \subsubsection{Study procedure}
@@ -148,25 +148,129 @@ The whole study lasted around 45 minutes per participant.
 
 \subsubsection{Measures}
 The analysis of the data was made on 27 participants because one did not fill all the questionnaires and their data were thus removed from the study. The quantitative data (questionnaires and oculometry) were analyzed using a non parametric two-way repeated measures Friedman ANOVA test.
-\subsubsection{Questionnaires}
+\begin{enumerate}
+
+
+\item \textit{Questionnaires}:
 The three questionnaires have been passed 5 times each (one trial + four blocks). The results were codified from 1 to 7 for the PeRDITA, from 0 to 6 for the AttrakDiff and from 1 to 6 for the situation awareness questionnaire while taking care of reordering inverted items.
 
 The PeRDITA Cronbach's alphas were for each dimension: $\alpha = 0.89$ for the interaction, $\alpha = 0.87$ for the competence, $\alpha = 0.85$ for the acting and $\alpha = 0.86$ for the collaboration.
 
 For the situation assessment questionnaire, the Cronbach's alphas were: $\alpha = 0.93$ for the perception, $\alpha = 0.88$ for the comprehension and $\alpha = 0.87$ for the projection.
 
-\subsubsection{Oculometry}
+\item \textit{Oculometry}:
+The oculometry data were split into two parts: before the robot crossing, and after the robot crossing (when the robot is behind the human). As we were not interested in where the participant gaze after the crossing occurred we did not analyze this part. The number and duration of fixations were measured for each of the 9 defined areas of interest (AOI) (Fig.~\ref{fig:aois}). The semantic gaze mapping method was used, it consists in manually selecting in which AOI each automatically detected fixation lays.
 
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.4]{figures/chapter2/pr2_aois_2.png}
+\caption{The areas of interest defined to analyze the participants oculometric data.}
+\label{fig:aois}
+\end{figure}
 
+\item \textit{Interview}:
+The first question was a control question, ensuring that the participants saw differences between each blocks. After the second question, the interviewer revealed that the robot behavior was indeed different between each block, then proceeded to the rest of the interview. The participants answers were analyzed by excerpting verbatim (keywords or general ideas) from each question and computing their frequencies.
+
+\item \textit{Dependent variables}:
+Therefore, the dependent variables were the participant scores at the three questionnaires: PeRDITA, Situation Awareness and AttrakDiff, in addition to the number and duration of their gaze fixation during the crossing.
+Prior to the experiment, the participants were asked to fill a questionnaire inquiring their age, gender, education level, profession, native language, an open question about past experience with robots and a 7 points Likert scale assessing their overall opinion about robotics.
+\end{enumerate}
 
 \subsection{Results}
+\subsection{Quantitative results}
+During the crossing almost all participants (95\%) went to their left (thus, letting the robot go to their right) because the experimental setup led them to do so as the interview revealed. The robot also planned that the optimal path (given the constraints described above) was to go to the right of the human. Participants who went to their right stated they were "testing" the robot, thus not respecting the given goal (which was to go to the marked goal and not to test the robot). These trials have been removed from the data.
+
+\subsubsection{Pertinence of Robot Decision In joinT Action}
+The mean scores of the three dimensions of the PeRDITA questionnaire were significantly higher with an alternating head behavior than with a continuous one. The quality of interaction was higher with an alternating head behavior (\textit{M} = 5.31, \textit{SD} = 0.97), than with a continuous head behavior (\textit{M} = 5.03, \textit{SD} = 1.17), \textit{F}(1,26) = 4.41, \textit{p} < .05, $\eta_{p}^{2}$ = .15. The perceived robot competence was higher with an alternating head behavior (\textit{M} = 5.12, \textit{SD} = 1.14), than with a continuous one (\textit{M} = 4.73, \textit{SD} = 1.14), \textit{F}(1,26) = 9.15, \textit{p} < .01, $\eta_{p}^{2}$ = .26. The quality of collaboration was higher with an alternating head behavior  (\textit{M} = 5.06, \textit{SD} = 1.04), than with a continuous one (\textit{M} = 4.73, \textit{SD} = 1.14), \textit{F}(1,26) = 6.07, \textit{p} < .05, $\eta_{p}^{2}$ = .19.
+
+There was not any significant effect of TTC on the quality of interaction (\textit{F}(1,26) = 1.65, \textit{p} = .21.), on the perceived robot competence (\textit{F}(1,26) = 0.04, \textit{p} = .84), and on the quality of collaboration neither (\textit{F}(1,26) = 0.43, \textit{p} = .52). No interaction between TTC and head behaviors reached significance.
+
+\subsubsection{Attrakdiff}
+The mean score of the hedonic qualities dimension was higher with an alternating head behavior (\textit{M} = 5.06, \textit{SD} = 0.87), than with a continuous one (\textit{M} = 4.93, \textit{SD} = 0,82), \textit{F}(1,26) = 4.13, \textit{p} < .05, $\eta_{p}^{2}$ = .14. There was no significant differences regarding the scores of the pragmatic qualities (\textit{F}(1,26) = 0.34, \textit{p} = .57) and attractiveness (\textit{F}(1,26) = 0.14, \textit{p} = .71) dimensions. 
+
+There was not any significant effect of TTC on hedonic qualities (\textit{F}(1,26) = 3.25, \textit{p} = .08), on pragmatic qualities (\textit{F}(1,26) = 2.97, \textit{p} = .10), and on attractiveness neither (\textit{F}(1,26) = 0.37, \textit{p} = .55). No interaction between TTC and head behaviors reached significance.
+
+\subsubsection{Situation awareness}
+The mean score of global situation awareness was significantly higher with an alternating head behavior (\textit{M} = 4.64, \textit{SD} = 0.98), than with a continuous one (\textit{M} = 4.33, \textit{SD} = 1.12), \textit{F}(1,26) = 7.77, \textit{p} < .01, $\eta_{p}^{2}$ = .23.
+
+The mean scores of all the three dimensions of situation awareness were higher with an alternating head behavior than with a continuous one. Perception was significantly higher with an alternating head behavior (\textit{M} = 4.60, \textit{SD} = 1.08), than with a continuous one (\textit{M} = 4.15, SD = 1.29), \textit{F}(1,26) = 8.20, \textit{p} < .01, $\eta_{p}^{2}$ = .24. Comprehension was higher with an alternating head behavior (\textit{M} = 4.64, \textit{SD} = 1.05), than on a continuous one (\textit{M} = 4.36, \textit{SD} = 1.14), \textit{F}(1,26) = 5.99, \textit{p} < .05, $\eta_{p}^{2}$ = .19. Projection was higher (strong tendency) with an alternating head behavior (\textit{M} = 4.67, \textit{SD} = 0.96), than on a continuous one (\textit{M} = 4.47, \textit{SD} = 1.16), \textit{F}(1,26) = 3.52, \textit{p} = .07, $\eta_{p}^{2}$ = .12.
+
+There was not any significant effect of the TTC on global situation awareness (\textit{F}(1,26) = 1.70, \textit{p} = .20), on the perception dimension (\textit{F}(1,26) = 0.72, p = .41), and on the comprehension dimension (\textit{F}(1,26) = 0.60, \textit{p} = .45). However, the mean score of the projection dimension was higher (strong tendency) with a high TTC (\textit{M} = 4.69, \textit{SD} = 0.98), than with a low TTC (\textit{M} = 4.44, \textit{SD} = 1.13), \textit{F}(1,26) = 4.03, \textit{p} = .06, $\eta_{p}^{2}$ = .13. No interaction between TTC and head behaviors reached significance.
+
+\subsubsection{Gaze}
+\begin{itemize}
+\item  \textit{Robot vs. Environment}
+
+The mean number of eye fixations was significantly higher on the robot (\textit{M} = 2.23, \textit{SD} = 0.98) than on the environment (\textit{M} = 1.17, \textit{SD} = 0.90), \textit{F}(1,21) = 17.82, \textit{p} < .001, $\eta_{p}^{2}$ = .46.
+The mean number of eye fixations was higher (strong tendency) with a high TTC (\textit{M} = 1.76, \textit{SD} =  1.04) than with a low TTC (\textit{M} = 1.65, \textit{SD} = 1.11), \textit{F}(1,21) = 3.86, \textit{p} = .06, $\eta_{p}^{2}$ = .16, regardless of the AOIs. There was not any significant effect of the robot head behavior on the mean number of eye fixations, \textit{F}(1,21) = 0.90, \textit{p} = .35. No interaction between the three factors reached significance.
+
+The mean average duration of eye fixations was significantly higher on the robot (\textit{M} = 351, \textit{SD} =  172) than on the environment (\textit{M} = 260, \textit{SD} = 123), \textit{F}(1,18) = 6.95, \textit{p} < .05, $\eta_{p}^{2}$ = .28. There was not any other significant effects or interactions regarding the average duration of eye fixations.
+
+\item \textit{Robot AOIs}
+
+As shown in Table~\ref{table:eye_fixation_ttc_head}, the head was the part of the robot that was the most fixated by the participants (\textit{M} = 6.13 ; \textit{SD} = 0.59), \textit{F}(4,84) = 39.10, \textit{p} < .001, $\eta_{p}^{2}$ = .65. The number of fixations on other parts were \textit{M} = 1.28 (\textit{SD} = 0.31) for the base, \textit{M} = 1.16 (\textit{SD} = 0.23) for the torso, \textit{M} = 0.95 (\textit{SD} = 0.19) for the right end, and \textit{M} = 1.64 (\textit{SD} = 0.37) for the left end. 
+
+\begin{table}[!htbp]
+   \caption{\label{table:eye_fixation_ttc_head} Mean number of eye fixations made by participants in each area of interest (AoI) of the robot in each experimental condition (TTC x robot head behavior) in main experiment. Standard deviations are shown in parentheses.}
+    \begin{tabular}{lcccc}
+    \hline
+    \multirow{2}{*}{\textbf{Robot AoI}} & \multicolumn{2}{c}{\textbf{Low TTC}} & \multicolumn{2}{c}{\textbf{High TTC}} \\
+    \cline{2-5} 
+               & \textbf{Continuous}  & \textbf{Alternating}  & \textbf{Continuous}  & \textbf{Alternating}   \\
+    \hline
+    Head       & 5.64 (3.42)  & 5.50 (2.78)  & 5.93 (2.90)  & 7.45 (3.80)   \\
+    Torso      & 1.39 (1.39)  & 1.14 (1.49)  & 1.39 (1.65)  & 0.73 (0.96)   \\
+    Left end   & 0.95 (1.20)  & 1.07 (1.11)  & 1.00 (1.15)  & 0.77 (1.14)   \\
+    Right end  & 1.82 (1.92)  & 1.55 (1.71)  & 1.55 (1.94)  & 1.64 (2.27)   \\
+    Base       & 1.36 (2.07)  & 1.23 (1.53)  & 1.45 (1.65)  & 1.07 (1.27)   \\
+    \hline
+\end{tabular}
+\end{table}
+
+There was a significant interaction between the AOI type and the type of TTC, \textit{F}(4,84) = 5.72, \textit{p} < .001, $\eta_{p}^{2}$ = .21. The robot head was more fixated when the TTC was high (\textit{M} = 6.69, \textit{SD} = 3.43) than when it was low (\textit{M} = 5.57, \textit{SD} = 3.08). There was an interaction (strong tendency) between the AOI type and head behaviors, \textit{F}(4,84) = 2.34, \textit{p} = .06, $\eta_{p}^{2}$ = .10. The robot head was more fixated, when the robot head was alternating  (\textit{M} = 6.48, \textit{SD} = 3.43) than when it was continuous (\textit{M} = 5.78, \textit{SD} = 3.14).
+
+In addition, there was a double interaction (strong tendency) between the AOI type, head behaviors and the type of TTC, \textit{F}(4,84) = 2.41, \textit{p} = .06, $\eta_{p}^{2}$ = .10. Table~\ref{table:eye_fixation_ttc_head} shows that the robot head was more fixated when the robot head was alternating only with a high TTC.
+
+There was not any significant effect of the robot head behaviors on the mean number of eye fixations, \textit{F}(1,21) = 0.13, \textit{p} = .73. There was not any significant effect of the TTC type on the mean number of eye fixations, \textit{F}(1,21) = 1.82, \textit{p} = .19. The interaction between the TTC and the head behaviors, \textit{F}(1,21) = 0.74, \textit{p} = .40, did not reach significance.
+
+The ANOVA for the mean duration of eye fixations was not possible due to an absence of data in some experimental conditions.
+\end{itemize}
+
+\subsection{Qualitative results}
+All the participants saw differences between blocks, 19 of them saw head behavior differences and 10 of them saw trajectory differences. When the participant talked about the alternated head behavior, positive adjectives were employed ("reassuring", "sympathetic", "interactive"), when they talked about the continuous head behavior, negative adjectives were employed ("unsettling").
+
+After the experimenter revealed that the robot behavior was different in each block, the participants preferred when the robot was "moving its head" (12 participants). Five participants also preferred when the robot changes its direction long before they cross. Participants did not appreciate when the robot kept a "fixed head" because they thought the robot was not aware of them (8 participants), when the robot was "hesitating" (4 participants) and when it came "too close" (4 participants).
+
+Fourteen participants found the robot was the most competent in the condition with the alternated head behavior and high TTC, because the robot became aware of them when looking at them (10 participants), because the robot changed its direction sooner (4 participants), because it was trying to avoid them (4 participants) or because it was not coming too close (3 participants).
+
+The participants found the robot more acceptable when it made a "visual contact" (4 participants) and when it changed its trajectory early (3 participants). They found the robot less acceptable when the robot came too close (6 participants), when hesitating (3 participants), when not making visual contact (2 participants).
+
 
 \subsection{Discussion}
+This study aimed at exploring how taking into account the human model and planning for both human and robot during navigation allows to easily design behavior enhancing the usability of the robot. More precisely, navigation coplanning allows to easily implement coordination smoothers and increase mutual manifestness, we thus hypothesized that these changes should lead to a significant impact on robot usability in the intricate scenario of narrow corridor crossing.
+
+Human gaze analysis showed that head of the robot was fixed many times and even more when the robot showed its chosen corridor side early in the navigation (with a high TTC). Moreover, subjective results revealed that moving the head of the robot in an alternating pattern (pointing towards its path while sometimes pointing at the human head) improved the perception of the quality of interaction, the perceived robot competence, and the quality of collaboration. This alternative head behavior also increases the situation awareness score. This strongly support previous results on using the robot head during human robot navigation scenarios \cite{khambhaita_head-body_2016}, \cite{may_show_2015}.
+
+However, the satisfaction seems to have been slightly improved (on hedonic quality) when the robot presented the alternating gaze behavior rather than the continuous one. This result is only a tendency, but in the interview, the participants identified as positive when the robot moved its head to glance at them and changed its trajectory. They also identified as negative when the robot was too close or did not look at them. We think these discrepancies between the AttrakDiff results and the interview are caused by our poor questionnaire choice. Indeed, the AttrakDiff questionnaire aims at measuring the satisfaction produced by a final product (\textit{e.g.} cellphones) and the willingness of a user to buy this product, but not the satisfaction of a user when dynamically interacting with a robot in a navigation scenario. Yet, as no other questionnaire to our knowledge proposed to measure user satisfaction during human robot interaction, we chose the AttrakDiff.
+
+Results show that using the HATEB navigation co-planner with a high time-to-collision weight constraint cost and low threshold, alongside an head behavior signaling future robot trajectory and the human awareness during a crossing in a constrained space allows the human to have a better situation awareness and to perceive the robot as acting more pertinently and being more competent. This finding support the result from Lu et al. \cite{lu_towards_2013}, where the navigation efficiency is increased when the robot looks at the human and shows a "social" navigation behavior.
+
+We speculate that both the high TTC and alternating gaze of the robot are needed to improve the interaction and that no simple effect are significant for multiple reasons. First, with only the robot choosing a corridor side early in the crossing (high TTC condition) without showing the human awareness (continuous head condition), it may not be obvious to the human that the trajectory change is due to their presence. Conversely, when the robot signals its awareness of the human (here by pointing its head towards them) but without taking any action to ease the interaction (low TTC condition), the human stays in a situation where they don't know what the robot will do next. Finally, by both making the robot show its human awareness and change its own trajectory to facilitate the interaction (coordination smoother), it becomes clear the that robot is proposing a co-navigation solution where both agents are avoiding each other.
+
+Finally, oculometry results indicate that when the head is recognized as an information provider (in the alternating head condition), information are most likely to be sought in the robot head motion. The head is also looked longer when the robot alternately looks at the human. We can also note that people tend to think PR2 is getting data through its head, probably because of the visible cameras on it, even when it is not the case (like in our experiment).
+
+\improvement{Ajouter limites et future works de l'étude ? Ou le mettre dans la section conclusion ?}
 
 \section{Extending HATEB}
+Having shown that providing co-navigation solution using HATEB can effectively be used to enhance the efficiency of the interaction, 
+
 \subsection{Adapting HATEB to other robots}
+\subsubsection{Humanoid Robot}
+
+\subsubsection{Pepper robot for close human robot motions}
 
 \subsection{Using the estimated time to goal to measure the execution of the planned trajectory}
+
 
 \section{Conclusion}
 
