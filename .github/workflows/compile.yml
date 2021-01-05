@@ -1,0 +1,19 @@
+name: Compile thesis
+
+on:
+    push:
+        branches: [ compile ]
+    workflow_dispatch:
+
+jobs:
+    compile:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Dependencies
+              run: sudo apt-get update && sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra texlive-bibtex-extra
+            - name: Compile PDF
+              run: pdflatex -synctex=1 -interaction=nonstopmode These.tex && bibtex These.aux && pdflatex -synctex=1 -interaction=nonstopmode These.tex && pdflatex -synctex=1 -interaction=nonstopmode These.tex
+            - name: Show PDF
+              run: less These.pdf
+
