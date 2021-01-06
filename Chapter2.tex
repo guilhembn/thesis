@@ -262,14 +262,75 @@ Finally, oculometry results indicate that when the head is recognized as an info
 \improvement{Ajouter limites et future works de l'étude ? Ou le mettre dans la section conclusion ?}
 
 \section{Extending HATEB}
-Having shown that providing co-navigation solution using HATEB can effectively be used to enhance the efficiency of the interaction, 
+Having shown that providing co-navigation solution using HATEB can effectively be used to enhance the efficiency of the interaction, we will present in this section the different extensions made to HATEB.
 
 \subsection{Adapting HATEB to other robots}
+Khambhaita et al. \cite{khambhaita_head-body_2016} successfully used HATEB on a PR2 robot, both in simulation and on the real platform. As the approach is general, we implemented it on other robots.
+
 \subsubsection{Humanoid Robot}
+Humanoid robots are characterized by their bipedal navigation, tremendously increasing the complexity of simple navigation with regards to wheeled robots. However, legged robots present a large advantage for social and human robot interaction as human infrastructure are often thought for being navigated with legs rather than with wheels. Thus, we tried to implement our approach to a humanoid robot.
+
+To do so, we partnered with the Gepetto team at LAAS-CNRS specialized in humanoid systems motion. Thanks to their modular software architecture presented in \cite{stasse_modular_architecture_2008}, only minor changes had to be done to HATEB to integrate with their other components.
+
+One of their component \cite{naveau_reactive_walking_2017} takes as parameter a (simplified) robot kinematic model and is able, in real-time and at typical joint position control frequencies (around 200~Hz), to give position command to all the robot joints in order for the center of mass of the robot to respect a speed command given as input. To do so, the component needs to generate footstep placements and to compute robot joint positions ensuring the equilibrium and the respect of the kinodynamic constraints (between two successive poses) of the robot. However, this component as no ROS interface whereas HATEB is heavily built for ROS use. Thus, we made a bridge transferring the speed commands output by HATEB to the Gepetto architecture and transferring back the joint position commands.
+
+This has only be run virtually, and for simplicity, no simulator was used. Instead, we assumed the joint position command to be immediately and perfectly executed. Such an assumption has been made possible because of the effectiveness of the Gepetto architecture, having a tested precise model of the robot, ensures that the kinodynamic constraints will be respected, and consequently gives a correct robot behavior.
+
+We tested this approach on a virtual HRP2 robot, with a virtual human. \unsure{What result do I have from that?} 
 
 \subsubsection{Pepper robot for close human robot motions}
+The European project MuMMER aimed at deploying a Pepper robot in a shopping mall in Finland to entertain and guide customers. \improvement[inline]{ref} The project united seven different stakeholders bringing their knowledge to the project. The LAAS-CNRS goal was to make the guide task. However, in order to serve the most customers possible and to cope with large navigation issues of the Pepper platform, we choose not to go with the customer all the way to the asked shop, but instead, as the mall employees usually do, give directions to the customer to help them find the requested shop.
+However, giving only verbal instructions concerning the route is not sufficient, we chose to make the robot point the shop, if it is visible from the current position, or point its direction and the first visible element of the route otherwise.
+
+Although, the surroundings of the robot home place (the place in the mall where the robot is located, and thus, where the interaction takes place) contains some obstacles such as barriers, structure poles and advertisement posters. Thus, the object the robot has to point to the human might not be visible from their current position. We thus endowed the robot with the ability to compute the optimal position for the human and the robot for it to point at a landmark. This computation details can be found in \cite{waldhart_reasoning_shared_2019}. Once the robot has computed these optimal positions, it needs to move to its one while ensuring the human can move to theirs. Moreover, the customers might be hesitant to approach the robot to start an interaction, thus, the robot is also able to approach a nearby human to ask them if they need its help. However, it has to consider that the human might also move towards the robot to encounter it.
+
+To tackle both of these issues, we decided to use HATEB. We made a higher level component proposing three services: rotate, navigate to and approach. While the rotate service is only made for in place rotation of the robot in order to reorient itself for repositioning or to look or point at something, the other two uses the HATEB planner described earlier. The navigate to service expects a robot goal pose and optionally a human identifier and a human goal (which is shown by the robot before starting the navigation). The HATEB planner is then called with empirically tuned weights to make the robot navigate to its goal position while, if provided, ensuring the human can reach theirs. The approach service expects a human identifier and a distance, and use the HATEB planner with different weights (e.g. with the visibility constraint described in \ref{sec:visibility_constraint} activated) with a goal at the specified distance in front of the human. The human goal is predicted from their current pose and velocity some seconds in the future, and updated at each control loop with their new sensed pose and speed.
+
+While this scheme worked well for the approach, with the robot presenting an efficient approach trajectory reacting the human motion, it performed very poorly for the navigation part. Indeed, the robot navigation was erratic and made too long trajectories even between close start and goal points. We identified two causes to this over conservative behavior:
+
+\begin{itemize}
+\item First, the HATEB algorithm did not support holonomic motion. Although this was not a problem for long distance scenarios, it made the robot having to maneuver to achieve small displacements.
+
+\item Then, by planning these short trajectories so close to the human, the optimizer does not have a lot of latitude to play with, and the search space is very noisy and chaotic.
+\end{itemize}
+
+It has thus been decided in the project to not use the HATEB approach, but simply an holonomic timed elastic band enriched with social constraints linked to the nearby humans (\textit{i.e.} only optimizing the robot trajectory and not the human one).
+
+This allowed to point out some of the limitations of the HATEB approach, it performs poorly for small, intricate displacements. This led to the creation of HATEB2 \cite{teja_hateb2_2020}, which is able to switch online between the HATEB planner, the TEB planner with social constraints or a velocity obstacle planner.
+
+\unsure{HATEB 3D ?}
 
 \subsection{Using the estimated time to goal to measure the execution of the planned trajectory}
+
+Another benefit of the HATEB approach is that it does not only compute speed command to follow a global plan while avoiding obstacles like other classic local planner, but also returns a complete short term trajectory for both the robot and the human. Moreover, as the trajectories contains the expected duration between each pose, simply by summing them, we can have an estimate of the time remaining to execute the local trajectories. Besides, we also compute the estimated time remaining for the global trajectories after the local ones by dividing the computed speed at the last local trajectory pose by its length. By summing these two estimated remaining times, we can have a estimation of the remaining navigation time (the time to goals) for all the considered agents.
+
+By monitoring the evolution of these times, we can estimate a quality of the ongoing navigation. Indeed, the local trajectories are computed at at a position control rate and so are the time to goals. Intuitively, if the computed time to goals are decreasing at the same rate as the real time duration (\textit{e.g.} the estimation for the robot goes from 12 seconds to 11 seconds while one second has elapsed) the execution of the trajectories are going according to plan. Instead, if the computed time to goals are decreasing slower than the real time duration, staying equals or even increasing, the execution does not go as smoothly as the plan was.
+
+We formalized it as follows: 
+\begin{equation}
+s_i(t) = \frac{ttg_i(t) - ttg_i(t - x)}{x}
+\end{equation}
+with $s_i(t)$ is the time to goal variation for the trajectory $i$ (either the robot or one of the considered human) at time $t$, and $x$ is the time window size parameter, specifying how old are the previous time to goal value we are comparing the current one with.
+With this definition we have:
+\begin{itemize}
+\item $s(t) \approx 1$: the execution goes according to plan,
+\item $s(t) > 1$: the execution outperforms the plan,
+\item $0 < s(t) < 1$: the execution goes slower than the plan, but progress towards the goal is still being made,
+\item and $s(t) < 0$: the goal is getting further.
+\end{itemize}
+
+This value can then be fed back to a supervision system which can change the navigation parameters or abort it to make a repair strategy if, combined with other task monitored values, it judges the navigation action is endangering the higher level task.
+
+\improvement{Dire que même si ça permet une certaine évaluation ça ne dit pas le problème. Obstacle imprévu par le robot ? Human qui change d'avis ? Humain qui ne veut pas coopérer ? Mauvais modèle de l'humain ?}
+
+
+
+\subsection{Adding constraints}
+\unsure{Is this subsection useful ?}
+
+\subsubsection{The visibility constraint}
+
+\unsure{ttc plus ?}
 
 
 \section{Conclusion}
