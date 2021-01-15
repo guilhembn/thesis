@@ -284,7 +284,7 @@ However, giving only verbal instructions concerning the route is not sufficient,
 
 Although, the surroundings of the robot home place (the place in the mall where the robot is located, and thus, where the interaction takes place) contains some obstacles such as barriers, structure poles and advertisement posters. Thus, the object the robot has to point to the human might not be visible from their current position. We thus endowed the robot with the ability to compute the optimal position for the human and the robot for it to point at a landmark. This computation details can be found in \cite{waldhart_reasoning_shared_2019}. Once the robot has computed these optimal positions, it needs to move to its one while ensuring the human can move to theirs. Moreover, the customers might be hesitant to approach the robot to start an interaction, thus, the robot is also able to approach a nearby human to ask them if they need its help. However, it has to consider that the human might also move towards the robot to encounter it.
 
-To tackle both of these issues, we decided to use HATEB. We made a higher level component proposing three services: rotate, navigate to and approach. While the rotate service is only made for in place rotation of the robot in order to reorient itself for repositioning or to look or point at something, the other two uses the HATEB planner described earlier. The navigate to service expects a robot goal pose and optionally a human identifier and a human goal (which is shown by the robot before starting the navigation). The HATEB planner is then called with empirically tuned weights to make the robot navigate to its goal position while, if provided, ensuring the human can reach theirs. The approach service expects a human identifier and a distance, and use the HATEB planner with different weights (e.g. with the visibility constraint described in \ref{sec:visibility_constraint} activated) with a goal at the specified distance in front of the human. The human goal is predicted from their current pose and velocity some seconds in the future, and updated at each control loop with their new sensed pose and speed.
+To tackle both of these issues, we decided to use HATEB. We made a higher level component proposing three services: rotate, navigate to and approach. While the rotate service is only made for in place rotation of the robot in order to reorient itself for repositioning or to look or point at something, the other two uses the HATEB planner described earlier. The navigate to service expects a robot goal pose and optionally a human identifier and a human goal (which is shown by the robot before starting the navigation). The HATEB planner is then called with empirically tuned weights to make the robot navigate to its goal position while, if provided, ensuring the human can reach theirs. The approach service expects a human identifier and a distance, and use the HATEB planner with different weights (e.g. with the visibility constraint described in \ref{sect:chapter2_visibility_constraint} activated) with a goal at the specified distance in front of the human. The human goal is predicted from their current pose and velocity some seconds in the future, and updated at each control loop with their new sensed pose and speed.
 
 While this scheme worked well for the approach, with the robot presenting an efficient approach trajectory reacting the human motion, it performed very poorly for the navigation part. Indeed, the robot navigation was erratic and made too long trajectories even between close start and goal points. We identified two causes to this over conservative behavior:
 
@@ -321,6 +321,8 @@ With this definition we have:
 
 This value can then be fed back to a supervision system which can change the navigation parameters or abort it to make a repair strategy if, combined with other task monitored values, it judges the navigation action is endangering the higher level task.
 
+\unsure{images ?}
+
 \improvement{Dire que même si ça permet une certaine évaluation ça ne dit pas le problème. Obstacle imprévu par le robot ? Human qui change d'avis ? Humain qui ne veut pas coopérer ? Mauvais modèle de l'humain ?}
 
 
@@ -328,12 +330,22 @@ This value can then be fed back to a supervision system which can change the nav
 \subsection{Adding constraints}
 \unsure{Is this subsection useful ?}
 
+
 \subsubsection{The visibility constraint}
+\label{sect:chapter2_visibility_constraint}
 
 \unsure{ttc plus ?}
 
 
 \section{Conclusion}
+\todo{Limitations: Mouvement trop courts et proches de l'humain (Mummer), nécessite d'avoir un bon modèle de l'humain (robot qui suit l'humain en pensant qu'il va accelerer), trouve le plan optimal comme si l'humain allait être au courant: c'est bien ça permet de s'assurer qu'il en existe au moins une trajectoire pour l'humain, mais ce n'est peut-être pas celle qu'il va choisir et on risque de se mettre dans un deadlock (en pensant qu'il va choisir une trajectoire mais en fait il en fait une autre).
+
+In this chapter, we presented a robot navigation planner HATEB, which not only computes an optimal local trajectory for the robot but also for the surrounding humans. This approach has been shown to be able to solve complex navigation tasks where both agents must take cooperate to reach their respective goals. Moreover, we proved via an user study that it allows to implement effective coordination smoothers to increase the robot mutual manifestness and facilitate the whole interaction.
+Besides, the versatility of this approach has been presented via its implementation on three different robots: PR2, HRP2 and Pepper.
+Finally, we used an other benefit of this scheme which is to compute precise local trajectory at position control loop rate to estimate the remaining time to reach the navigation goal. By processing this data and monitoring it over the course of interaction, quality of the ongoing navigation and interaction can be deduced and returned to a higher level supervision component.
+
+We are particularly interested in these coordination smoothers, which can be seen as non verbal communication of the robot intents and of the shared plan. Planning for these coordination smoothers can only be done if we plan for both the robot and the human. However, due to the continuous and short duration nature inherent to navigation tasks, exploring the planning of such communication can be tedious. We thus propose to move from navigation problems to focus on human robot symbolic task planning.
+
 
 \ifdefined\included
 \else
