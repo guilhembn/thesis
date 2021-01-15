@@ -9,27 +9,32 @@
 \faketableofcontents
 \fi
 
-\chapter{Contexte scientifique \& État~de~l'art}
+\chapter{Planning for Human Robot Interaction Background}
 \minitoc
 
 % Planifier pour l'autre c'est important : SAvoir qu'il va agir/réagir (éviter le blocage dans le couloir, savoir qu'on va atteindre le but même si le robot ne peut pas faire certaines actions), lui indiquer clairement nos intentions pour qu'il puisse prendre sa décision dans les meilleures conditions (mutual manifestness, legibility, predictability, coordination smoothers, ...)
 % Motion planning (+ Human Aware)
 % Task Planning (+ Human Aware)
+% Usability and action model and automation
 
-\section{section1}
-\subsection{subsection1a}
+This first chapter aims at setting the context for this thesis. While not providing a exhaustive state of the art, it presents challenges of planning for human robot interaction. Exhaustive related works will be reviewed in the beginning of each chapter. In what follows, we first define robot motion and task planning, then we describe the challenges arising for the specific context of human robot interaction and finally we present general approaches trying to cope with these challenges by modeling and planning for the human.
 
-Il faut utilizer au moins une citation (exemple: \cite{goossens93}) pour bien
-compiler le document. Regardez le document These.bib pour les details de
-comment organizer la bibliographie.
+\section{Task and Navigation Planning}
+As put by Ghallab, Nau and Traverso, "the purpose of planning is to synthesize an organized set of actions to carry out some activity" \cite{ghallab_nau_traverso_2016}. Planning can be \textit{domain-specific} if the planning method (and set of actions) is precisely made to solve a specific type of activity. Domain-specific planning includes navigation aiming at planning a trajectory for moving the robot base from a place to another while respecting its kinodynamic constraints and avoiding obstacles. On the other hand, \textit{domain independent} planning uses methods which can be applied to a wide varieties of problems using abstraction. Actions are then represented as functions modeling the changes it has on a generic world state to produce a new world state. In any case planning require to model the environment and the actions allowing to predict how an agent actions would impact this environment.
 
-\subsection{subsection1b}
+Besides, the robot not only needs to plan, but also to act. Acting refers to the process by which the robot decides "how to perform the chosen actions while reacting to the context in which the activity takes place". Indeed, a planning process can usually only rely on the world state estimated at the beginning of the process and the models of how it evolves (caused or not by an agent action). However, this estimation can be coarse and can contain a lot of unknown information, moreover the models used are always imperfect and may not represent exactly how the world state evolves over time. For example in navigation planning, the map on which the planning is done may be incomplete as some obstacles may not be detectable at the robot starting position. Besides the robot controllers might not be able to follow exactly the planned trajectory, and thus the robot would fall outside the plan. This is why Ghallab, Nau and Traverso argue for an "interplay" between planning and acting.
 
-Pour ajouter un symbole à la liste des abréviations il faut utiliser
-\verb|\nomenclature{<symbole>}{<description>}|. Par exemple, je peux ajouter
-$\beta$\nomenclature{$\beta$}{La deuxième lettre de l'alphabet grec} et
-$\alpha$\nomenclature{$\alpha$}{La première lettre de l'alphabet grec} comme
-symboles dans ce document.
+In navigation this is usually done via a global/local planner approach \cite{choset2005principles} \improvement{add cite or this enough ?}. First the global planning process finds an obstacle-free general trajectory from the start to the end point over a known map of the environment. Then, a local planner tries to find a more precise and shorter trajectory from the current estimated position of the robot to a point on the global plan while also dealing with newly detected obstacles. This local trajectory be recomputed at position control speed (around 20Hz for speeds around 2 meters per seconds) and can be as short as only a speed command sent to the controller \improvement{cite, DWA ?} but can also predict a trajectory for several second in the future. \improvement{cite... Principle of robot motion, optimal control ? TEB ?} For more abstract task planning this often translate as having a "descriptive model" for planning, where tasks are represented as high level symbols and an "operational model" for acting, where tasks can be refined into low level commands depending on current world state. \unsure{re referencer Malik et al. ? Si oui ce serait presque sur tout le paragraphe...}
+% interplay between Planning and acting, in navigation and in general
+
+% cost based planning ? Maintenant ou dans la partie HRI ?
+
+\section{Human-Robot Interaction}
+\subsection{Usability and Automation}
+
+\subsection{Joint Action in Human-Robot Interaction}
+
+\section{Modeling Human Actions and Shared Plans}
 
 \ifdefined\included
 \else
