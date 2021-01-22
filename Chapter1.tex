@@ -25,16 +25,67 @@ As put by Ghallab, Nau and Traverso, "the purpose of planning is to synthesize a
 Besides, the robot not only needs to plan, but also to act. Acting refers to the process by which the robot decides "how to perform the chosen actions while reacting to the context in which the activity takes place". Indeed, a planning process can usually only rely on the world state estimated at the beginning of the process and the models of how it evolves (caused or not by an agent action). However, this estimation can be coarse and can contain a lot of unknown information, moreover the models used are always imperfect and may not represent exactly how the world state evolves over time. For example in navigation planning, the map on which the planning is done may be incomplete as some obstacles may not be detectable at the robot starting position. Besides the robot controllers might not be able to follow exactly the planned trajectory, and thus the robot would fall outside the plan. This is why Ghallab, Nau and Traverso argue for an "interplay" between planning and acting.
 
 In navigation this is usually done via a global/local planner approach \cite{choset2005principles} \improvement{add cite or this enough ?}. First the global planning process finds an obstacle-free general trajectory from the start to the end point over a known map of the environment. Then, a local planner tries to find a more precise and shorter trajectory from the current estimated position of the robot to a point on the global plan while also dealing with newly detected obstacles. This local trajectory be recomputed at position control speed (around 20Hz for speeds around 2 meters per seconds) and can be as short as only a speed command sent to the controller \improvement{cite, DWA ?} but can also predict a trajectory for several second in the future. \improvement{cite... Principle of robot motion, optimal control ? TEB ?} For more abstract task planning this often translate as having a "descriptive model" for planning, where tasks are represented as high level symbols and an "operational model" for acting, where tasks can be refined into low level commands depending on current world state. \unsure{re referencer Malik et al. ? Si oui ce serait presque sur tout le paragraphe...}
-% interplay between Planning and acting, in navigation and in general
 
-% cost based planning ? Maintenant ou dans la partie HRI ?
+Planning seldom resume to finding a valid plan or not. It often also have to find the minimal cost plan. Cost are usually associated with actions and can represent a variety of concept, ranging from battery consumption to money costs. In the case of navigation planning, the interest is often to find the shortest obstacle-free trajectory (\textit{i.e.} minimizing the trajectory length).
+
 
 \section{Human-Robot Interaction}
+When robots need to interact with humans, be it for collaborating on a task, for maintenance, for teleoperation or just because they share a common environment, new planning constraints and goals arise. The human-robot interaction (HRI) field studies these topics. More precisely, "HRI is a field of study dedicated to understanding, designing, and evaluating robotic systems for use by or with humans" \cite{goodrich_human-robot_2007}. Other fields study the interaction between human and system, such as human computer interaction (HCI) or human agent interaction (HAI), but HRI presents its unique challenges, as the system is able to take autonomous decision and physically act on its environment.
+All these fields are strongly linked to psychology (more specially cognitive psychology) as the understanding and modeling of human behavior is crucial for such intricate interactions between the systems and the human.
+In this part we will first define an highly desirable property of interactive systems: the usability, and how it is applied to highly autonomous systems and to robots. Then, some principles of the joint action field, studying how humans handle cooperative tasks, will be presented along with their application in human robot interaction.
+
 \subsection{Usability and Automation}
+Usability is defined by the ISO 9241 as "the extent to which a system, product or service can be used by specified users to achieve specified goals with effectiveness, efficiency and satisfaction in a specified context of use". The interactive system used by a human must allow them to do the task, while consuming as little resources as possible (\textit{e.g.} time, money, number of steps) and being enjoyable to use.
+
+\subsubsection{Human Computer Interaction}
+
+To design such systems a lot of works in HCI and ergonomics relies upon human cognitive models, often drawn from cognitive psychology. One of the most detailed and still being used and enriched to date is the human processor model~\cite{card1983psychology}, which can be used for estimating how long a human will take to achieve a certain task. Another widely used model to help with designing interactive system is the Norman's seven stages of action model (Figure~\ref{fig:norman_7_stages}). This model represents the different cognitive process involved when a human performs an action, and allow to design an interactive system accordingly. Moreover, Norman elicit seven design principles from this model. One of them being highly desirable for an autonomous agent system is the discoverability \cite{norman2013design}.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{figures/chapter1/Norman_7_stages_action.png}
+\caption{The seven stages of actions defined by Norman \cite{norman2013design}. This model guides the design of interactive systems by emphasizing each step of the cognitive processes taking place during an action.}
+\label{fig:norman_7_stages}
+\end{figure}
+
+Indeed, too many systems require an expertise to be used. This often result from the system designer focusing on the "machine part" and not on the interface. Machines have been identified to avoid some humans flaws for a long time \cite{fitts_human_1951}, but because the "interface" \footnote{we refer here to the first meaning of "interface": the common surface where two systems meet and interact.} is too often poorly designed, the human needs to make great effort to use the machine. This effort becomes more important as the system gain in complexity and automation. This has been identified by Norman as the "paradox of automation" \cite{norman2013design}. More precisely, when an automation is performing a task the human situation awareness \cite{endsley_design_1988} decreases leading to misuses and errors when they need to interact with the system (\textit{e.g.} because of a system error or incapability).
+
+\subsubsection{Human Robot Interaction}
+When interacting with a robot, the human is no more the only agent taking autonomous decisions and able to act on the world. Indeed, not only the robot have its own plan-act-sense cycle with its own goal, but it can also physically move and change its environment. For the decision part, Bradshaw \textit{et al.} propose eight maxims to complete and specify the recommendations of Norman. These maxims apply to human-agent interaction when they perform a joint activity:
+\begin{itemize}
+\item The agent must be \textit{observable}: its state and intentions are clearly exposed to others.
+\item The agent must \textit{appraise progress}: it should inform others about the status of its task and warn them for any foreseen potential issues.
+\item The agent must \textit{knows its limits}: it should be proactive or wait when performing a task, depending on its evaluation of its capabilities.
+\item The agent must be \textit{predictable} and \textit{dependable}: it should show what its capabilities are, and be trusted to use them at its best.
+\item The agent must be \textit{directable}: its (sub)task can be preempted or modified if required and its knowledge can be updated thanks to other agents.
+\item The agent must be \textit{selective}: it should expose only relevant facts in the context of the task.
+\item The agent must be \textit{coordinated}: it should negotiate and deconflict plans, share resources and align beliefs between agents to create a \textit{common ground} if it is required to perform the task.
+\end{itemize}
+
+\unsure{I am afraid of adding thing here concerning the application of these things in task planning, I fear repetitions with "modeling human actions and shared plans...}
+
+
+% Focus on motion (navigation) => legibility, predictability, ...
+Robot navigation should also respect these maxims. A number of approaches are trying to cope with these specific human robot issues \cite{kruse_human-aware_2013}. Moreover, more precise concepts have emerged from the maxims especially for the motion of a robot in a joint activity. 
+
+First of all, the motion should ensure the physical safety of the surrounding humans. This is often respected by constraining the trajectory to stay at a minimal distance from humans \cite{kruse_human-aware_2013, rios2015proxemics}. \unsure{proxemics et Hall ? Pas grand chose à voir avec ici... Ce plan est nul...}
+
+Moreover, while in a task, the motion of the robot can be used to convey information about its intentions, and thus making it more \textit{observable} and \textit{predictable}. Dragan \textit{et al.} defines three types of motions: functional, predictable and legible \cite{dragan2015effects}. A \textit{functional motion} is built only to make the robot move from on state to another one while avoiding humans and obstacles, it does not aim at providing any intent --- which does not mean it does not provide one. Then, a \textit{predictable motion} is a motion expected by an external observer knowing the robot model and its goal. It is often the quickest or shortest trajectory to reach the goal. Finally, a \textit{legible motion} is a motion allowing an external observer to quickly and reliably infer the robot motion goal.
+
+A lot of work has been made to generate legible paths. In \cite{beetz2010generality}, the robot learns usual motions from humans and generates trajectories based on them. However, even if the authors highlights the improvement in legibility, one could argue that the learned motions correspond more to the Dragan's definition of \textit{predictability}. In \cite{dragan_legibility_2013}, a robot motion planner is presented which is dedicated to generate legible trajectory. They prove its effectiveness through a user study while reporting an interesting finding: if the legibility of the motion is stressed to much, it becomes unpredictable and confuses the observer. 
+
 
 \subsection{Joint Action in Human-Robot Interaction}
 
+Besides making behaviors from scratch, a lot of works inspires from situations where humans already perform a task with another autonomous agent: another human. A lot of work has been done studying how humans perform a so-call \textit{joint action}. \textit{Joint action} is defined by Sebanz \textit{et al.} as "any form of social interaction whereby two or more individuals coordinate their actions in space and time to bring about a change in the environment" \cite{sebanz2006joint}. Moreover, they propose three key abilities an agent must have to successfully perform a joint action:
+\begin{itemize}
+\item the agent must \textit{share representation}
+\end{itemize}
+
+% Bradshaw, J.M., M. Sierhuis, A. Acquisti, P. Feltovich, R. Hoffman, R. Jeffers, D. Prescott, N. Suri, A. Uszok, and R. Van Hoof. "Adjustable autonomy and human-agent teamwork in practice: An interim report on space applications. => "Part of that “extra” work involves each party doing its part to assure that relevant aspects of the agents and the situation are observable at an appropriate level of abstraction and using an effective style of interaction [8]." bradshaw et al. HAI. => This is called mutual manifestness 
+
 \section{Modeling Human Actions and Shared Plans}
+% Chakroborti
 
 \ifdefined\included
 \else
@@ -42,3 +93,4 @@ In navigation this is usually done via a global/local planner approach \cite{cho
 \bibliography{These}
 \end{document}
 \fi
+
