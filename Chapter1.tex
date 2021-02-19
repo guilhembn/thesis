@@ -51,7 +51,7 @@ To design such systems a lot of works in HCI and ergonomics relies upon human co
 Indeed, too many systems require an expertise to be used. This often result from the system designer focusing on the "machine part" and not on the interface. Machines have been identified to avoid some humans flaws for a long time \cite{fitts_human_1951}, but because the "interface" \footnote{we refer here to the first meaning of "interface": the common surface where two systems meet and interact.} is too often poorly designed, the human needs to make great effort to use the machine. This effort becomes more important as the system gain in complexity and automation. This has been identified by Norman as the "paradox of automation" \cite{norman2013design}. More precisely, when an automation is performing a task the human situation awareness \cite{endsley_design_1988} decreases leading to misuses and errors when they need to interact with the system (\textit{e.g.} because of a system error or incapability).
 
 \subsubsection{Human Robot Interaction}
-When interacting with a robot, the human is no more the only agent taking autonomous decisions and able to act on the world. Indeed, not only the robot have its own plan-act-sense cycle with its own goal, but it can also physically move and change its environment. For the decision part, Bradshaw \textit{et al.} propose eight maxims to complete and specify the recommendations of Norman. These maxims apply to human-agent interaction when they perform a joint activity:
+When interacting with a robot, the human is no more the only agent taking autonomous decisions and able to act on the world. Indeed, not only the robot have its own plan-act-sense cycle with its own goal, but it can also physically move and change its environment. For the decision part, Bradshaw \textit{et al.} \cite{bradshaw2011human} propose eight maxims to complete and specify the recommendations of Norman. These maxims apply to human-agent interaction when they perform a joint activity:
 \begin{itemize}
 \item The agent must be \textit{observable}: its state and intentions are clearly exposed to others.
 \item The agent must \textit{appraise progress}: it should inform others about the status of its task and warn them for any foreseen potential issues.
@@ -64,6 +64,8 @@ When interacting with a robot, the human is no more the only agent taking autono
 
 \unsure{I am afraid of adding thing here concerning the application of these things in task planning, I fear repetitions with "modeling human actions and shared plans...}
 
+Interestingly, in their "Architecture for autonomy", Alami \textit{et al.} propose a robotic architecture which is defines similar levels as the ones identified by Norman during human action \cite{alami1998architecture}.
+
 
 % Focus on motion (navigation) => legibility, predictability, ...
 Robot navigation should also respect these maxims. A number of approaches are trying to cope with these specific human robot issues \cite{kruse_human-aware_2013}. Moreover, more precise concepts have emerged from the maxims especially for the motion of a robot in a joint activity. 
@@ -72,20 +74,49 @@ First of all, the motion should ensure the physical safety of the surrounding hu
 
 Moreover, while in a task, the motion of the robot can be used to convey information about its intentions, and thus making it more \textit{observable} and \textit{predictable}. Dragan \textit{et al.} defines three types of motions: functional, predictable and legible \cite{dragan2015effects}. A \textit{functional motion} is built only to make the robot move from on state to another one while avoiding humans and obstacles, it does not aim at providing any intent --- which does not mean it does not provide one. Then, a \textit{predictable motion} is a motion expected by an external observer knowing the robot model and its goal. It is often the quickest or shortest trajectory to reach the goal. Finally, a \textit{legible motion} is a motion allowing an external observer to quickly and reliably infer the robot motion goal.
 
-A lot of work has been made to generate legible paths. In \cite{beetz2010generality}, the robot learns usual motions from humans and generates trajectories based on them. However, even if the authors highlights the improvement in legibility, one could argue that the learned motions correspond more to the Dragan's definition of \textit{predictability}. In \cite{dragan_legibility_2013}, a robot motion planner is presented which is dedicated to generate legible trajectory. They prove its effectiveness through a user study while reporting an interesting finding: if the legibility of the motion is stressed to much, it becomes unpredictable and confuses the observer. 
+A lot of work has been made to generate legible paths. In \cite{beetz2010generality}, the robot learns usual motions from humans and generates trajectories based on them. However, even if the authors highlights the improvement in legibility, one could argue that the learned motions correspond more to the Dragan's definition of \textit{predictability}. In \cite{dragan_legibility_2013}, a robot motion planner is presented which is dedicated to generate legible trajectory. They prove its effectiveness through a user study while reporting an interesting finding: if the legibility of the motion is stressed to much, it becomes unpredictable and confuses the observer.
+
+
 
 
 \subsection{Joint Action in Human-Robot Interaction}
 
-Besides making behaviors from scratch, a lot of works inspires from situations where humans already perform a task with another autonomous agent: another human. A lot of work has been done studying how humans perform a so-call \textit{joint action}. \textit{Joint action} is defined by Sebanz \textit{et al.} as "any form of social interaction whereby two or more individuals coordinate their actions in space and time to bring about a change in the environment" \cite{sebanz2006joint}. Moreover, they propose three key abilities an agent must have to successfully perform a joint action:
+Besides making behaviors from scratch, a lot of works inspires from situations where humans already perform a task with another autonomous agent: another human. Several previous reasearches have been done studying how humans perform a so-called \textit{joint action}. \textit{Joint action} is defined by Sebanz \textit{et al.} as "any form of social interaction whereby two or more individuals coordinate their actions in space and time to bring about a change in the environment" \cite{sebanz2006joint}. Moreover,several works propose multiple key abilities humans deploy when performing a joint action:
 \begin{itemize}
-\item the agent must \textit{share representation}
+\item humans can create and understand \textit{joint attention}: they are able to direct, or be directed by, others' attention \cite{pacherie_phenomenology_2011, sebanz2006joint}.
+\item humans can \textit{predict} others' action effects and goals \cite{tomasello2005understanding, sebanz2006joint}.
+\item humans can \textit{represent the shared task}: they can infer others' actions without directly seeing it, by observing events in the environment \cite{knoblich2011psychological, sebanz2006joint}.
+\item humans can \textit{coordinate actions} by integrating others' actions into their own plan \cite{sebanz2006joint}.
+\item humans consider combined actions results more important than their own only \cite{sebanz2006joint}.
+\item yet, humans are able to \textit{distinguish their own actions from other's}, allowing them to find any divergence in beliefs or intentions and align them (\textit{e.g. through communication} if necessary \cite{pacherie_phenomenology_2011}.
 \end{itemize}
 
-% Bradshaw, J.M., M. Sierhuis, A. Acquisti, P. Feltovich, R. Hoffman, R. Jeffers, D. Prescott, N. Suri, A. Uszok, and R. Van Hoof. "Adjustable autonomy and human-agent teamwork in practice: An interim report on space applications. => "Part of that “extra” work involves each party doing its part to assure that relevant aspects of the agents and the situation are observable at an appropriate level of abstraction and using an effective style of interaction [8]." bradshaw et al. HAI. => This is called mutual manifestness 
+Besides, a joint action can only occur if the involved agents know the presence of others agents. Pacherie defines it as the mutual manifestness: "\textit{each subject must be aware, in some sense, of the event as an event that is present to both; in other words the fact that both are attending to the same object or event should be open or mutually manifest}" \cite{pacherie_phenomenology_2011}.
+
+Finally, studies show that humans can help the others to predict and coordinate their actions by communicating or slightly modifying their own. Coordination smoothers are defined as the changes in an agent own's behavior to facilitate the interaction with another one \cite{vesper_minimal_2010}.
+
+It is interesting to note that some concepts are already overlapping with the desirable features for a robot taking part in an activity with a human. For example, the legibility and predictability of motion are using the human capability of understanding coordination smoothers and predicting future actions effects. Bradshaw \textit{et al.} also refer to an "extra work" an agent has to perform to ensure an efficient interaction with a human partner \cite{bradshaw2003adjustable}, which can be linked to the mutual manifestness and the several mechanisms which can be used, and which a human expects, when interacting.
+
+Moreover, some works already try to incorporate these joint action concepts and abilities into robotic architectures and behaviors \cite{khamassi2016integration, clodic2017key}. Lemaignan et al. present a robotic architecture composed of several components addressing the cognitive skills required to perform a collaborative task \cite{lemaignan2017artificial}. These include shared plan synthesis, human-aware motion planning --- both of which discussed later in this chapter ---, supervision, beliefs management and situation assessment. The situation assessment is able to generate symbolic facts from geometric data for the robot and also to estimate the beliefs of the human partner based on an estimation of their perspective of the scene \cite{milliez2014framework}. This framework has since been improved to a more modular approach allowing more refined reasoning, especially for the estimation of human beliefs \cite{lemaignan2018underworlds}. The supervision component is based on SHARY \cite{clodic2009shary} allowing the robot to execute shared plan while monitoring the human activities and deciding when to communicate. Devin \& Alami proposed an extended supervision system, heavily based on theory of mind, which is able to follow a shared plan but also to compute diverging agents beliefs, deciding if the divergence endangers the plan and if so, align the beliefs via verbal communications \cite{devin2016implemented}.
 
 \section{Modeling Human Actions and Shared Plans}
-% Chakroborti
+
+It has been showed previously that a robotic agent interacting with a human must coordinate its actions with them. Moreover, joint action theory proves that humans interacting together are able to represent the task as a whole, and plan not only for their actions but also for the actions of other agents. Thus, we think that for a human to perform the most efficient and satisfactory joint task with a robot, this robot must explicitly model the human actions and plan not only for its actions but also for the human ones. In this part we will first introduce some notations used throughout all this thesis, then we will briefly show some ways of modeling human task and link it with robot task planning, and finally review some systems planning for both humans and robots when performing a joint task.
+
+\subsection{Notations}
+In order to help to differentiate between the models presented in this thesis, we introduce here some notations we will use in the thesis. These notations are partially excerpted from the work of Chakraborti et al. \cite{chakraborti2018human}. We will refer to the model the robot has of itself as $\robotmodel$, to the model the robot has of the human it is interacting with as $\humanmodel$ and to the model the human has of the robot as $\robotinhumanmodel$. The models can represent different part of the agent, ranging from their beliefs to their action model, while not being here a formal definition, the notation should help to understand to which agent we are referring to. It is important to note that all the components presented in this thesis are considered to be a part of the robot, and thus $\robotmodel$ plays a special role as we consider all the information in it as the ground truth. For example, if there is a belief divergence between $\robotmodel$ and $\humanmodel$, we always consider that the $\robotmodel$ is the truth, otherwise, it would make no sense to keep this information in $\robotmodel$ while having access to the one in $\humanmodel$.
+
+\subsection{Task Modeling and Hierarchical Task Networks}
+%, Hamster, Nau
+\unsure{This part may be out of context here and probably shall be in Chapter4 only?}
+A common way of representing human activity and interaction with computer at high abstraction level is by using \textit{task models}. The hierarchical structure of human activity was first exploited by Annett and Duncan \cite{annett1967task}. They state that tasks can be described at several levels of abstraction until a certain criterion is met. Each task can thus be refined into subtasks detailing the procedure followed by the human to achieve the higher level task.
+Task modeling has then evolved to introduce interaction with systems, produced and needed information, potential errors and a wide variety of operators specifying how tasks interacts with each other during their execution. Task models are now commonly used in user-centered and user interface designing processes. Most advanced notations include \textit{ConcurTaskTrees} \cite{paterno2004concurtasktrees} and \textit{HAMSTERS} \cite{martinie2019analysing}. 
+% However used for evaluating or designing systems, but the system do not take decision based on it.
+% Similar (hierarcical) HTN for robot planning... 
+
+\subsection{Human Robot Planning}
+%Charkrabori, Shah, HATP Jules, Epistemic planning?
+
 
 \ifdefined\included
 \else
