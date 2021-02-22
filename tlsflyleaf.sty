@@ -16,6 +16,24 @@
 %
 %
 % Version history
+%  v1.13:
+%        - Fix illegal unit in new Texlive version for linethickness
+%  v1.12:
+%        - Fix deprecated \bf and \sc
+%  v1.11:
+%        - Fix geometry clash when already loaded by the document class
+%        - Fix geometry problem when loading the package (use geometry's option "pass")
+%        - Fix header deletion when using tlsflyleaf (change style from "plain" to "headings"
+%  v1.10:
+%        - Fix incompatibility with memoir document class
+%        - Fix french typo
+%  v1.9:
+%        - Upgrade SDU2E speciality labels (according to the responsible of the doctoral school January 2017)
+%  v1.8:
+%        - Remove fancyhdr dependencies (useless)
+%        - Merge blanksheet and blankpage command (no more need of two command)
+%  v1.7:
+%        - Adding missing MITT speciality (SIAO)
 %  v1.6:
 %        - Establishment naming updated (UT2)
 %  v1.5:
@@ -26,17 +44,17 @@
 %        - Add sentence if no member of jury are defined and njudge=0
 %  v1.2:
 %        - Add new ED2 option -> double mention for a second speciality (ED like option)
-%        - Coorection cotutelle bug
+%        - Fix cotutelle bug
 %  v1.1:
 %        - Update cotutelle layout
 %        - Only fancy mode kept => fancy option removed
 %  v1.0:
-%        - Add 2 new options: ED and Ets to fix the syntaxe for respectively docschool and establishment
+%        - Add 2 new options: ED and Ets to fix the syntax for respectively docschool and establishment
 %  v0.9:
 %        - Add new command \establishment
 %        - Use \title instead of \FRtitle
 %  v0.8:
-%        - Add auto aggrement with number (boss and referee by adding 's' if number greater than 1)
+%        - Add auto agreement with number (boss and referee by adding 's' if number greater than 1)
 %        - Add a fancy flyleaf load with the 'fancy' option 
 %        - Automatic position of the background figure (doesn't depend on the paper size)
 %        - Rename \makepdg to \makeflyleaf
@@ -45,11 +63,10 @@
 %          Default value set with \author{names} command
 %        - Rename \umr command to \lab
 %        - Option `emptysheetbefore' and `emptypageafter' added
-%        - Option `draft' removed
 %
 
 \NeedsTeXFormat{LaTeX2e}          % Require recent version of LaTeX >= 2011
-\ProvidesPackage{tlsflyleaf}[2013/03/22 Page de Garde de l'Universite de Toulouse]
+\ProvidesClass{tlsflyleaf}[2013/03/22 Page de Garde de l'Universite de Toulouse]
 
 \RequirePackage{xkeyval}          % Allow key=value option for the package
 
@@ -96,7 +113,7 @@
 % Docschool and speciality
 \def\docschool#1{\def\@docschool{#1}}
 \define@choicekey+{edname}{ED}[\val\nr]
-    {AA, ALLPHA-Al, ALLPHA-An, ALLPHA-Ar, ALLPHA-AtA, ALLPHA-AtSp, ALLPHA-AtSc, ALLPHA-AtP, ALLPHA-C, ALLPHA-D, ALLPHA-Es, ALLPHA-Ea, ALLPHA-I, ALLPHA-LC, ALLPHA-LM, ALLPHA-M, ALLPHA-Ph, ALLPHA-Po, ALLPHA-R, ALLPHA-S, ALLPHA-T, BSB-Anth, BSB-BioC, BSB-BioD, BSB-BioS, BSB-BiosV, BSB-BiotB, BSB-BiotC, BSB-GC, BSB-GM, BSB-Immu, BSB-Micr, BSB-Neur, BSB-Phar, BSB-Phys, CLESCO-A, CLESCO-D, CLESCO-E, CLESCO-L, CLESCO-Npsy, CLESCO-Nsc, CLESCO-NscCC, CLESCO-PM, CLESCO-Psy, CLESCO-Psyp, CLESCO-SE, CLESCO-SL, GEET-Comp, GEET-Elec, GEET-Genie, GEET-Plasma, GEET-MicNano, GEET-Pho, GEET-RadImg, MEGEP-DyF, MEGEP-Energ, MEGEP-GC, MEGEP-GPE, MEGEP-GMeca, MITT-MathEp, MITT-MathA, MITT-MathF, MITT-STICIA, MITT-STICRT, MITT-STICSL, MITT-ImgInf, MPSE-Sci, SDM-CMacro, SDM-CMol, SDM-COrg, SDM-CBio, SDM-Nano, SDM-PTh, SDM-PCOR, SDM-PMat, SDM-SAgro, SDM-SGen, SDU2E-Ast, SDU2E-Eco, SDU2E-Hy, SDU2E-Oc, SDU2E-Sc, SEVAB-Ag, SEVAB-De, SEVAB-Eco, SEVAB-Ing, SEVAB-Int, SEVAB-PaTox, SG-C, SG-F, SG-G, SG-M, SG-St, SG-Sys, SJP-D, SJP-ScP, TESC-Ant, TESC-Arc, TESC-Eco, TESC-EcoS, TESC-EtH, TESC-EtRG, TESC-EtRSG, TESC-EtRSD, TESC-EtRSE, TESC-EtRS, TESC-EtA, TESC-Geo, TESC-Hist, TESC-HistA, TESC-Pre, TESC-ScA, TESC-Soc, EDSYS-A, EDSYS-ASPR, EDSYS-GenInd, EDSYS-Info, EDSYS-Robo, EDSYS-SystEmb}
+    {AA, ALLPHA-Al, ALLPHA-An, ALLPHA-Ar, ALLPHA-AtA, ALLPHA-AtSp, ALLPHA-AtSc, ALLPHA-AtP, ALLPHA-C, ALLPHA-D, ALLPHA-Es, ALLPHA-Ea, ALLPHA-I, ALLPHA-LC, ALLPHA-LM, ALLPHA-M, ALLPHA-Ph, ALLPHA-Po, ALLPHA-R, ALLPHA-S, ALLPHA-T, BSB-Anth, BSB-BioC, BSB-BioD, BSB-BioS, BSB-BiosV, BSB-BiotB, BSB-BiotC, BSB-GC, BSB-GM, BSB-Immu, BSB-Micr, BSB-Neur, BSB-Phar, BSB-Phys, CLESCO-A, CLESCO-D, CLESCO-E, CLESCO-L, CLESCO-Npsy, CLESCO-Nsc, CLESCO-NscCC, CLESCO-PM, CLESCO-Psy, CLESCO-Psyp, CLESCO-SE, CLESCO-SL, GEET-Comp, GEET-Elec, GEET-Genie, GEET-Plasma, GEET-MicNano, GEET-Pho, GEET-RadImg, MEGEP-DyF, MEGEP-Energ, MEGEP-GC, MEGEP-GPE, MEGEP-GMeca, MITT-MathEp, MITT-MathA, MITT-MathF, MITT-STICIA, MITT-STICRT, MITT-STICSL, MITT-ImgInf, MITT-SIAO, MPSE-Sci, SDM-CMacro, SDM-CMol, SDM-COrg, SDM-CBio, SDM-Nano, SDM-PTh, SDM-PCOR, SDM-PMat, SDM-SAgro, SDM-SGen, SDU2E-Ast, SDU2E-Eco, SDU2E-Surf, SDU2E-Oc, SDU2E-Sc, SEVAB-Ag, SEVAB-De, SEVAB-Eco, SEVAB-Ing, SEVAB-Int, SEVAB-PaTox, SG-C, SG-F, SG-G, SG-M, SG-St, SG-Sys, SJP-D, SJP-ScP, TESC-Ant, TESC-Arc, TESC-Eco, TESC-EcoS, TESC-EtH, TESC-EtRG, TESC-EtRSG, TESC-EtRSD, TESC-EtRSE, TESC-EtRS, TESC-EtA, TESC-Geo, TESC-Hist, TESC-HistA, TESC-Pre, TESC-ScA, TESC-Soc, EDSYS-A, EDSYS-ASPR, EDSYS-GenInd, EDSYS-Info, EDSYS-Robo, EDSYS-SystEmb}
   {%
     \ifcase\nr\relax
       \docschool{AA : voir dossier renouvellement}
@@ -229,7 +246,9 @@
     \or
       \docschool{MITT : Domaine STIC : Suret\'e de logiciel et calcul de haute performance}
     \or
-      \docschool{MITT : Image, Information, Hypermedia}
+      \docschool{MITT : Image, Information, Hyperm\'edia}
+    \or
+      \docschool{MITT : Signal, Image, Acoustique et Optimisation}
     \or
       \docschool{MPSE : Sciences \'Economiques}
     \or
@@ -257,9 +276,9 @@
     \or
       \docschool{SDU2E : \'Ecologie fonctionnelle}
     \or
-      \docschool{SDU2E : Hydrologie, Hydrochimie, Sol, Environnement}
+      \docschool{SDU2E : Surfaces et interfaces continentales, Hydrologie}
     \or
-      \docschool{SDU2E : Oc\'ean, Atmosph\`ere et Surfaces Continentales}
+      \docschool{SDU2E : Oc\'ean, Atmosph\`ere, Climat}
     \or
       \docschool{SDU2E : Sciences de la Terre et des Plan\`etes Solides}
     \or
@@ -344,7 +363,7 @@
 % Docschool and speciality double
 \def\doubleSpe#1{\def\@doubleSpe{#1}}
 \define@choicekey+{dblspe}{ED2}[\val\nr]
-    {AA, ALLPHA-Al, ALLPHA-An, ALLPHA-Ar, ALLPHA-AtA, ALLPHA-AtSp, ALLPHA-AtSc, ALLPHA-AtP, ALLPHA-C, ALLPHA-D, ALLPHA-Es, ALLPHA-Ea, ALLPHA-I, ALLPHA-LC, ALLPHA-LM, ALLPHA-M, ALLPHA-Ph, ALLPHA-Po, ALLPHA-R, ALLPHA-S, ALLPHA-T, BSB-Anth, BSB-BioC, BSB-BioD, BSB-BioS, BSB-BiosV, BSB-BiotB, BSB-BiotC, BSB-GC, BSB-GM, BSB-Immu, BSB-Micr, BSB-Neur, BSB-Phar, BSB-Phys, CLESCO-A, CLESCO-D, CLESCO-E, CLESCO-L, CLESCO-Npsy, CLESCO-Nsc, CLESCO-NscCC, CLESCO-PM, CLESCO-Psy, CLESCO-Psyp, CLESCO-SE, CLESCO-SL, GEET-Comp, GEET-Elec, GEET-Genie, GEET-Plasma, GEET-MicNano, GEET-Pho, GEET-RadImg, MEGEP-DyF, MEGEP-Energ, MEGEP-GC, MEGEP-GPE, MEGEP-GMeca, MITT-MathEp, MITT-MathA, MITT-MathF, MITT-STICIA, MITT-STICRT, MITT-STICSL, MITT-ImgInf, MPSE-Sci, SDM-CMacro, SDM-CMol, SDM-COrg, SDM-CBio, SDM-Nano, SDM-PTh, SDM-PCOR, SDM-PMat, SDM-SAgro, SDM-SGen, SDU2E-Ast, SDU2E-Eco, SDU2E-Hy, SDU2E-Oc, SDU2E-Sc, SEVAB-Ag, SEVAB-De, SEVAB-Eco, SEVAB-Ing, SEVAB-Int, SEVAB-PaTox, SG-C, SG-F, SG-G, SG-M, SG-St, SG-Sys, SJP-D, SJP-ScP, TESC-Ant, TESC-Arc, TESC-Eco, TESC-EcoS, TESC-EtH, TESC-EtRG, TESC-EtRSG, TESC-EtRSD, TESC-EtRSE, TESC-EtRS, TESC-EtA, TESC-Geo, TESC-Hist, TESC-HistA, TESC-Pre, TESC-ScA, TESC-Soc, EDSYS-A, EDSYS-ASPR, EDSYS-GenInd, EDSYS-Info, EDSYS-Robo, EDSYS-SystEmb}
+    {AA, ALLPHA-Al, ALLPHA-An, ALLPHA-Ar, ALLPHA-AtA, ALLPHA-AtSp, ALLPHA-AtSc, ALLPHA-AtP, ALLPHA-C, ALLPHA-D, ALLPHA-Es, ALLPHA-Ea, ALLPHA-I, ALLPHA-LC, ALLPHA-LM, ALLPHA-M, ALLPHA-Ph, ALLPHA-Po, ALLPHA-R, ALLPHA-S, ALLPHA-T, BSB-Anth, BSB-BioC, BSB-BioD, BSB-BioS, BSB-BiosV, BSB-BiotB, BSB-BiotC, BSB-GC, BSB-GM, BSB-Immu, BSB-Micr, BSB-Neur, BSB-Phar, BSB-Phys, CLESCO-A, CLESCO-D, CLESCO-E, CLESCO-L, CLESCO-Npsy, CLESCO-Nsc, CLESCO-NscCC, CLESCO-PM, CLESCO-Psy, CLESCO-Psyp, CLESCO-SE, CLESCO-SL, GEET-Comp, GEET-Elec, GEET-Genie, GEET-Plasma, GEET-MicNano, GEET-Pho, GEET-RadImg, MEGEP-DyF, MEGEP-Energ, MEGEP-GC, MEGEP-GPE, MEGEP-GMeca, MITT-MathEp, MITT-MathA, MITT-MathF, MITT-STICIA, MITT-STICRT, MITT-STICSL, MITT-ImgInf, MITT-SIAO, MPSE-Sci, SDM-CMacro, SDM-CMol, SDM-COrg, SDM-CBio, SDM-Nano, SDM-PTh, SDM-PCOR, SDM-PMat, SDM-SAgro, SDM-SGen, SDU2E-Ast, SDU2E-Eco, SDU2E-Surf, SDU2E-Oc, SDU2E-Sc, SEVAB-Ag, SEVAB-De, SEVAB-Eco, SEVAB-Ing, SEVAB-Int, SEVAB-PaTox, SG-C, SG-F, SG-G, SG-M, SG-St, SG-Sys, SJP-D, SJP-ScP, TESC-Ant, TESC-Arc, TESC-Eco, TESC-EcoS, TESC-EtH, TESC-EtRG, TESC-EtRSG, TESC-EtRSD, TESC-EtRSE, TESC-EtRS, TESC-EtA, TESC-Geo, TESC-Hist, TESC-HistA, TESC-Pre, TESC-ScA, TESC-Soc, EDSYS-A, EDSYS-ASPR, EDSYS-GenInd, EDSYS-Info, EDSYS-Robo, EDSYS-SystEmb}
   {%
     \ifcase\nr\relax
       \doubleSpe{AA : voir dossier renouvellement}
@@ -477,7 +496,9 @@
     \or
       \doubleSpe{MITT : Domaine STIC : Suret\'e de logiciel et calcul de haute performance}
     \or
-      \doubleSpe{MITT : Image, Information, Hypermedia}
+      \doubleSpe{MITT : Image, Information, Hyperm\'edia}
+    \or
+      \doubleSpe{MITT : Signal, Image, Acoustique et Optimisation}
     \or
       \doubleSpe{MPSE : Sciences \'Economiques}
     \or
@@ -505,9 +526,9 @@
     \or
       \doubleSpe{SDU2E : \'Ecologie fonctionnelle}
     \or
-      \doubleSpe{SDU2E : Hydrologie, Hydrochimie, Sol, Environnement}
+      \doubleSpe{SDU2E : Surfaces et interfaces continentales, Hydrologie}
     \or
-      \doubleSpe{SDU2E : Oc\'ean, Atmosph\`ere et Surfaces Continentales}
+      \doubleSpe{SDU2E : Oc\'ean, Atmosph\`ere, Climat}
     \or
       \doubleSpe{SDU2E : Sciences de la Terre et des Plan\`etes Solides}
     \or
@@ -610,8 +631,11 @@
 \RequirePackage{graphicx}         % Use graphics
 \RequirePackage{eso-pic}          % Make background texture (picture and page style)
 \RequirePackage{pgffor}           % Make loop for in LaTeX
-\RequirePackage{geometry}         % Change geometry
-\RequirePackage{fancyhdr}         % Nive header
+\@ifpackageloaded{geometry}{%
+  \PassOptionsToPackage{pass}{geometry}
+}{%
+  \RequirePackage[pass]{geometry}}
+\@ifclassloaded{memoir} {\DisemulatePackage{setspace}} {}
 \RequirePackage{setspace}         % interline
 \RequirePackage{calc}             % allow use of '-',+','/' ans '*' to make simple lenght computation
 \RequirePackage{etoolbox}         % Need at least for ifstrequal, ifnumgreater (include in mdframed)
@@ -622,6 +646,7 @@
 % ============================================================
 % LENGHT
 \newlength{\RuleWidth}
+\newlength{\@pdgLinethickness}
 \newlength{\@pdgMargeSize}
 \newlength{\@pdgInnerBoxWidth}
 \newlength{\@pdgInnerBoxHeight}
@@ -642,21 +667,9 @@
 		}
 	}
 }
-% Blank page
-\newcommand{\blankpage}[1][num]{%
-	\ifstrequal{#1}{nonum}{%true nonum
-		\newpage{\thispagestyle{empty}}~
-	}{%false
-		\ifstrequal{#1}{num}{%true num
-			\newpage ~
-		}{%false not nonum and not num
-			\PackageWarning{obianphd-blanksheet}{'#1' is not a possible option(nonum[default], num)}
-		}
-	}
-}
 % textline
 \newcommand\textline[4][t]{%
-  \par\noindent\parbox[#1]{.333\textwidth}{\raggedright{\sc #2}}%
+  \par\noindent\parbox[#1]{.333\textwidth}{\raggedright{\scshape #2}}%
   \parbox[#1]{.333\textwidth}{\centering#3}%
   \parbox[#1]{.333\textwidth}{\raggedleft#4}\par%
 }
@@ -684,11 +697,11 @@
 % Box and background picture
 \newcommand\MakeBackground{%
 	% Line thickness
-	\linethickness{1pt}
+	\setlength{\@pdgLinethickness}{1pt}
 	%dimention
 	\setlength{\@pdgMargeSize}{15mm}%
-	\setlength{\@pdgInnerBoxWidth}{\paperwidth-2\@pdgMargeSize-2\linethickness}%
-	\setlength{\@pdgInnerBoxHeight}{\paperheight-2\@pdgMargeSize-2\linethickness}%
+	\setlength{\@pdgInnerBoxWidth}{\paperwidth-2\@pdgMargeSize-2\@pdgLinethickness}%
+	\setlength{\@pdgInnerBoxHeight}{\paperheight-2\@pdgMargeSize-2\@pdgLinethickness}%
     % University logo
 	\put(\convertto{pt}{1.5\@pdgMargeSize},\convertto{pt}{\paperheight-6.1\@pdgMargeSize}){%
         \parbox[t][\paperheight]{\paperwidth}{%
@@ -768,8 +781,8 @@
             \blanksheet[nonum]
         \fi
         % Flyleaf
-        \thispagestyle{empty}
-        \newgeometry{centering, vmargin=2cm, hmargin=3cm} %%3cm
+        \pagestyle{empty}
+        \newgeometry{centering, vmargin=2cm, hmargin=3cm}
         \AddToShipoutPictureBG*{\MakeBackground} %% Add Colored frame box and picture background
         \begin{center}
             \setstretch{1.05}
@@ -788,14 +801,11 @@
                         {\bfseries En vue de l'obtention du}
 
                         \bigskip
-                        {\Large \bfseries DOCTORAT DE L'UNIVERSIT\'E F\'ED\'ERALE TOULOUSE MIDI-PYR\'EN\'EES}
-                    
-                    
-                    
+                        {\Large \bfseries DOCTORAT DE L'UNIVERSIT\'E DE TOULOUSE}
                     
                         %%%%% ETS & COTUTELLE %%%%%
                         \bigskip
-                        \mbox{\bfseries D\'elivr\'e par :}\\ \mbox{\textit{\@establishment}} \if@showCotutelle\mbox{Cotutelle \@cotutelle}\fi
+                        \mbox{\bfseries D\'elivr\'e par :} \mbox{\textit{\@establishment}} \if@showCotutelle\mbox{Cotutelle internationale \@cotutelle}\fi
                         %%%%%%%%%%%%%%%				
                     
                         \vfill
@@ -814,7 +824,7 @@
                         ~{\color{pdgred}\rule{1.2\RuleWidth}{0.8pt}}
                         \vspace*{3pt}
 
-                        {\large\bf\@title}
+                        {\large\bfseries\@title}
                         
                         \rule{\textwidth}{1.2pt}
                         
@@ -904,10 +914,10 @@
             \vfill
         \end{center}
         \restoregeometry
-        %\pagestyle{plain}
+        \pagestyle{headings}
         % White page
         \if@emptypageafter
-            \blankpage[nonum]
+            \blanksheet[nonum]
         \fi
     }
 \fi
