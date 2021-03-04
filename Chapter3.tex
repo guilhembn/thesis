@@ -11,16 +11,42 @@
 
 \chapter{Evaluating communication needs at task planning level}
 \minitoc
+\printnomenclature
 
 \section{Introduction}
+In the previous chapter, we showed interactions are more efficient and satisfactory if the robot consider the plan of the human in its own path of action. Not only it allows at least to ensure that the task is feasible for both agents (provided the models are correct enough) but also to perform coordination smoothers or other communication actions.
 
+In this chapter, we alleviate from the inherent complexity of geometrical navigation planning to further study at symbolic level the planning of communication actions in plans involving multiple agents. We will especially focus on one type of explicit communication, being verbally designating an object, a problem called referring expression generation.
+
+First, we review the literature concerning referring expression generation and communication actions in task planning. Then we present a novel approach for referring expression generation, which runs on ontologies and is both efficient and suitable for human robot interaction scenarios. We then show how such a communication planner can be included in task planning allowing for precise estimation of communication feasibility and cost at task planning level. Finally, an extension of the referring expression generation algorithm is presented using past actions and tasks to refer to objects.
 
 \section{Related Work}
-\subsection{Referring Expression Generation}
+We claim that estimating the content of some communcation at task planning level is needed to generate useful plans. Indeed, some communication actions are known to be necessary already while elaborating a plan, but might not be feasible.
+In this section we will firstly review how a robot can autonomously verbally designate an object to an hearer. This problem is called the \textbf{referring expression generation} (REG) problem.
+Then, we will review several task planning approaches allowing to account for communication actions.
 
-Il faut utilizer au moins une citation (exemple: \cite{goossens93}) pour bien
-compiler le document. Regardez le document These.bib pour les details de
-comment organizer la bibliographie.
+\subsection{Referring Expression Generation}
+As defined by Reiter and Dale, Referring Expression Generation (REG) "\textit{is concerned with how we produce a description of an entity that enables the hearer to identify that entity in a given context} \cite{reiter1997building}. An intuition about what a well constructed referring expression (RE) is, is given by the Grice's maxims \cite{grice1975logic}. These maxims aim at defining principles for smooth cooperative activities (including verbal communication). They fall into four categories:
+\begin{itemize}
+\item \textit{Quantity}: The communication should be as informative as required but not more.
+\item \textit{Quality}: The communication should be as true as possible. The sender should not communicate information that they consider false or unsure.
+\item \textit{Relation}: The communication should be relevant in the current context. This is especially important when performing a collaborative task, where the world state is constantly changing and the relevance of a communication can quickly change.
+\item \textit{Manner}: The communication should be unambiguous and brief.
+\end{itemize}
+
+The REG problem is actually composed of two parts: the content determination --- aiming at deciding which attributes (and relations) to use --- and the linguistic realization --- refining the attributes of the content into verbalizable/writable words \cite{krahmer_computational}. In this thesis, we will only consider the content determination, as we assume that the linguistic realization will not have any impact on the plan once the content of the RE has been decided.
+
+To our knowledge the first REG formulation and algorithm was coined by Dale and used a depth-first search over a knowledge base being a key-value tree representing attribute of objects \cite{plop}. However, this approach lead to over specified referring expressions, containing redundant information and thus violating the maxim of quantity. This defect was corrected in a subsequent work with the \textit{Full Brevity} algorithm \cite{plop}, always generating the shortest referring expression, but at the cost of an exhaustive search. Besides, to be as relevant as possible, the attribute of the referred object to be included in the RE should be chosen carefully. Indeed, not all the attributes are equally understandable by the hearer, the color or the shape for example will often be quicker to understand than spatial relation. The Incremental Algorithm is the first approach tackling this issue \cite{plop}. By taking as input a preference list of ordered attributes, it is able to generate the smallest RE while prioritizing the attribute used.
+
+However, all the presented approaches are running on dedicated key-value knowledge bases representing only the attribute of the entities and are thus unable to use relations between them to generate REs. For example, an object having the same attributes (color, size, shape, ...) as another one will not have any RE generated by the previous approaches, even if one is in a blue box and the other in a green one. By introducing a new knowledge representation, being a labeled directed multi-graph linking entities and attributes, Krahmer \textit{et al.} were able to solve this issue. The graph is dedicated to the problem of REG and is called a \textit{REG graph}. Moreover, a cost can be set on each edge of the graph to represent the complexity of the hearer to understand this relation. By exploring this graph through a branch and bound approach, the Graph-Based Algorithm \cite{GBA} is able to generate the smallest and less costly RE for a given entity. This algorithm has then been refined to integrate types of entities in the exploration \cite{GBA category descriptor}, to be more computationnally efficent \cite{Li thesis} or to over specify the RE \cite{longest first}.
+
+Other approaches also include learning for generating REs. Yamakata \textit{et al.} use a beliefs network based method to disambiguate entities based on multiple attributes \cite{plop}. Besides, they state that their algorithm runs on the hearer estimated belief network, we think that it is an important feature to generate relevant REs. However, they indicate that a belief network should be trained for each attribute, which can be really impractical in a real world robotic application.
+
+Every approach presented until then are relying on REG dedicated knowledge bases or data structures. Such structures can be cumbersome to maintain in a dynamic world where relations between entities can change along the task. Moreover, in complete robotic architecture knowledge bases managing relations already exists, but are not dedicated to REG. The DIST-PIA method tries to mitigate this issue by having a domain-independent Incremental Algorithm querying dedicated knowledge base consultants to elaborate the RE \cite{DIST-PIA}. This approach has been successfully integrated in a complete robotic architecture \cite{architecture}. Another work having been integrated into a robotic architecture is made by Ros \textit{et al.} \cite{ros}. The knowledge base used is an ontology, which is more and more used in robotics to store symbolic knowledge. However, it does not support using the relations to generate REs (it only relies on the attributes of the entities). It has been integrated in a robotic architecture allowing the robot to guess the object the human is thinking of in a dynamic environment \cite{lemaignan}.
+
+To the best of our knowledge, none of these approaches have been used to determine the feasability and the cost of a referring communication action at task planning level.
+
+
 
 \subsection{Task Planning with Communication Actions}
 
@@ -30,9 +56,25 @@ $\beta$\nomenclature{$\beta$}{La deuxième lettre de l'alphabet grec} et
 $\alpha$\nomenclature{$\alpha$}{La première lettre de l'alphabet grec} comme
 symboles dans ce document.
 
-\section{Ontology based Referring Expression Generation}
+\section{Ontology based Referring Expression Generation for Human Robot Interaction}
+\subsection{Using ontologies for human robot interaction}
+
+\subsection{REG feature for communication action estimation during task planning}
+All these approaches only focus on the content determination of the REG and consider that the linguistic realization will be perfect, that all the content can be verbalized...
+
+\subsection{Ontology based REG problem definition}
+
+\subsection{Efficient REG algorithm presentation}
+
+\subsection{Results}
 
 \section{Planning Communication Actions Using Referring Expression Generation}
+
+
+
+\section{Using Past Actions in Referring Expression Generation}
+
+\section{Conclusion}
 
 \ifdefined\included
 \else
