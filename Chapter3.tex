@@ -67,7 +67,19 @@ Finally, it appears clear in the presented works that planning for communication
 
 \improvement{Add a conductor example, the ones with cubes and areas maybe ?}
 \section{Ontology based Referring Expression Generation for Human Robot Interaction}
+To estimate the feasibility and the cost of communication action during task planning, we need to be able to quickly resolve the content of a communication. Since considering every type of communication would be intractable we focus on a special type of verbal communication: referring expressions.
+In this section we present an efficient algorithm that is able to generate referring expression for human-robot interaction based on ontologies. We first introduce the concept of ontology and argue about its use in human-robot interaction scenarios. Then we propose a list a features needed for REG in human-robot interaction. Next, we formally define the problem of ontology-based REG for HRI, and present an efficient algorithm to solve it. Finally, we show the results of this approach both in term of found solutions and time complexity.
+
+This part has been done in close collaboration with Guillaume Sarthou.
+
 \subsection{Using ontologies for human robot interaction}
+An ontology is a data representation used in many domains. In robotics it is more and more used as a knowledge base. It allows to represent multiple concepts inheriting from one another and entities as instantiation of these concepts. Moreover, the entities can be linked through properties representing relations. Reasoners can use this structure to deduce and complete the ontology. Recently, ontologies are even standardized for robotic application such as the IEEE-SA P1872.2 Standard for Autonomous Robotics Ontology.
+
+Formally, as coined by ... \cite{ontology_def}, an knowledge base ontology is defined by the tuple $K = \langle \abox, \tbox, \rbox \rangle$. The \textit{TBox} $\tbox$ contains the concepts, called \textit{classes} representing the possible types of entities known by the agent. More specifically, it is a finite directed acyclic graph (DAG) $\tbox = \langle T, H \rangle$ with $T$ the set of classes and $H$ the directed edges representing the inheritance/inclusion links between them. For simplicity purposes we will refer to them as \textit{isA} links. In an ontology representing the example depicted in Figure~\ref{fig:chapter3_example}, we may have: $\{Cube, Table, Object, Agent, Pickable, Robot, Human\} \subset T$ and $\{(Cube, Pickable), (Pickable, Object), (Table, Object), (Robot, Agent), (Human, Agent)\} \subset H$ (\textit{i.e.} $(Cube, isA, Pickable), (Pickable, isA, Object), (Table, isA, Object), (Robot, isA, Agent), (Human, isA, Agent)$). The RBox $\rbox = \langle P, Incl, Inv \rangle$ contains the properties, their inheritances and inverses known by the agent. $P$ is the set of properties, $Incl$ the finite DAG representing inheritances/inclusions between the properties and $Inv = \{(p_i, p_j) \in P^2}$ representing the inverse properties. In an ontology representing the example depicted in Figure~\ref{fig:chapter3_example} the RBox may include: $\{isIn, hasIn, isOn, hasOn, geometricProperty\} \subset P$, $\{(isIn, geometricProperty), (hasIn, geometricProperty), (isOn, geometricProperty), (hasOn, geometricProperty)\} \subset Incl$ and $\{(isIn, hasIn), (hasIn, isIn), (isOn, hasOn), (hasOn, isOn)\} \subset Inv$. Finally, the ABox $\abox = langle A, C_0, R \rangle$ contains the entities, their types and relations. 
+
+% Note that the TBox and RBox are considered static, but the ABox is fully dynamic => SA, ...
+
+% One ontology per agent
 
 \subsection{REG feature for communication action estimation during task planning}
 All these approaches only focus on the content determination of the REG and consider that the linguistic realization will be perfect, that all the content can be verbalized...
