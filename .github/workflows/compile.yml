@@ -11,9 +11,9 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Dependencies
-              run: sudo apt-get update && sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra texlive-bibtex-extra texlive-font-utils
+              run: sudo apt-get update && sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra texlive-bibtex-extra texlive-font-utils latexmk
             - name: Compile PDF
-              run: pdflatex -synctex=1 -interaction=nonstopmode These.tex && bibtex These.aux && pdflatex -synctex=1 -interaction=nonstopmode These.tex && pdflatex -synctex=1 -interaction=nonstopmode These.tex
+              run: latexmk -e "$pdflatex=q/pdflatex -synctex=1 -interaction=nonstopmode/" -pdf These.tex
             - name: Create Release
               id: create_release
               uses: actions/create-release@v1
