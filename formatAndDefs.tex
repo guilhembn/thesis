@@ -223,6 +223,7 @@ urlcolor=linkcol %couleur des liens pour les url
 	 \setlength{\itemsep}{\parsep}}}%
 { \end{list} }
 
+\theoremstyle{definition}
 \newtheorem{definition}{Definition}
 \renewcommand{\epsilon}{\varepsilon}
 
@@ -234,9 +235,15 @@ urlcolor=linkcol %couleur des liens pour les url
 
 \usepackage{tablefootnote}
 
-\theoremstyle{constraint}
+\theoremstyle{plain}
 \newtheorem{constraint}{Constraint}[section]
 
 \algnewcommand\algorithmicforeach{\textbf{for each}}
 \algnewcommand\algorithmicin{\textbf{in}}
 \algdef{S}[FOR]{ForEach}[2]{\algorithmicforeach\ #1\ \algorithmicin\ #2\ \algorithmicdo}
+
+\usepackage{listings}
+\lstdefinestyle{customPlan}{
+  language=C,
+  commentstyle=\itshape\color{green!25!black},
+}
