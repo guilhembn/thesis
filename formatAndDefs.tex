@@ -4,6 +4,12 @@
 \usepackage{babel}
 \usepackage{datetime}
 
+\usepackage{silence}
+
+\WarningFilter{minitoc(hints)}{W0023}
+\WarningFilter{minitoc(hints)}{W0028}
+\WarningFilter{minitoc(hints)}{W0030}
+
 \usepackage{lmodern}
 \usepackage{tabularx}
 %\usepackage{tabular}
@@ -42,13 +48,13 @@
 \ifpdf
   \usepackage[pdftex]{graphicx}
   \DeclareGraphicsExtensions{.jpg}
-  \usepackage[a4paper,pagebackref,hyperindex=true]{hyperref}
+  \usepackage[pagebackref,hyperindex=true]{hyperref}
   \usepackage{tikz}
   \usetikzlibrary{arrows,shapes,calc}
 \else
   \usepackage{graphicx}
   \DeclareGraphicsExtensions{.ps,.eps}
-  \usepackage[a4paper,dvipdfm,pagebackref,hyperindex=true]{hyperref}
+  \usepackage[dvipdfm,pagebackref,hyperindex=true]{hyperref}
 \fi
 
 \graphicspath{{.}{images/}}
