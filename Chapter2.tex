@@ -95,7 +95,7 @@ Moreover, as stated before \unsure{maybe move the gaze stuff from related work t
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[scale=0.4]{figures/chapter2/expe_human-min.png}
+\includegraphics[scale=0.7]{figures/chapter2/head_traj_follower.png}
 \caption{Behavior implemented for the robot head. The robot \textit{looks} at a point placed at its planned position X seconds in the future and h meters above the ground.}
 \label{experiment_adream}
 \end{figure}
@@ -104,7 +104,7 @@ Moreover, as stated before \unsure{maybe move the gaze stuff from related work t
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[scale=0.4]{figures/chapter2/expe_human-min.png}
+\includegraphics[width=\textwidth]{figures/chapter2/expe_human-min.png}
 \caption{The  study  environment.  The  participant  had  to  go  from  the  yellow  cross  marked  on  the  ground  to  the  green  square  also  marked  on  the  ground,which was the robot starting point. Crossing occurred roughly in the area where the robot and participant are on the picture. Trajectories are displayed on the picture for example only and where not marked on the ground or suggested by the experimenters at any time.}
 \label{head_gaze_behavior}
 \end{figure}
@@ -134,7 +134,7 @@ Three questionnaires and an interview were used to collect the subjective measur
 
 
 \subsubsection{Experimental design}
-The user study was a 2 $\times$ 2 within-participants user study to evaluate how the time-to-collision constraint and the head behavior impact the robot navigation effectiveness efficiency and satisfaction. The independent variables were the HATEB time-to-collision cost parameters (both weight and threshold) and the head behavior. The conditions for the time-to-collision variable were $\gamma_ttc = 0.01$ (in Eq.~\ref{eq:hateb_obj_function}) with $\tau = 1s$ for the \textit{low TTC} condition and $\gamma_ttc = 15$ (in Eq.~\ref{eq:hateb_obj_function}) with $\tau = 4s$ for the \textit{high TTC} condition. For the both \textit{continuous} and \textit{alternated} head behavior conditions the robot head was pointing towards a the robot planned position in 1.5s in the future at 1m above the ground. In addition, in the \textit{alternated} head behavior, the robot pointed its head towards the human when they entered the long part of the corridor during 1.5s and again during 1.2s when the robot and human were 3.5m apart.
+The user study was a 2 $\times$ 2 within-participants user study to evaluate how the time-to-collision constraint and the head behavior impact the robot navigation effectiveness efficiency and satisfaction. The independent variables were the HATEB time-to-collision cost parameters (both weight and threshold) and the head behavior. The conditions for the time-to-collision variable were $\gamma_{ttc} = 0.01$ (in Eq.~\ref{eq:hateb_obj_function}) with $\tau = 1s$ for the \textit{low TTC} condition and $\gamma_{ttc} = 15$ (in Eq.~\ref{eq:hateb_obj_function}) with $\tau = 4s$ for the \textit{high TTC} condition. For the both \textit{continuous} and \textit{alternated} head behavior conditions the robot head was pointing towards a the robot planned position in 1.5s in the future at 1m above the ground. In addition, in the \textit{alternated} head behavior, the robot pointed its head towards the human when they entered the long part of the corridor during 1.5s and again during 1.2s when the robot and human were 3.5m apart.
 The participant goal position was marked with a square on the ground, and was the starting point of the robot. The robot final position was 10m straight ahead of its starting position. So, the participant was able to reach their natural walking speed before turning at the corner of the L shaped corridor. The robot was only started when the participant was about to turn (2m before the turn), giving the impression that the robot was coming from further away while ensuring that the crossing happened around the same place independently of the participant walking speed.
 
 \subsubsection{Study procedure}
