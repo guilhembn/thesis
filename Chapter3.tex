@@ -11,7 +11,6 @@
 
 \chapter{Evaluating communication needs at task planning level}
 \minitoc
-\printnomenclature
 
 \section{Introduction and Example}
 In the previous chapter, we showed interactions are more efficient and satisfactory if the robot consider the plan of the human in its own path of action. Not only it allows at least to ensure that the task is feasible for both agents (provided the models are correct enough) but also to perform coordination smoothers or other communication actions.
@@ -388,6 +387,8 @@ Note that the restriction to the most specific classes is not necessary but migh
 \textbf{\textsc{ApplyTransition}:}
 The \textsc{ApplyTransition} function creates a new node $\node'$ by applying a transition to an existing node $\node$. It always add the triplet of the transition to $\mathcal{T}_{\node'}$ but, in case of a transition coming from the \textsc{TypingTransitions} function, a new variable is created and added to the mapping function $\mathcal{S}_{\node}$. Indeed, if an entity needs to be typed, it means that it is unlabeled and thus need to be represented through a variable in a valid \textit{reference}.
 
+\unsure{Add an implementation section ? (link with ROS, fast, C++, hashmap, only storing last individual if not typed, ...}
+
 \subsection{Results}
 We present hereafter the solutions given by our algorithm to the illustrative examples. Then we provide results involving a large scale knowledge base describing a full apartment in terms of time-execution, solution length and composition. Finally, we provide comparative performance measures with two state-of-the-art methods on their own domains.
 
@@ -540,6 +541,8 @@ With this approach, we are able to change the \textit{context} and \textit{usabl
 \includegraphics[width=\textwidth]{figures/chapter3/struct.png}
 \caption{\label{fig:integration} A representation of the exploration of potential mental states and ontologies conducted by the planner. The ontology representing estimated human knowledge is first copied in order to plan it without altering the original one. The human and robot planning information is extracted from the ontologies. During the tree exploration, for each verbal communication action, the planned human ontology is updated with the current explored state and the REG is executed on it.}
 \end{figure}
+
+\unsure{Adds implementation section ? HATP, ROS, ...}
 
 \subsection{Case Studies}
 \label{sec:Case_studies}
