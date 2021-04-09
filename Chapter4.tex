@@ -17,13 +17,7 @@ In the previous chapter we successfully integrated a verbal communication planne
 
 In this chapter we propose a first step to tackle this issue. We present a novel approach, where, instead of planning and allocating tasks to the human without planning for any plan communication, use a human action model to predict possible human actions, considering their reaction and own planning process.
 
-First, we review some related works on planning with human models and human task modeling. Then, we describe our approach and introduce the notations used in this chapter before detailing the planning process. Finally, we present some example situations.
-
-
-\section{Related Work}
-\subsection{???}
-
-\subsection{???}
+First, we describe our approach and introduce the notations used in this chapter before detailing the planning process. Then, we demonstrate the planner capabilities on two example situations. Finally, we present a task inspired from psychology which is particularly interesting for HRI and has never been tackled in robotics yet, and we show how our planner has been integrated in a fully functional robotic architecture dedicated to this new task.
 
 \section{Description}
 We separate agents involved in a given task into two categories: the controllable agent (\textit{i.e.} the robot) for which the planner needs to select the best course of actions to generate a plan; and the uncontrollable agent (\textit{i.e.} the human) on whom the planner has no direct control but, still, has a representation of their decision and action models. The two agent types are fundamentally different: (1) the robot is controllable since the process is run by the robot, (2) the human agent is not controllable since the process can only "speculate" on her/his decisions and actions, but can model that the robot actions can still influence them, (3) the two agents are not equivalent, the robot agent role is to help, assist and facilitate human and to synthesize pertinent, legible and acceptable behavior.
@@ -281,14 +275,14 @@ Once a request is received the planning process can start, and, once a condition
 
 
 \section{Examples}
-In this section, we will first present some case studies in which are presented small task examples. Each example will present some features of the planner and comparisons between multiple plans depending on some initial conditions (beliefs or action costs). Besides, they will give insights into the rationale used when creating the domains for both the robot and the human.
-Next, we will present an integration of the planner in a real robotic architecture, performing the so-called director task.
-\subsection{Case studies}
-All the three following cases are set in the same context. We envision a super-scenario in a company office where a robot assistant is verbally commanded by a human worker to bring her a coffee. The robot must take her mug, go to the coffee machine, manage to fill the mug with coffee and bring back the filled mug to the worker.
+In this section, we will present some case studies in which are presented small task examples. Each example will present some features of the planner and comparisons between multiple plans depending on some initial conditions (beliefs or action costs). Besides, they will give insights into the rationale used when creating the domains for both the robot and the human.
+
+The two following cases are set in the same context. We envision a super-scenario in a company office where a robot assistant is verbally commanded by a human worker to bring her a coffee. The robot must take her mug, go to the coffee machine, manage to fill the mug with coffee and bring back the filled mug to the worker.
 We decline this scenario into three precise subtasks highlighting multiple features of the presented planner.
 % Triggers vs. explicit communication
 %Human asks for the robot to get a coffee. Two mugs nearby, two possible decomposition for the robot : ask for which one to take or take one. One adds "answers" to the human -> two possibilities 
-\subsubsection{Plan for robot unknown human knowledge}
+\subsection{Plan for robot unknown human knowledge}
+\improvement{3d illustration ?}
 First of all, after the robot has been commanded by the worker to bring her a coffee, it must pick her mug. We want to illustrate how we can represent human knowledge that is unknown to the robot (but with a small number of possibilities), and how the planner can elaborate different plans depending on action costs and the number of possibilities. To do so, we place the robot in a scenario where the worker and it are face to face when she asks it for a coffee. There is a table between them and $n \in \intset$ mugs are placed on it. Only one mug belongs to the worker, the robot knows she knows which one it is ($\humanmodel$) but the robot does not know it ($\robotmodel$). The goal of the robot is thus to take the right mug, and to go to the coffee machine. The general idea is that we want the robot to have two ways of grabbing the right mug. Either it can take a random one, and if the human is not protesting, the robot can proceed with the rest of the task, else it tries again while knowing this mug was not the right one; or the robot can ask the human for the right mug and take it. However, as the specifying the right mug through verbal communication can be costly for the human (\textit{e.g.} highly resembling mugs, a noisy environment), asking her might not always be feasible not be the optimal solution.
 
 First, we go through the design of the robot HTN. The robot agenda is initialized with two tasks \verb'get_right_mug' and \verb'go_to_coffee_machine'. The robot abstract tasks and their decompositions are presented here:
@@ -366,21 +360,125 @@ However, imagine that the human (who has still not had her coffee) is in a hurry
 As we increase the number of mugs $n$, the cost of \verb'verbally_answer_right_mug' has to also increase to make the robot choose the trials and errors decomposition, as the average of this decomposition increases since the number of potential errors increases. 
 %Finally, if we make two mugs for which the REG does not find any solution (the mugs are not distinguishable from one another) the planner is able to generate conditional plans where it first tries to <-- not true for now, as we do not take into account failed actions in cost computation....
 
+\improvement{Adds compute time for n=2,3,4,5}
+
+\improvement{Add link to domain}
+
 In this example we show one really interesting feature of our planner: representing human knowledge that is not known by the robot. While not being tractable when there are a lot of possibilities, it allows to select more or less conservative conditional plans depending on the cost of each actions. Moreover, this example allowed to see how updating the human agenda and how triggers can be used to model the agents interaction in the HTNs planning.
 However, the human model was pretty simple, and we propose to challenge our planner in the next example with a task where the human is more involved.
 
-\subsubsection{Rely on human planning ability}
-The robot has now the right mug and is on its way to the coffee machine. 
+\subsection{Balance difficult communications, decomposition cost and task attribution}
+The robot is now heading to the coffee machine with the right mug in its gripper. On its way it detects another human taking a break near the coffee machine. The coffee has to be made. To brew coffee, ground coffee and water must be put in the coffee machine, and then the coffee can be served. While water is considered as always available, ground coffee is not. There are two places where ground coffee can be retrieved: either in the kitchen cupboard (close to the coffee machine) or in the pantry cupboard. 
 
-Make coffee -> instant or brew. The robot plan to adapt. If instant the human grab instant coffee or make hot water, the robot does the opposite; if brew, the human fills the machine with water and the robot grind the coffee and put it in the machine (or the opposite). Play with initial condition (water already in the machine, the human does all or the robot does all, no more instant coffe, the human cannot do the instant decompo, ...)
+\subsubsection{Handling the robot only case}
+\label{subsubsec:chap4coffeerobotonly}
+ First, we want the robot to be able to make coffee by itself, without requiring human help. To do so, we implement the following abstract tasks tree in the robot model (here we prepend the task names with \verb'r' where task are different in the robot and the human model):
 
-\subsubsection{Balance difficult communications, decomposition efficiency and task attribution}
+\begin{itemize}
+\item \verb'r_make_coffee' only having one decomposition (for now):
+	\begin{itemize}
+	\item \verb'r_make_coffee_alone' returning, in both orders (to represent partially ordered task tree), the tasks \verb'get_water', \verb'pour_water_in_machine' and \verb'r_get_coffee', \verb'put_coffee_in_machine'. Only \verb'r_get_coffee' is an abstract task.
+	\end{itemize}
+\item \verb'r_get_coffee' representing the ways for the robot to obtain coffee. It has only one decomposition:
+	\begin{itemize}
+	\item the decomposition returns $()$ if the robot has already coffee in its gripper. Else, it selects the closest cupboard and returns \verb'r_pick_coffee' with it as parameter.
+	\end{itemize}
+\end{itemize}
 
-Small coffee reserve in the drawer (close) and huge coffee reserve far away. Initial conditions : The human believes there is coffee in the drawer while there is none, the human believes there is not coffee in the drawer (or does not know which drawer, so go the long way).  
-Human do -> long way no communication (trial and error from human) or long communication short way or robot does but very long
+The robot primitive tasks as are follow:
+\begin{itemize}
+\item \verb'get_water' returning $\bot$ if the robot is already holding something; updating the beliefs of all the agents in the room with the fact that the robot holds water otherwise.
+\item \verb'pour_water_in_machine' updating all the agents in the room beliefs with the machine being filled with water.
+\item \verb'r_pick_coffee' returning $\bot$ if the robot is already holding something or if the cupboard passed as parameter does not contains coffee (in the robot beliefs); updating the beliefs of all agents in the room with the fact the the robot holds coffee otherwise.
+\item \verb'put_coffee_in_machine' updating all the agents in the room beliefs with the machine being filled with coffee.
+\item \verb'r_serve_coffee' updating all the agents in the room with the mug being filled with coffee.
+\end{itemize}
+
+Now, for the initial conditions we set that the robot knows there is coffee in the kitchen cupboard (the closest) and we add two tasks in its agenda: \verb'r_make_coffee' and \verb'r_serve_coffee'. The human has nothing in its agenda. The two possible plans for this really simple case are presented in Figure~\ref{fig:chap4coffeesimple}(a) and (b). The plan selection would then choose one of the plan based on robot action costs.
+
+\todo{caption}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\textwidth]{figures/chapter4/Chap4CoffeeSimplePlan.png}
+\caption{CAPTION TODO}
+\label{fig:chap4coffeesimple}
+\end{figure}
+
+\subsubsection{Incorporating the human planning process}
+As we also want the robot to be able to ask the idling human to help it, we add, to its action model, a decomposition to the abstract task \verb'r_make_coffee' and a new abstract task \verb'help_make_coffee':
+
+\begin{itemize}
+\item \verb'r_make_coffee' containing the previous decomposition and the new one:
+	\begin{itemize}
+	\item \verb'r_make_coffee_collaboratively' returning the primitive task \verb'r_ask_human_for_help' and the abstract task \verb'r_help_make_coffee'
+	\end{itemize}
+\item \verb'help_make_coffee' representing the ways for the robot to help another agent to make coffee. It has only one decomposition:
+	\begin{itemize}
+	\item It returns \verb'get_water' and\verb'pour_water_in_machine' if there is no water in the machine and the human is doing a task related to bringing coffee. Likewise, it returns \verb'r_get_coffee' and \verb'put_coffee_in_machine' if there is no coffee in the machine and the human is doing a task related to fill the machine with water. Then, if the human is not doing any task, we add to the exploration \verb'r_get_coffee', \verb'put_coffee_in_machine' and \verb'help_make_coffee' if there is no coffee in the machine and \verb'get_water', \verb'pour_water_in_machine' and \verb'help_make_coffee'. The idea here is to complete the human actions if they take the initiative of a task, but to be proactive by exploring both possible alternatives if they are not. The recursion allows to reevaluate the need of this task later in the planning process.
+	\end{itemize}
+\end{itemize}
+
+The primitive action added to the robot model is:
+\begin{itemize}
+\item \verb'r_ask_human_for_help' adding the task \verb'help_make_coffee' to the human agenda. Here we could have represented the possible refusal of the human by adding an abstract task leading to two possible decomposition for the human, accepting or declining, leading in similar schemes as in \ref{subsubsec:chap4coffeerobotonly}. However, to keep this example as simple as possible, we assume the human will always help the robot if asked to do so.
+\end{itemize}
+
+We model the human actions similarly to the robot ones. Their primitive tasks are defined as:
+\begin{itemize}
+\item \verb'help_make_coffee' representing the ways for the human to help another agent to make coffee. It has only one decomposition, which is the same as the robot one.
+\item \verb'h_get_coffee' representing the ways for the human to obtain coffee. It has only one decomposition:
+	\begin{itemize}
+	\item the decomposition returns $()$ if the human is already holding coffee. Else, it selects the closest cupboard and returns \verb'h_try_pick_coffee' with it as parameter and \verb'h_get_coffee'. It differs from the robot one, indeed, whereas the knowledge of the robot is assumed to be the world state, the human's one can be false. Thus, the human might try to perform \verb'h_try_pick_coffee' on a cupboard not containing coffee. We take this into account with the recursion of this abstract task, and with the primitive task \verb'h_try_pick_coffee' described hereafter.
+	\end{itemize}
+\end{itemize}
+
+The model of the human primitive actions are:
+\begin{itemize}
+\item \verb'get_water' as defined for the robot
+\item \verb'pour_water_in_machine' as defined for the robot
+\item \verb'h_try_pick_coffee' differs from the one defined for the robot as it checks if the cupboard passed as parameter really contains coffee (\textit{i.e.} in the robot beliefs). If it does not, the human's beliefs about this cupboard are updated to match the robot ones (modeling the human going in front of the cupboard, opening it and seeing the absence of coffee). If the cupboard does contain coffee in the robot beliefs, all the agents in the room beliefs are updated with the human having coffee in their hand.
+\item \verb'put_coffee_in_machine' as defined for the robot.
+\end{itemize}
+
+The initial conditions are the same as presented before, but we also add that the kitchen cupboard contains coffee in the human beliefs. In addition to the two plans where the robot does not seek help to the human, another valid plan is found. This plan is presented in Figure~\ref{fig:chap4coffeesimple}(c). This conditional plan has two alternatives, depending on the initiative taken by the human.
+
+\subsubsection{Updating human beliefs}
+We can also change the initial conditions to elicit new behaviors. We keep the same action models for both the robot and the human, but we change the estimation of the human beliefs given as initial conditions to the planner. In a real robotic architecture, the human knowledge base would be updated with an estimation provided by situation assessment components. We specify that the human believes that both the kitchen and the pantry cupboard contain coffee. However, the robot knows (\textit{e.g.} using specific sensors or having been told about) that there is coffee only in the pantry cupboard. With these conditions, the search space extends to the three plans presented in Figure~\ref{fig:chap4coffeesimple}(a), (b), being when the robot prepare the coffee by itself, and in Figure~\ref{fig:chap4beliefsdiv}(a). In this last plan, we indeed model that the human will tend to first go to the nearest cupboard he thinks contains coffee. If this cupboard does not contain coffee, he will go to the next one. We can also note that only the left branch of the plan in Figure~\ref{fig:chap4beliefsdiv}(a) is impacted by this beliefs divergence. However, this branch choice is not up to the robot without any communication as we modeled the human as having the initiative of selecting a task. This subtlety cannot be represented in HATP.
+
+Depending on the cost of the human being deceived and of the actions, the plan selected can be that the robot does all the task, as the human "mistake" can increase too much the average cost.
+
+\todo{caption}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\textwidth]{figures/chapter4/Chap4CoffeeBeliefDiv.png}
+\caption{CAPTION TODO}
+\label{fig:chap4beliefsdiv}
+\end{figure}
+
+To improve our robot, we want to make it able to realign the beliefs of the human, so, whatever the task he chooses, he will not make a mistake. To do so, we add a third decomposition to the \verb'r_make_coffee' abstract task and one new primitive task to the robot models.
+\begin{itemize}
+\item \verb'r_make_coffee' containing the previous two decompositions and the new one:
+	\begin{itemize}
+	\item \verb'r_align_and_make_coffee_collaboratively' returning $\bot$ if no belief divergence is detected between the robot and the human. The decomposition returns the new primitive task \verb'r_update_human_inventory' along with \verb'r_ask_human_for_help' and \verb'r_help_make_coffee'. An alternative for \verb'r_update_human_inventory' is returned with as parameter each cupboard in diverging beliefs between the robot and the human.
+	\end{itemize}
+\item \verb'r_update_human_inventory' being a primitive task. It updates the human beliefs concerning the cupboard passed as parameter with the beliefs of the robot.
+\end{itemize}
+
+With this new decomposition the new plan presented in Figure~\ref{fig:chap4beliefsdiv}(b) is added to the search space. In this plan the human beliefs are updated before asking him to help the robot to make coffee. The human does not make the mistake of going first to the kitchen cupboard.
+
+Depending on the communication cost (estimated using the REG approach presented in the previous chapter), the human deception cost and the other actions costs any one of the four possible plans can be selected. For example, to minimize the human involvement and if the communication has a high cost, the selected plan would be Figure~\ref{fig:chap4coffeesimple}(a) or (b). If the communication is costly but the pantry and kitchen cupboard are not too far away, the selected plan is Figure~\ref{fig:chap4beliefsdiv}(a), finally, if we represent that the human would be upset if he makes a mistake or if the communication for aligning beliefs is not expensive, the plan Figure~\ref{fig:chap4beliefsdiv}(b) would be returned.
+
+Through all these examples we show that this task planning approach, which separates human and robot beliefs and action models, can be suitable for multiple problems. We are able to plan for robot unknown human beliefs, to rely on the human planning process while keeping inherent uncertainties (\textit{i.e.} not making choices for them, without communicating them) and also to plan diverging beliefs and balance the actions of realigning them with plans containing mistakes. In the next section, we present a HRI task, inspired from psychology, that has never been tackled in robotics and we show how our planner is integrated in a fully functional robotic architecture dedicated for this task.
 
 
-\subsection{The director task}
+\section{The Director Task}
+
+\section{Conclusion and Future Works}
+\subsection{Representing explicitly observation processes}
+
+\subsection{Leveling-up the theory of mind}
+
+\subsection{Pruning during the search space exploration}
 
 \ifdefined\included
 \else
