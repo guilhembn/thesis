@@ -248,6 +248,7 @@ The decomposition functions take the world states (beliefs), partial plans of th
 The search algorithms have also been implemented in Python. A lot of optimization can be done, and it is planned to entirely rewrite the software in C++. The current prototype, while not being efficient compared to others approaches, still allows to find plans in a reasonable time for realistic human robot scenarios.
 
 \subsection{Integrating with other components}
+\label{subsec:chap4integratingwithothers}
 \subsubsection{Retrieving the current state and beliefs from the knowledge base}
 Before any planning process could start, the planner must be initialized with the current world state (robot beliefs) and the estimation of the human's beliefs. To do so, we use the knowledge base presented in the previous chapter: the ontologies. In our architecture, each human the robot is interacting with has a dedicated ontology in addition to the robot own ontology, representing the world state. Thus, each agent beliefs $\agentstate$ is initialized with the facts in its respective ontology.
 However, ontologies can contain a lot of information that are not needed for planning, and worse, that can hamper keeping world state consistency if the planning domains do not consider some of these facts (\textit{e.g.} an action deleting a fact but not deleting the inverse relation). To cope with this issue, we define two special attributes in the world state objects: the \textit{types} and the \textit{individuals} attributes.
@@ -472,13 +473,106 @@ Through all these examples we show that this task planning approach, which separ
 
 
 \section{The Director Task}
+This work has been made in close collaboration with two other PhD. students Amandine Mayima and Guillaume Sarthou. 
+\unsure{Dire qu'il y a un papier ?}
+
+\subsection{A task used in psychology}
+The director task is an experiment setup largely used and derived in psychology. It places two agents, the director and the receiver, in front of each other with a shelf in between. Usually, only the receiver is the participant, and the director is either an accomplice or a remote controlled agent (for computer-based experiment). The shelf consists in several compartments possibly containing objects. Each compartment can either be open on both opposite faces or open on only the receiver's side (hiding any contained object from the director, and being obvious for the receiver that the director cannot see inside it).
+
+\todo{caption}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=\textwidth]{figures/chapter4/dt_apple.png}
+\caption{CAPTION TODO}
+\label{fig:chap4dtapple}
+\end{figure}
+
+The director asks the receiver to move some objects by describing them. However, some descriptions of the director will also match other objects ---called competitors--- that are only visible by the receiver (Figure~\ref{fig:chap4dtapple}). Hence, the receiver must think that the object matching the description cannot be the one referred by the director as they are not aware of it, and find the object matching the description in the director's beliefs. This process must then be maintained all along the interaction as the situation evolves.
+
+This task is used in psychology to study how perspective-taking is used for communication understanding while performing a task with another agent \cite{keysar2000taking}. Results show that, even if the receiver considered or took a competitor for the first trial, they are able to take the one designated by the director during subsequent trials. This shows that even if participants understand language in an egocentric way, they are able to do perspective-taking to successfully perform the task \cite{keysar2003limits}. 
+
+Even if this task is well known by psychologists, to our knowledge, no robot managed to handle it. A robot that does would prove its architecture being able to maintain self-other distinction of beliefs but also to perform perspective taking on its human partner. We propose a robotic architecture integrating our planner, that is able to handle both side of the director task. Besides, we propose some changes for both the director and receiver roles to be interesting along with planning challenges some modifications of the task can arise.
+
+\subsection{Setup}
+The setup we propose is a slight variation of the original director task used in psychology. First, instead of moving objects between compartments, the high level known goal is to remove a subset of the objects in the compartments and to place them in a receiver accessible only area (on top of a table). 
+Then, objects are replaced with blocks having four special attributes: their color, the color of their border, the shape drawn on them and the color of this shape. The colors can either be blue or green, and the shapes either a triangle or a circle. This allows for a maximum of ambiguity between the blocks. 
+Besides, to make the task interesting for both the director and receiver roles, compartment are not only either fully opened or hiding content from the director, they can also be hiding content from the receiver while being opened towards the director. Thus, not only the receiver must take the perspective of the director to understand the right block, but the director has also to take the perspective of the receiver to make the smallest instruction possible to respect the maxim of quantity~\cite{grice1975logic}.
+In addition, to increase the number of ambiguous situations, we prohibit the use of geometrical relations during the communications (\textit{e.g.} "the leftmost block", "the block above the green one") to only allow the use of the block attributes. Likewise, pointing at a block is forbidden.
+Finally, every blocks and compartments are equipped with AR-tags (different on each face) allowing the robot to easily detect them and to make an accurate representation of the environment.
+
+\subsection{The robotic architecture}
+The robotic architecture is composed of several elements.
+First, the knowledge base chosen is an ontology. As we have shown before, ontologies are more and more common in robotics as they allow for rich and complete reasoning mechanisms and efficient requests of symbolic facts. The software used is \textit{Ontologenius}~\cite{sarthou2019ontologenius}. An ontology is created for the robot ($\robotmodel$, which we use as the true state of the environment) and another one is created for the human ($\humanmodel$) representing the robot estimation of the human knowledge. As stated in the previous chapter, these ontologies can be queried or updated through an efficient low-level API or higher-level \sparql{} queries. The interfaces between the ontologies and our planner are presented in \ref{subsec:chap4integratingwithothers}. The ontology is initialized with static facts being (1) the link between each AR-tag and their matching block and compartment, (2) the attributes of each block, (3) the 3D models of each block and compartment.
+
+To gather all the robot sensing data, create a geometric representation of the environment, compute symbolic facts from it for both the robot and the human and update the ontologies with them, a situation assessment component is added to the architecture. This component is based on underwolds~\cite{lemaignan2018underworlds} allowing for modular and reusable reasoners. It first gathers the data from perception algorithm (AR-tags positions for the objects and motion capture for the human), then creates a geometrical scene of the environment. Based on it, the component is able to compute symbolic facts: \textit{isIn}, \textit{isVisibleBy}, \textit{isReachableBy}, \textit{isOnTopOf}; and feed them in real time to the ontology. This component also estimates the geometrical scene viewed and known by the human, computes symbolic facts on it and feed the corresponding ontology.
+
+Then, to be able to give and understand instructions, the REG component presented in the previous chapter is also included. A grammar-based verbalization component allows to transform the generated RE into natural language. Similarly, a natural language request can be interpreted as a \sparql{} query and matched against an ontology.
+
+To orchestrate all the components, the supervision system called JAHRVIS (Joint Action-based Human-aware supeRVISor) is dedicated to manage the interaction. It not only handles the robot actions but also estimates the human mental state, monitors the human actions and manages the communication with them. It manages five facets of the interaction: (1) interactions sessions, (2) communication, (3) human, (4) task and (5) quality of interaction. It is responsible for task planning requests and plan execution and monitoring.
+
+Finally, the task planning component used in this architecture is the one presented in this chapter. Task planning is only required when the robot is the director, since when the robot is receiver it only has to execute commanded instructions. When the robot is the director, the supervision system is given a list of blocks (via their ids) to remove from the shelves. This list is then passed as the goal parameter of a task to decompose to the planner.
+The task to decompose is called \verb'clear_blocks' and is filled with a parameter representing the goal and another being the human id. The goal is simply an under specified world state, composed of triplets containing for example \verb'(block_23, isIn, disposalArea)'.
+The robot task planning domain ($\robotmodel$) is presented hereafter. 
+\begin{itemize}
+\item The \verb'clear_blocks' abstract task has only one (recursive) decomposition. The decomposition returns $()$ if the blocks specified in the goal matches the relations also specified in the goal. Otherwise, a REG request is performed for all the misplaced blocks, and the tasks \verb'clear_one_block' and \verb'clear_blocks' are returned, with the easiest block to refer to (\textit{i.e.} lowest RE cost) as parameter of the \verb'clear_one_block' task.
+\item The \verb'clear_one_block' task has also only one decomposition returning the primitive task \verb'tell_human_to_clear_block' and the abstract one \verb'wait_for_human_to_clear_block'.
+\item The \verb'wait_for_human_to_clear_block' abstract task has only one decomposition. It aims at recursively planning to wait until we planned the human has removed and put the right block away. It recursively decomposes into $()$ if the block passed as argument is in the right place; and returns \verb'wait' and \verb'wait_for_human_to_clear_block' otherwise.
+\end{itemize}
+
+The robot primitive tasks are defined as follow:
+\begin{itemize}
+\item The \verb'tell_human_to_clear_block' primitive task returns $\bot$ if the block specified as parameter is not reachable by the human, or if it is not present in the human beliefs $\humanmodel$. Else, it adds the abstract task \verb'clear_told_block' to the human agenda passing the specified block as parameter and does not update any beliefs.
+\item The \verb'wait' primitive task does not update any beliefs.
+\end{itemize}
+
+On the human tasks side, we modeled a cooperative human, non declining asked tasks. Thus, the task model is as follows:
+\begin{itemize}
+\item The abstract task \verb'clear_told_block' has only one decomposition, returning the primitive tasks \verb'pick_block' and \verb'place_block'.
+\item The primitive task \verb'pick_block' return $\bot$ if the block passed as parameter is not reachable by the human in their beliefs; and updates the beliefs of all the agents in the room with the human holding the block otherwise.
+\item The primitive task \verb'place_block' return $\bot$ if the human is not carrying anything; else it updates the beliefs of all the agents in the room with the block being placed in the area specified as parameter, and the human not holding anything.
+\end{itemize}
+
+In the domain described previously, we compute in the abstract task the least costly block to refer to to decompose the task. This greedy approach can be used because we remove the block during the task. The referring cost of blocks thus can only decrease at each iteration of the task. However, it would be completely different if some blocks were to be added to the shelf along with others to remove. There, our greedy approach would not work as an not costly action would make future actions more costly leading to an sub-optimal plan. Another approach could be to have the decomposition of \verb'clear_blocks' to return all the orders of the block removing instructions to explore.
+
+In the proposed version of the director task, only the cube order can be planned. Thus, in the following subsection, we propose slight variations of the task increasing the planning complexity and interest, along with some possible modeling directions to overcome these challenges.
+
+\subsection{Challenges for planning}
+To spice up the planning challenge in the director task, we propose some extensions to the presented task.
+First, by adding blocks with identical visual features to the shelf, and asking to remove a precise one of them, we introduce situations where verbal communication (and REG) is not enough to refer to a block. To solve this problem, we could for example add a decomposition to \verb'clear_one_block'. In this decomposition, we could have the robot moving one distractor of the REG in a non visible compartment to be able to refer to the intended block. The planner would then have to balance between making the referring easier by moving a block before giving the instruction and giving a long and complex instruction (when feasible).
+
+With the same scenario, using the REG extension presented in the previous chapter, allowing the RE to contain relations to past common actions, we could introduce another way for the robot to refer to a block. The planner would need to balance previous communication means with creating a unique past experience with a block to easily refer to it (\textit{e.g.} "the blue block that I just moved").
+
+Besides, we can add multiple distinct disposal areas for blocks. The director would then have to instruct the receiver not only the block to pick but also which area they have to place it in. Furthermore, we could also add a decomposition where the robot ask to pick an under specified block, ensuring that all the matching ones need to be removed, and plan for all the possible blocks picked by the human matching this description. Depending on the block picked, it would be planned to ask to place the cube in its corresponding area. This may result in a better efficiency as it would lead to less complex referring expressions.
+
+Finally, performing this task will necessarily bring errors, either from the human (\textit{e.g.} the wrong block may be picked) or the robot (\textit{e.g.} a block may fail to be picked). Even if some errors can be planned for (\textit{e.g.} modeling all the blocks the human can pick and planning accordingly) doing so for all the possible contingencies is not possible. Therefore, a strong link with supervision must be envisioned as it will ask for replanning. Replanning is not as simple as passing the current state and the same goal and starting the process all over again, since some task decomposition may have been executed partially and cannot be changed in the replanning process.
+
+% Code words + Multiple sessions
+% Communicating about multiple blocks at once
 
 \section{Conclusion and Future Works}
-\subsection{Representing explicitly observation processes}
+In this chapter we proposed a new task planning approach for human robot interaction. This approach not only explicitly represent and plan upon both the human and the robot beliefs but also use two separate action models as HTNs for the human and the robot.
 
-\subsection{Leveling-up the theory of mind}
+We proposed a formalism along with an algorithm allowing to plan for robot actions, while considering the possible human actions according to their task model. By doing so, we are able to represent and to account for the human planning and reaction processes.
+
+Then, we presented a successful implementation of this approach in Python and showed first results along two examples. These examples highlighted both the features of the prototype planner and the rationale behind the action models crafting. The planer is able to represent and to plan for robot unknown human knowledge, human reactions to robot actions, multiple human possible plans and intricate human robot tasks. It is also capable of balancing between communicating, letting the human perform a mistake and attributing different roles to the robot or the human.
+
+Finally, we introduced a simple to reproduce while challenging collaborative task inspired from psychology studies: the director task. To be performed by a robot, this task includes several prerequisites such as being able to take the perspective of the human partner and to refer objects in a dynamically evolving environment. The robot architecture built to handle the task allowed us to show how our prototype planner can be used on a real task in a complete robotic architecture. Some extensions of this task challenging for task planning were introduced along with hints to complete them.
+
+We look forward to continue exploring this approach, find its benefits and its limits. More importantly we aspire at improving it, especially on the following topics.
+
+\subsection{Representing explicitly observation processes}
+A lot of code is common between the primitive tasks not only in a planning domain but also between multiple ones. Indeed, the part where we update the beliefs of the agent performing the action, but also the ones of the other agents in the room is present in almost all the primitive actions. This commonality raises the question of observability of actions. Indeed, even if we can assume that when an agent is planned to do an action they will be aware of its effects, and that if the human is planned to perform an action, even if it is not observable from the planned robot position, we update the beliefs of the robot (as it is emulating the human actions), it is not the case for a robot action and the update of human beliefs. We can represent is coarsely in the primitive task effects by relying on heuristics such as the presence of the agents in the same room. Still, observabilty of actions may need a specific representation for belief update in the planner core.
+
+Besides, even if we plan that the human will do one action or the other at one point in the plan, recognizing and distinguishing between them may not be possible during the execution. This can endanger the interaction as the wrong branch of the plan may be executed. Thus, the supervision component must be informed, along with the plan, of the observability of the human actions, which can, in turn, impact the plan selection process.
+
+%\subsection{Leveling-up the theory of mind}
 
 \subsection{Pruning during the search space exploration}
+For now, all the search space is explored to find valid plans, and only then the cost of actions are evaluated to select the optimal conditional plan. However, even if the search is guided by the HTNs, the branching factor can become large, especially if the planning process is executed in a robotic architecture while interacting with a human. Thus, it is possible to evaluate the plan cost during exploration and to prune some branches in the search space according to the best plan found so far. Yet, doing so would prevent from applying plan wide costs, as they could change the optimality of the plan used during in the search.
+
+Another approach would be to learn which actions a human is more likely to perform in a certain state. We could then prune all the least probable human actions (still returned by their modeled task tree). Although this approach can be easy to implement, learning must be done per human (as two humans may react differently in the same situation) and on a few learning samples as the same world state seldom appears during specific tasks on typical short term laboratory scenarios and generalization could be difficult.
+
+Finally, we can also imagine that the robot might ask the human which tasks they are likely to perform at a specific step in the plan, while elaborating the plan. This would lead to negotiations with the human making the final plan more acceptable while also reducing the branching factor as only the tasks answered by the human would be explored. However, for long and complex domains, this solution may confuse the human because it would require them to project on the long-term among multiple conditional eventualities.
 
 \ifdefined\included
 \else
