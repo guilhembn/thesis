@@ -1,3 +1,4 @@
+
 % Choose the language of your thesis passing 'french' or 'english' as
 % \documentclass option.
 % Note1: The 'page de garde' will always be written in French.
@@ -151,18 +152,31 @@ A faire en dernier :-)
 \cleardoublepage
 \begin{vcenterpage}
 \noindent\rule[2pt]{\textwidth}{0.5pt}
-\\
-\iftoggle{ThesisInEnglish}{%
-{\large\textbf{Abstract:}}
-}{%
-{\large\textbf{Résumé :}}
-}
-resume
-\iftoggle{ThesisInEnglish}{%
-{\large\textbf{Keywords:}}
-}{%
-{\large\textbf{Mots clés :}}
-}
+
+\textbf{Abstract:}
+%%%%%%%%%%%%%%%%%%%%%% ATTENTION GUILHEM ! SI MODIFICATION => MODIF SUR ADUM AUSSI !!!
+Robots are capable to handle autonomously more and more complex tasks. However, today's robots have either their workspaces are physically separated from the humans ones or their abilities severely restricted when evolving nearby humans. In this thesis, we propose several approaches allowing to plan not only for the robot but also for the human, enabling to predict and elicit their decision process and actions, leading to better human robot interactions (HRI). 
+
+First, we show through a user study, why such a scheme applied to robot navigation is crucial for efficient and satisfactory interaction. Planning for the robot and the human allows to find solution in intricate situations where collaboration is necessary but also for the robot to be proactive and legible while navigating. Secondly, we alleviate from inherent ephemeral nature of interaction in collaborative navigation to explore how co-planning can be applied for task planning. We introduce a new referring expression generation algorithm, working on an ontology as knowledge base, and show that it is the fastest one to date while being designed for HRI application. We use it in a human-aware task planner to estimate feasibility and cost of communication during task planning, preventing deadlock or suboptimal plans. Finally, a novel approach to human-aware task planning is proposed where action models of the robot and the human are distinct and used to produce conditional plans.
+\begin{comment}
+As technology progresses, more and more complex tasks can be automated. However, robots seldom consider the nearby humans in their decision making processes. This result in today robots usage to be separated from human environment or to be overdefensive when evolving close to humans. We claim that bringing the robot and the human workspace closer would allow to use their complementarity to perform more complex tasks in collaboration, more efficiently and with more satisfaction for the human.
+
+In this thesis we show why it is crucial for a robot not only to plan for itself but also for the nearby human in order to predict, elicit and guide human decisions and actions. 
+First, we prove, through a user study, planning both for the robot and the human trajectories is important to make a successful and efficient crossing with a human in a narrow corridor. The resulting robot trajectory are not only more acceptable to the human but also allows for the robot to communicate about the proposed collaborative plan.
+Secondly, we alleviate from inherent complexity and ephemeral nature of collaborative motion planning to propose a method for planning communication in human robot task planning. An novel approach for referring expression generation is described and shown to be the most computationally efficient method to date while being designed for human robot interaction scenarios. This algorithm is then integrated in a human robot task planner: the Hierarchical Agent-base Task Planner (HATP), enabling for the estimation of the feasibility and the cost of communication actions by resolving their content during task planning. 
+%This require to plan for both robot and human actions while also keeping track of both agents beliefs while planning. Consequently, it prevents deadlocks and results in more efficient plan than if communication actions were resolved during execution.
+Finally, we introduce a new task planning scheme reasoning on separate human and robot beliefs and action domains. By exploring two HTNs corresponding respectively to the planning domain of the robot and the task model of the human, the planner is able to predict and elicit human actions by emulating their decision and reaction processes. The pertinence of the scheme is showed on example and a more complete challenging task is presented: the director task.
+\end{comment}
+
+\textbf{Résumé :}
+%%%%%%%%%%%%%%%%%%%%%% ATTENTION GUILHEM ! SI MODIFICATION => MODIF SUR ADUM AUSSI !!!
+Les robots sont capables d'effectuer de manière autonome des tâches toujours plus complexes. Cependant, ils sont encore soit utilisés avec une séparation physique des humains, soit limités lorsqu'ils évoluent proches d'humains. Dans cette thèse, nous proposons plusieurs approches visant à planifier pour le robot mais aussi pour l'humain. Les plans alors générés prennent en compte l'humain en prédisant et provoquant leur actions, menant à de meilleures interactions humains-robots.
+
+Premièrement, nous montrons au travers d'une étude utilisateur, pourquoi une telle approche appliquée à la navigation est cruciale pour une interaction efficiente et satisfaisante. Planifier pour le robot et l'humain permet en effet de trouver des solutions dans des situations d'interaction complexes mais aussi au robot d'avoir un comportement plus lisible et proactif. Deuxièment, nous présentons un algorithme de génération d'expression de référencement, le plus rapide aujourd'hui et pensé pour l'interaction humain-robot. Nous utilisons ensuite cet algorithme pour estimer la faisabilité et le coût des actions de communication pendant la planification de tâches, permettant d'éviter des impasses et des plans sous optimaux. Enfin, nous proposons une approche novatrice à la planification de tâches humain robot, dans laquelle les modèles de l'action des deux agents sont distincts et utilisés pour produire des plans conditionels.
+
+\textbf{Keywords:}
+
+\textbf{Mots clés :}
 mots, clefs
 \\
 \noindent\rule[2pt]{\textwidth}{0.5pt}
