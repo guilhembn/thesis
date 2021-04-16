@@ -194,8 +194,10 @@ Once the robot agenda is emptied, the agents state is set as a success, the plan
 
 \subsection{Conditional plan selection}
 Once this exhaustive search has been done, the result is a search tree of alternating robot and human feasible actions leading to a task completion. However, we still have to select the action the robot has to perform at each step (if several of them are applicable). To do so, we define a cost function $cost: \agentsstates \times \operators \mapsto \realset^+$ representing the cost of an action in a specific state. The data structure is now similar to a two players game tree. However, \textit{MinMax} approaches are not suitable here, as we are not in an adversarial setup but more into a collaborative one. Indeed, trying to minimize the maximal possible cost is assuming that the human will always do the actions leading to the worst plan. This defensive behavior could lead to non optimal plans. We assume that given the right indications, the human will do their best to achieve the task with minimal cost. We thus propose to explore this tree differently.
+\improvement{also set plan wide (social) costs}
 
 \subsubsection{Minimizing the average cost}
+\improvement{TODO !!}
 The first approach we propose for plan selection is to minimize the average cost.
 
 \begin{algorithm}[H]
@@ -236,6 +238,7 @@ The first approach we propose for plan selection is to minimize the average cost
 \unsure{Not implemented, just the idea, maybe not enough time}
 
 \subsubsection{Guiding human choices towards the least costly solution}
+\improvement{TODO !!}
 \unsure{Even blurrier idea}
 
 \section{Implementation}
@@ -483,7 +486,7 @@ The director task is an experiment setup largely used and derived in psychology.
 \todo{caption}
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width=\textwidth]{figures/chapter4/dt_apple.png}
+\includegraphics[width=0.5\textwidth]{figures/chapter4/dt_apple.png}
 \caption{CAPTION TODO}
 \label{fig:chap4dtapple}
 \end{figure}
