@@ -118,8 +118,8 @@ In this section we present an efficient algorithm that is able to generate refer
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width=\textwidth]{figures/chapter3/ABoxR.png}
-\caption{A part of the ABox ($A$ and $R$) of an example of ontology representing the situation depicted in Figure~\ref{fig:chap3keys}.}
+\includegraphics[width=0.8\textwidth]{figures/chapter3/ABoxR.png}
+\caption{A part of the ABox ($A$ and $R$) of an example of ontology representing the situation depicted in Figure~\ref{fig:chap3keys}(a).}
 \label{fig:chap3aboxrel}
 \end{figure}
 
@@ -180,6 +180,7 @@ Finally, we want to be able to estimate and reason on the human beliefs. To do s
 
 % Content of the ontology
 \paragraph{The content of the ontology in HRI}
+\todo{Complete !}
 The content of the ontology should be carefully chosen for HRI. In our architecture, the content of the robot ontology can be decomposed in three parts. First, 
 
 
@@ -188,7 +189,7 @@ We saw previously that REG is an important and interesting problem for human-rob
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width=\textwidth]{figures/chapter3/pens.png}
+\includegraphics[width=0.7\textwidth]{figures/chapter3/pens.png}
 \caption{Six scenes as viewed by a human interacting with a robot at the other side of a table. In each scene, the configuration of objects leads to different mechanisms to refer to a pen without ambiguities.}
 \label{fig:pens}
 \end{figure}
@@ -201,66 +202,67 @@ We saw previously that REG is an important and interesting problem for human-rob
 \item We also want to support the \textbf{preference ordering} per agent. Indeed, some relations are understood better and quicker than others, and this preference can change depending on the agent we are interacting with. 
 \item In addition, we want the algorithm to consider the verbalization through \textbf{the use of types}. All the approaches presented before only focus on the content determination of the REG and consider that the linguistic realization (the verbalization) will be perfect. They consider that all the contents of the used graph (often dedicated to REG) can be verbalized (\textit{e.g.} it exists a word for every edges of the REG graph and each word correspond to only one edge). While this can be assumed when dealing with dedicated knowledge base, in an ontology we need the type of an entity as the minimal information needed to refer to an entity (\textit{e.g.} the \textit{pen\_6} in Figure~\ref{fig:pens} (a) cannot be verbalized directly as "pen 6", only its type can be verbalized as "the pen").
 \item Likewise, in large robotic ontologies, every type or relation cannot be verbalized. Indeed, we saw that they also can contain data to be used by other components (\textit{e.g.} planners) or to be shared across the architecture. For instance we do not want the robot to say \textit{Pickable} type, the \textit{geometricProperty} or the \textit{hasMesh} property. Thus, our algorithm should be able to \textbf{select only verbalizable types and properties}.
-\item Finally, in an interaction, it is clear for the hearer that some entities will not be referred, and should not be taken into account as distractors by the algorithm (in the example depicted in Figure~\ref{fig:pens}(a), it should be clear to the human that, unless specified otherwise, if the robot asks about a pen, it is one on the table and not one in another room). Also, some relations will be implicit in the communication (\textit{e.g.} if the robot asks the human to \textit{give} it a pen, it is implied that the cube is not reachable by the robot and reachable by the human, as in the Figure~\ref{fig:pens}(b) and (c)). Thus, the algorithm must \textbf{use the context of the ongoing task}.
+\item Finally, in an interaction, it is clear for the hearer that some entities will not be referred, and should not be taken into account as distractors by the algorithm (in the example depicted in Figure~\ref{fig:pens}(a), it should be clear to the human that, unless specified otherwise, if the robot asks about a pen, it is one on the table and not one in another room). Also, some relations will be implicit in the communication (\textit{e.g.} if the robot asks the human to \textit{give} it a pen, it is implied that the cube is not reachable by the robot and reachable by the human, as in the Figure~\ref{fig:pens}(b) and (c)). Thus, the algorithm must \textbf{use the context of the ongoing task}. 
+
+Determining the right context (what are the implicit relations, which do not need to be said) is an open challenge. It appears to be linked to the location of the agents and to the action intended to perform with the referred object. We think \textit{affordances} of objects can be a way of determining this context \cite{gibson2014ecological, norman2013design}. Indeed, by emulating the perceived affordances of the different objects perceived by the human, we can deduce which one would be filtered out when asking to perform an action with a referred object. For instance, if the robot asks the human to place the object they are holding on top of a referred object, the human will probably not consider all the object not providing a support as an affordance, the implicit communication would be that the referred object is a support. For now, some affordances are represented as classes in the ontology (\textit{e.g.} \textit{Pickable}, \textit{Support}). While some effort has still to be put in clearly defining and determining the context for each referring expression, in this thesis the contexts will be deduced by hand and provided to the REG algorithm.
 
 \end{enumerate}
 
 \subsection{Ontology based REG problem definition}
 To formally define the REG problem for HRI, we need to enhance our knowledge base with three functions.
-First, we define a class labeling function $\labelfunc_t: T \mapsto str \cup \bot$ where $str$ denotes a set of strings used as words in the vocabulary. We define that a class $t \in T$ is labeled iif $\labelfunc_t(t) \neq \bot$ and call $\labelfunc_t(t) \in str$ the label of $t$. Besides, we require this label to be unique, \textit{i.e.} for any pair of labeled classes $t, t' \in T^2, t \neq t' \Leftrightarrow \labelfunc_t(t) \neq \labelfunc_t(t')$. We define similarly a an entity labeling function $\labelfunc_a: \indivset \mapsto str \cup \bot$ associating some entities to their speakable/writable unique names. These function can be defined in the ontology by using the commonly used property \textit{rdf:label} to the labeled classes and entities. Adding them that way, allows to make these function agent dependent. In the example depicted in Figure~\ref{fig:chap3keys}(a) we would have among others $\labelfunc_t(Table) = "table"$, $\labelfunc_t(Pickable) = \bot$ and $\labelfunc_t(Key) = "key"$.
+First, we define a class labeling function $\labelfunc_t: T \mapsto str \cup \bot$ where $str$ denotes a set of character strings used as words in the common human robot vocabulary. We define that a class $t \in T$ is labeled iif $\labelfunc_t(t) \neq \bot$ and call $\labelfunc_t(t) \in str$ the label of $t$. Besides, we require this label to be unique, \textit{i.e.} for any pair of labeled classes $t, t' \in T^2, t \neq t' \Leftrightarrow \labelfunc_t(t) \neq \labelfunc_t(t')$. We define similarly a an entity labeling function $\labelfunc_a: \indivset \mapsto str \cup \bot$ associating some entities to their speakable/writable unique names (grey names in Figure~\ref{fig:chap3aboxtbox}). These functions can be defined in the ontology by using the commonly used property \textit{rdf:label} to the labeled classes and entities. Adding them that way, allows to make these function agent dependent. In the example depicted in Figure~\ref{fig:chap3keys}(a) we would have among others $\labelfunc_t(Table) = "table"$, $\labelfunc_t(Pickable) = \bot$ and $\labelfunc_t(Key) = "key"$. Indeed, the types and entities are defined by their identifier in the ontology, however these identifiers usually make no sense to the human (\textit{e.g.} \textit{key\_1}), or are not intended to be verbalized (\textit{e.g.} \textit{Pickable}). The labels serve to distinguish the individuals and types that are verbalizable from the other and to give a unique verbalizable name to them. In practice, entities are rarely named except for very specific objects that would have been given a unique name.
 
-Moreover, to support the preference ordering we introduce a \textit{comprehension cost function} depending on the agent $\costcompfunc^H: P \mapsto \realset^{+*}$. It allows to represent that some relations are harder to understand for the hearer than others. We will not present in this thesis how to compute these costs. However, some approaches using learning manage to estimate this cost \cite{belke2002tracking, koolen2012learning}.
+Moreover, to support the preference ordering we introduce a \textit{comprehension cost function} depending on the agent $\costcompfunc^H: P \mapsto \realset^{+*}$ assigning a positive cost to properties. It allows to represent that some relations are harder to interpret for the hearer than others. We will not present in this thesis how to compute these costs. However, some approaches manage to estimate this cost and the preference order \cite{belke2002tracking, koolen2012learning}. Belke and Meyer evaluated the reaction times to find if two pattern were different, moreover, they analyzed the referring expression generated by participants when presented with two different patterns to refer to one. They found that differences in object colors (absolute difference) appear to make the distinction easier than differences in the size (relative difference). Besides, people tend to overspecify the referring expression (RE) by specifying the color even when it is not needed. This shows that color attributes should be preferred over size when generating a RE \cite{belke2002tracking}. Koolen \textit{et al.} used a learning approach based on human generated RE to assign costs to the relations used by the IA and GBA algorithm \cite{koolen2012learning}. In what follows, all the properties have a unit cost.
 
 We are aiming to unambiguously designate, through its relations to other entities, an entity $\goalindiv \in \indivset$ in a knowledge base $\knowledgebase$. We will call the entity we are trying to refer to the \textit{target entity} $\goalindiv$.
-However, the RE is meant to be used in the context of a task. As stated previously, the RE needs to account for certain implicit relations. This is why the problem must be given a \textbf{context} $Ctx = (R_{ctx}, C_{ctx})$, a set of relations and direct types that are implicit in the current situation, which will be used to reference $\goalindiv$, but not included in the generated RE. For the interactions of Figure~\ref{fig:chap3keys}, the context could be defined as $Ctx = (\{ \langle \goalindiv, isOn, table_1 \rangle, \langle \goalindiv, isVisibleBy, human_3 \rangle, \langle \goalindiv, isReachableBy, human_3 \rangle \}, \emptyset)$. With this context, we restrict the disambiguation to the entities present on the table $table_1$ and visible and reachable by \textit{human\_3}, the human partner.
+However, the RE is meant to be used in the context of a task. As stated previously, the RE needs to account for certain implicit relations. This is why the problem must be given a \textbf{context} $Ctx = (R_{ctx}, C_{ctx})$, a set of relations and direct types that are implicit in the current situation, which will be used to reference $\goalindiv$, but not included in the generated RE. For the interactions of Figure~\ref{fig:chap3keys}, the context could be defined as $Ctx = (\{ \langle \goalindiv, isOn, table\_1 \rangle, \langle \goalindiv, isVisibleBy, human\_3 \rangle, \langle \goalindiv, isReachableBy, human\_3 \rangle \}, \emptyset)$. With this context, we restrict the disambiguation to the entities present on the table $table_1$ and visible and reachable by \textit{human\_3}, the human partner. Indeed, when engaged in a tabletop scenario, objects on the table are prioritized when designating one. Besides, as the robot asks to move the keys, we model that the human infer that the keys referred to are reachable and visible by him.
 
 Finally, to be able to run on our ontologies and select only verbalizable properties, we provide the problem with a set of \textbf{usable properties} $\usablepropset \subseteq P$. Because of properties inheritance $Incl$ all the properties inheriting from the ones in $\usablepropset$ are usable in the problem.
 
 We thus defines the REG problem as follows:
 \begin{definition}[The referring expression generation problem]
-The referring expression generation (REG) problem is a tuple $\regproblem = \langle \goalindiv, \knowledgebase, Ctx, \usablepropset \rangle$ with $\goalindiv \in \indivset$ the target entity, $\knowledgebase$ the hearer's knowledge base as an ontology, $Ctx$ the context and $\usablepropset \subset P$ the set of usable properties.
+The referring expression generation (REG) problem is a tuple $\regproblem = \langle \goalindiv, \knowledgebase, Ctx, \usablepropset \rangle$ with $\goalindiv \in \indivset$ the target entity, $\knowledgebase$ the hearer's estimated knowledge base as an ontology containing the facts the robot estimates the hearer knows, $Ctx$ the context and $\usablepropset \subset P$ the set of usable properties.
 \end{definition}
-To find the more precise and robust RE the considered knowledge base is the estimated hearer's one.
+It is important to note that the knowledge base we use is the hearer's one. Indeed, for the referring expression to make sense, we need to ensure that all the types and attributes used are known to the hearer. We see here that such a problem requires the robot to perform perspective taking.
 
-
-A solution to the REG problem is a set of relations which could be verbalized afterwards.
-Because some entities are \textit{not} labeled with a unique name (anonymous) and thus cannot be referred to directly, some of the relations might be under-specified. For instance, the sentence ``the cube is black'' is under-specified in that ``the cube'' does not identify a unique entity but any entity with the class ``cube''.
-In addition, it might be the case that a unique, anonymous, entity participates in more than one relation, e.g., ``the cube is black and on the table''. 
-To keep track of anonymous entities in underspecified relations, we introduce a variable set $X$, representing the anonymous entities. By convention, variables will be prefixed with a question mark (e.g. $?y \in X$).
-An underspecified relation is thus a triple $(s, p, o) \in (X \cup \indivset) \times \usablepropset \times (X \cup \indivset)$, e.g., \textit{(?y, hasColor, black)} where $?y \in X$ is a variable and $black \in A$ is a labeled entity in the knowledge base.
+A solution to the REG problem is a set of relations (the attribute of object, their relations between them and their type) which could be verbalized afterwards. We define more precisely what must be a solution to the REG problem.
+Because some entities (actually the vast majority) are \textit{not} labeled (anonymous,) and thus cannot be referred to directly (their id \textit{e.g.} \textit{key\_1} is only an internal identifier, and does not make any sense for the human), some of the relations might be under-specified. For instance in Figure~\ref{fig:chap3keys}, the sentence ``the black key'' is under-specified in that ``the key'' does not identify a unique entity but any entity with the class ``key''.
+In addition, it might be the case that a unique, anonymous, entity participates in more than one relation, e.g., ``the black key on the table''. 
+To keep track of anonymous entities in underspecified relations, we introduce a variable set $X$, representing the anonymous entities, just as in \sparql{} queries. Again, we choose a syntax where variables will be prefixed with a question mark (e.g. $?y \in X$).
+An underspecified relation is thus a triplet $(s, p, o) \in (X \cup \indivset) \times \usablepropset \times (X \cup \indivset)$, e.g., \textit{(?y, hasColor, black)} where $?y \in X$ is a variable and $black \in A$ is a labeled entity in the knowledge base.
 
 
 When speaking about anonymous entities, one must know its type to serve as a placeholder in sentences (e.g. "the pen").
-Thus, the solution should associate each variable and a type. For simplicity, we chose to represent them also as triplets: $X \times "isA" \times T$ (e.g. \textit{(?y, isA, Cube)}). 
+Thus, the solution should associate each variable and a type (previously denoted as "isA" relations). For simplicity, we chose to represent them also as triplets: $X \times "isA" \times T$ (e.g. \textit{(?y, isA, Cube)}). 
 
 \begin{definition}[Reference]
 \label{def:reference}
 Thus, a \textbf{reference} $E$ is a set of triplets, each triplet in $E$ being either an under-specified relation in $(X \cup \indivset) \times \usablepropset \times (X \cup \indivset)$ or a type ascription in  $(X \times "isA" \times T)$.
 \end{definition}
 
-However, a reference may not be verbalizable as is, nor  represent a valid situation of the knowledge base. We thus introduce three constraints:
+For example for the ontology depicted in Figure~\ref{fig:chap3aboxtbox} and Figure~\ref{fig:chap3aboxrel}, $\{(area\_white, hasColor, white)\}$, $\{(?0, isOn, table\_1), (?0, isA, Key)\}$ and $\{(key\_2, hasColor, ?0), (?1, hasColor, ?0), (?0, isA, Color)\}$ are three references. However, a reference may not be verbalizable as is, nor represent a valid situation of the knowledge base. We thus introduce three constraints:
 
 \begin{constraint}[Nameability of entities]
 \label{theo:constraint_1}
 Each entity $a \in \indivset$ present in any tuple of a reference $E$ (as first or third component) must have a label: $\labelfunc_a(a) \neq \bot$.
 \end{constraint}
 
-\improvement{Example violating C1}
+For instance for Figure~\ref{fig:chap3keys}(a) with the ontology depicted in Figure~\ref{fig:chap3aboxtbox} and Figure~\ref{fig:chap3aboxrel} a reference being: $\{(key\_3, hasColor, red)\}$ violates the Constraint~\ref{theo:constraint_1}. Indeed, even if $red$ does have a label ($\labelfunc_a(red) = "red"$), $key\_3$ does not ($\labelfunc_a(key\_3) = \bot$, the individual $key\_3$ does not have a grey name in Figure~\ref{fig:chap3aboxtbox}).
 
 \begin{constraint}[Nameability of variables]
 \label{theo:constraint_2}
 For each variable $x \in X$ present in any tuple of a reference $E$ (as first or third component) there must also be a unique tuple in $E$ specifying one of its labeled type ($(x, "isA", t) \in E$ with $t \in T$ and $\labelfunc_t(t) \neq \bot$.
 \end{constraint}
 
-\improvement{Example violating C2 but not C1}
+Again, in the situation of Figure~\ref{fig:chap3keys}(a) with the ontology in Figure~\ref{fig:chap3aboxtbox} and Figure~\ref{fig:chap3aboxrel}, the references $\{(?0, hasColor, red)\}$ and $\{(?0, hasColor, red), (?0, isA, Pickable)\}$ respect the Constraint~\ref{theo:constraint_1} ($red$ has a label) but violate the Constraint~\ref{theo:constraint_2}. For the first one, $?0$ is a variable but the reference does not contain an \textit{isA} relation linking it to a type. For the second one, it does contain an $isA$ relation linking the variable $?0$ to a type, but $Pickable$ does not have a label ($\labelfunc_t(Pickable) = \bot$; it does not have a grey name in Figure~\ref{fig:chap3aboxtbox}).
 
 \begin{constraint}[Correct instantiation of variables]
 \label{theo:constraint_3}
-For a reference $E$ there must exists at least one substitution function $f: X \mapsto \indivset$ of the variables in $E$ into entities in $\indivset$ such that the types and relations linking entities in $E$ are still present in $T$ and $R$ once $f$ has been applied.
+For a reference $E$ there must exist at least one mapping function $f: X \mapsto \indivset$ of the variables in $E$ into entities in $\indivset$ such that the types and relations linking entities in $E$ are still present in $T$ and $R$ once $f$ has been applied.
 In practice, $f$ transforms the underspecified relations of $E$ into fully specified ones that must appear in the knowledge base.
 \end{constraint}
 
-\improvement{Example violating C3 but not C2 nor C1}
+As an example, in the context of the Figure~\ref{fig:chap3keys}(a) represented by the ontology depicted on Figure~\ref{fig:chap3aboxtbox} and Figure~\ref{fig:chap3aboxrel}, the reference $\{(?0, isA, Key), (?0, hasColor, white)\}$ respects the Constraints~\ref{theo:constraint_1} and \ref{theo:constraint_2}, but does not respect the Constraint~\ref{theo:constraint_3}. Indeed, the variable $?0$ cannot be replaced by an entity having the specified relation in the given ontology (no entity of type \textit{Key} has the relation \textit{hasColor} with the entity $white$).
 
 We can now define a \textbf{valid reference}:
 
@@ -281,38 +283,41 @@ A solution to a REG problem $\regproblem = \langle \goalindiv, \knowledgebase, C
 A complete solution to a REG problem $\regproblem = \langle \goalindiv, \knowledgebase, Ctx, \usablepropset \rangle$ is a solution where the mapping function $f$ respecting the constraint \ref{theo:constraint_3} is unique.
 \end{definition}
 
-\improvement{Examples}
+In the situation of Figure~\ref{fig:chap3keys}(b), a referring expression for the entity $area\_black$ could be $\{(?0, isA, Area), (?1, isA, Key), (?1, hasColor, black), (?1, isIn, ?0)\}$ with $x_g = ?0$. In this situation, $?1$ can be bound to both $key\_1$ or $key\_2$, (two possible mapping functions), but in either case $?0$ can only be bound to $area\_black$. Thus, this referring expression is not complete.
+
 The aim of the hearer is then to instantiate all the variables from their knowledge to find the entity referred to.
 
-Finally, we define an optimal solution (referring expression) $S^* = \langle E^*, x_g \rangle$ as being the a solution minimizing $\sum_{(s, p, o) \in E^*}\costcompfunc(p)$ over the set of all possible solutions for a REG problem.
+Finally, we define an optimal solution (referring expression) $S^* = \langle E^*, x_g \rangle$ as being the a solution minimizing $\sum_{(s, p, o) \in E^*}\costcompfunc(p)$ over the set of all possible solutions for a REG problem, where $\costcompfunc: P \mapsto \realset^{+*}$ is the properties cost function defined previously. In this thesis, all the properties will have a unit cost, the optimal referring expression will then be the shortest one.
 
 
 \subsection{Efficient REG algorithm presentation}
+We aim at building an algorithm to find a solution to the REG problem. The algorithm must build a set of relations, from the content of a provided ontology, of which all possible substitution of variables would result, for a specific variable $x_g$ to a unique entity of the ontology, the target entity. We choose to inspire from the previous contributions of REG and to formalize the problem as a graph search. The nodes of this graph are references (as defined in Definition~\ref{def:reference}), and the transitions (edges) are relations from the ontology being added to this reference.
+
 \subsubsection{Formalization as a graph search problem}
 \label{sec:SCFormalisation}
 
-Let \textbf{node} $\node = \langle \mathcal{T}_\node, X_\node, A_\node, \mathcal{S}_\node$. $\mathcal{T} \subseteq \relationset \cup C$ is a set of triplet relations representing some relations in the knowledge base $\knowledgebase$. $X_\node \subseteq X$ is the variable set used in this node, $A_\node \subseteq \indivset$ is the set of anonymous entities of $\mathcal{T}_\node$ and $\mathcal{S}_\node: X_\node \mapsto A_\node$ is the bijective mapping function linking variables to the anonymous entities they represent. We will note $\mathcal{S}^{-1}(T)$ the resulting \textit{reference} (as defined in Definition~\ref{def:reference}) after the application of $\mathcal{S}^{-1}$ on all the entities in each triplet of $T$ which is also in $A_\node$.
+Let \textbf{node} $\node = \langle \mathcal{T}_\node, X_\node, A_\node, \mathcal{S}_\node \rangle$. $\mathcal{T} \subseteq \relationset \cup C$ is a set of triplet relations representing some relations in the knowledge base $\knowledgebase$. $X_\node \subseteq X$ is the variable set used in this node, $A_\node \subseteq \indivset$ is the set of anonymous entities of $\mathcal{T}_\node$ and $\mathcal{S}_\node: X_\node \mapsto A_\node$ is the bijective mapping function linking variables to the anonymous entities they represent. We will note $\mathcal{S}^{-1}(T)$ the resulting \textit{reference} (as defined in Definition~\ref{def:reference}) after the application of $\mathcal{S}^{-1}$ on all the entities in each triplet of $T$ which is also in $A_\node$.
 The \textbf{initial node} is specified by the user's query through the $context$ of the problem.
 The idea is then to explore these nodes until the reference generated from the node $\mathcal{S}^{-1}(T)$ is valid and solution of the REG problem.
  
-To find all substitution functions defined in the Constraint~\ref{theo:constraint_3}, and thus, all the entities which can be bound to the variables in the reference (what the hearer will do to find the entity referred to), we use the \sparql{} queries presented previously. From any node $\node$ we can easily construct a \sparql{} query from $\mathcal{S}^{-1}(T)$, and submit it on the knowledge base to know how many entities can bound to the variables of the request. In some sense, the \sparql{} queries can be seen as an emulation of the cognitive process the hearer will do when receiving the RE.
+To find all substitution functions defined in the Constraint~\ref{theo:constraint_3}, and thus, all the entities which can be bound to the variables in the reference (what the hearer will do to find the entity referred to), we use the \sparql{} queries presented previously. From any node $\node$ we can construct a \sparql{} query from $\mathcal{S}^{-1}(T)$, and submit it on the knowledge base to know how many entities can bound to the variables of the request. In some sense, the \sparql{} queries can be seen as an emulation of the cognitive process the hearer will do when receiving the RE.
 A node $\node$ is a \textbf{goal node} if $\goalindiv$ is the only solution to the variable $x_g$ of the \sparql{} query created from the node (Definition~\ref{def:re}), and possibly all the variables in the \sparql{} query have only one assignation (Definition~\ref{def:complete_re}).
 
 A \textbf{transition} $\transition$ in the unambiguous reference generation problem consists in the insertion of a new triplet $(s, p, o)$ to the set $\mathcal{T}_\node$ of a node $\node$ resulting in the creation of a new node $\node'$. The inserted relation in a node $\node$ can be a typing relation ($p \equiv isA$) or a relation which differs between ambiguous entities in $\node$. 
 We define two kinds of difference between ambiguous entities.
 \begin{definition}[Hard difference]
-A \textbf{hard difference} ($a_i, \harddiff, a_j$) exists when two entities own the same property towards a different entity (i.e $(a_i, p, b_i) \in \relationset \land (a_j, p, b_j) \in \relationset | b_i \neq b_j$).
+A \textbf{hard difference} $a_i \harddiff, a_j$ exists when two entities have the same property towards a different entity (i.e $(a_i, p, b_i) \in \relationset \land (a_j, p, b_j) \in \relationset | b_i \neq b_j$).
 \end{definition}
 
 \begin{definition}[Soft difference]
-A \textbf{soft difference} ($a_i, \softdiff, a_j$) exists when an entity owns a property that is not owned by another ambiguous entity (i.e $(a_i, p, b_i) \in \relationset \land (a_j, p, \cdot) \notin \relationset$).
+A \textbf{soft difference} $a_i \softdiff a_j$ exists when an entity has a property that is not present for any other ambiguous entity (i.e $(a_i, p, b_i) \in \relationset \land (a_j, p, \cdot) \notin \relationset$).
 \end{definition}
 
-\improvement{Example of soft and hard difference}
+For example, in Figure~\ref{fig:chap3keys}(b) we would have for an hard difference: $(area\_black, hasColor, black) \in area\_black \harddiff area\_red$ as both $area\_black$ and $area\_red$ have a relation containing the property $hasColor$ but $area\_black$ has this property with the entity $black$ while $area\_red$ has it with the entity $red$. Then, a soft difference would be: $(key\_1, isIn, area\_black) \in area\_black \softdiff area\_red$ as the property $isIn$ is present in this relation concerning $area\_black$ but not present in any relation concerning $area\_red$.
 
-As the hard differences respect the \textbf{open-world assumption} but the soft differences do not, we propose to encourage the use of hard difference when possible by adding an extra-cost to transitions coming from soft differences.
+As the hard differences respect the \textbf{open-world assumption} but the soft differences do not, we propose to encourage the use of hard differences when possible by adding an extra-cost to transitions coming from soft differences.
 
-Finally, the \textbf{cost} of a node is the sum of the cost of each transition leading to this node. If we assume that each transition $\transition_j$ corresponds to the addition of a triplet $(s_j, p_j, o_j)$ to the set $\mathcal{T}_\node$ of a node $\node$ with a cost $\costcompfunc(p_j)$, the cost to $\node$ is $\costcompfunc_\node = \sum_{(s, p, o) \in \mathcal{T}_\node} \costcompfunc(p)$. 
+Finally, the \textbf{cost} of a node is the sum of the costs of each transition leading to this node. If we assume that each transition $\transition_j$ corresponds to the addition of a triplet $(s_j, p_j, o_j)$ to the set $\mathcal{T}_\node$ of a node $\node$ with a cost $\costcompfunc(p_j)$, the cost to $\node$ is $\costcompfunc_\node = \sum_{(s, p, o) \in \mathcal{T}_\node} \costcompfunc(p)$. 
 
 \subsubsection{Algorithm presentation}
 We chose to perform this search and solve the REG problem to use an uniform cost search algorithm on the graph presented before.
@@ -331,7 +336,7 @@ From an initial node built from the context of the query, the algorithm generate
 \Function {REG}{$\goalindiv$, $\knowledgebase$, $Ctx$, $U$}
 \State $node \leftarrow Ctx$
 \State $frontier \leftarrow$ a priority queue of nodes ordered by their \textit{cost}, initialized with $node$ having a cost 0 as only element
-\State $explored \leftarrow$ an empty set
+\State $explored \leftarrow$ an empty set of nodes
 \Loop
 	\If{\textsc{IsEmpty}($frontier$)} 
 		\State \Return failure		
@@ -365,7 +370,7 @@ From an initial node built from the context of the query, the algorithm generate
 \State \Return $additions$
 \EndFunction
 \end{algorithmic}
- \caption{How to write algorithms}
+ \caption{The pseudocode of the function returning the different transitions (edges) to explore.}
 \end{algorithm}
 
 \begin{algorithm}[H]
@@ -416,7 +421,7 @@ From an initial node built from the context of the query, the algorithm generate
 	\State $x \leftarrow$ a new variable such that $x \in X \land x \notin X_{newnode}$
 	\State $X_{newnode} \leftarrow X_{newnode} \cup x$
 	\State $A_{newnode} \leftarrow A_{newnode} \cup s$
-	\State Update $mathcal{S}_{newnode}$ such that $\mathcal{S}_{newnode}(x) = s$
+	\State Update $\mathcal{S}_{newnode}$ such that $\mathcal{S}_{newnode}(x) = s$ \label{line:updatesymboltable}
 \EndIf
 \State $\mathcal{T}_{newnode} \leftarrow \mathcal{T}_{newnode} \cup (s, p, o)$
 \State \Return $newnode$
@@ -427,34 +432,51 @@ From an initial node built from the context of the query, the algorithm generate
 \end{algorithm}
 
 
+The graph search algorithm is presented in Algorithm~\ref{alg:reg}. The different transitions (edges) (\textsc{GetTransitions} function) exploring through the nodes can be of two types. Either the reference $\mathcal{S}^{-1}(T)$ of the node contains some variable that are not typed (violating the Constraint~\ref{theo:constraint_2}) and the function returns a typing (\textit{isA}) relation to be added to the set of relations (\textsc{TypingTransitions} function); or it returns the set of soft and hard differences between the anonymous individuals of the node and the other individuals having matched in the \sparql{} query (\textsc{DifferenceTransitions} function) for their substituting variable. By doing so, we ensure that if a node produces a reference that is not valid (violating the Constraint~\ref{theo:constraint_2}), the next transitions are only dedicated to make it valid through typing (\textit{isA}) relations. Moreover, by only adding relations that are in the ontology $\knowledgebase$ we ensure that all the relations of a node are in the ontology, and thus respecting the Constraint~\ref{theo:constraint_3}). Then, the transitions returned are explored and used to create new nodes (\textsc{ApplyTransition} function). A new node is created by copying the relations of its parent and adding the relation of the transition. Moreover, if the transition adds a new anonymous entity, it creates a new variable and add the binding to the mapping function, ensuring the respect of the Constraint~\ref{theo:constraint_1}). Finally, when a node is explored, its reference is created using its mapping function, then the validity of the reference is checked and if it is valid, a \sparql{} query is constructed and submitted to the ontology to check if the valid reference is solution; if not, the exploration continues.
+
+The different called functions are presented hereafter and the pseudocode are given for the most interesting ones:
+
 \textbf{\textsc{ToQuery}:}
 Performs a direct translation of a \textit{reference} into a \sparql{} query.
 
 \textbf{\textsc{SparqlResult}:}
 The function that takes a \sparql{} query as input and returns a match table $\mathcal{M}: X \mapsto \mathcal{P}(A)$\footnote{This is a simplification of the result returned by a \sparql{} query, as we do not use the relation between the tuples really returned.} in the way that $\mathcal{M}(x)$ is the set of entities matching the variable $x \in X$ in the given query.
 
+\textbf{\textsc{GoalTest}:}
+First, this function checks if the reference produced with $\mathcal{S}^{-1}(T)$ is valid. Then, it constructs a \sparql{} query from a node using the \textsc{ToQuery} function. Then, it submit it to the ontology $\knowledgebase$ with the function \textsc{SparqlResult}. Finally, using the resulting match table, it returns $\top$ (true) if the variable denoting the target entity $x_g$ has only one match, being the target entity $\goalindiv$ ($\mathcal{M}(x_g) = \{\goalindiv\}$) and $\bot$ (false) otherwise.
+
 \textbf{\textsc{GetTransitions}:}
-At each step, we consider two kinds of possible transitions. The \textsc{TypingTransitions}~function (Alg.~\ref{alg:typingtrans}) consisting in the addition of an inheritance relation if at least one entity has no label and no inheritance relation in $\mathcal{T}_{\node}$. Otherwise, the \textsc{DifferenceTransitions} concatenates the transitions from the \textbf{hard difference transitions} (Alg.~\ref{alg:harddifftrans}) and the \textbf{soft differences transitions} (Alg.~\ref{alg:harddifftrans} with the $\softdiff$ operator at line~\ref{line:harddiff}. These transitions add relations that differ as hard and soft differences between ambiguous entity for each variable in $\mathcal{M}$.
+At each step, we consider two kinds of possible transitions. The \textsc{TypingTransitions}~function (Algorithm~\ref{alg:typingtrans}) consisting in the addition of an inheritance (\textit{isA}) relation if at least one entity has no label and no inheritance relation in $\mathcal{T}_{\node}$. Otherwise, the \textsc{DifferenceTransitions} concatenates the transitions from the \textbf{hard difference transitions} (Algorithm~\ref{alg:harddifftrans}) and the \textbf{soft differences transitions} (Algorithm~\ref{alg:harddifftrans} with the $\softdiff$ operator at line~\ref{line:harddiff}). These transitions add relations that differ as hard and soft differences between ambiguous entities for each variable in $\mathcal{M}$.
 
 The $\harddiff$ (resp. $\softdiff$) operator returns all the relations that are hard differences (resp. soft) between two entities as defined in \ref{sec:SCFormalisation}. In the difference actions algorithm, an action can be added only once and must not be present in the current state to avoid redundancy. The inverse relation to the one added by the action is also retrived from the $Inv$ set defined in the knowledge base and checked if not present in the current state and in the current actions set, again to avoid redundancy. 
 %In the example of Figure~\ref{fig:search_example} the relation $(P\_1, isIn, G\_2)$ will be redundant if the relation $(G\_2, hasIn, P\_2)$ has been already used in the current state.
 
 \textbf{\textsc{TypingTransitions}:}
-The \textsc{TypingTransitions} function stops at the first entity which has no label nor type. This specificity reduces the branching factor while ensuring that each entity has a label or at least a type. Since typing actions are the first tested in the \textsc{GetTransitions} function, all entities not typed during a first execution will be during the next ones. In the implementation, this function has been optimized by observing that once all the entities from the context are typed, the only entities in $\mathcal{T}_{\node}$ which may be be not typed are added as the \textit{object} of a \textsc{DifferenceTransitions}. Thus, by storing the object entity of a transition and only checking if it is labeled or has already been typed (and is thus present in $A_{\node}$) we reduce the complexity of the \textsc{TypingTransitions} function.
+The \textsc{TypingTransitions} function (Algorithm~\ref{alg:typingtrans}) stops at the first entity which has no label nor type. This specificity reduces the branching factor while ensuring that each entity has a label or at least a type. Since typing actions are the first tested in the \textsc{GetTransitions} function, all entities not typed during a first execution will be during the next ones. In the implementation, this function has been optimized by observing that once all the entities from the context are typed, the only entities in $\mathcal{T}_{\node}$ which may be be not typed are added as the \textit{object} of a \textsc{DifferenceTransitions}. Thus, by storing the object entity of a transition and only checking if it is labeled or has already been typed (and is thus present in $A_{\node}$) we reduce the complexity of the \textsc{TypingTransitions} function.
 
 \textbf{\textsc{UsableClass}:}
 The function \textsc{UsableClasses} returns the most specific \textit{labeled} classes of an entity $\indiv$, i.e., the set of classes $t \in \classset$ such that $(\indiv, t) \in C$, $\class$ is labeled and there are no labeled subclasses of $t$.
 
 This strategy differs from the one of \cite{dale1995computational} that prefers the least specific types (so called basic-level classes).
-However, in domain-independent knowledge bases such as ours their scheme could often resolve to "Object" or "Thing" which can lead to confusion.
+However, in domain-independent knowledge bases such as ours their scheme could often result to "Object" or "Thing" which can lead to confusion.
 Furthermore, by being conservative in our estimation of the receiver's knowledge base, we can guarantee that the labels of the considered classes are known to the human partner.
 Finally, using the most specific classes might reduce the ambiguities, and thus the branching factor early in the search, without impacting completeness.
 Note that the restriction to the most specific classes is not necessary but might reduce the branching factor of the algorithm without impacting completeness.
 
 \textbf{\textsc{ApplyTransition}:}
-The \textsc{ApplyTransition} function creates a new node $\node'$ by applying a transition to an existing node $\node$. It always add the triplet of the transition to $\mathcal{T}_{\node'}$ but, in case of a transition coming from the \textsc{TypingTransitions} function, a new variable is created and added to the mapping function $\mathcal{S}_{\node}$. Indeed, if an entity needs to be typed, it means that it is unlabeled and thus need to be represented through a variable in a valid \textit{reference}.
+The \textsc{ApplyTransition} function (Algorithm~\ref{alg:transapply}) creates a new node $\node'$ by applying a transition to an existing node $\node$. It always add the triplet of the transition to $\mathcal{T}_{\node'}$ but, in case of a transition coming from the \textsc{TypingTransitions} function, a new variable is created and added to the mapping function $\mathcal{S}_{\node}$ (line~\ref{line:updatesymboltable} of Algorithm~\ref{alg:transapply}). Indeed, if an entity needs to be typed, it means that it is unlabeled and thus need to be represented through a variable in a valid \textit{reference}.
 
-\unsure{Add an implementation section ? (link with ROS, fast, C++, hashmap, only storing last individual if not typed, ...}
+
+
+\subsubsection{Implementation}
+
+The algorithm has been implemented in C++. This choice was motivated by the performance we want our algorithm to have since we aim at using it during task planning. The software must be able to solve several request per second.
+
+The interface between the algorithm and the ontology (to compute the hard and soft differences and to make the \sparql{} requests) has been done with the Ontologenius API, ultimately using ROS for low level communications. This allows to have the ontology and the REG algorithm running on different computers. However, it is important to note that a low-level interface has also been used, linking Ontologenius as a dynamic library and running on the same process to avoid communications latency. This approach, while preventing Ontolgenius to be used by other software, allows for the best performance. This is the version used to compare the computation times of our approach with the others in what follows.
+
+Besides, the software has been integrated has a ROS node allowing other components, such as the supervision and the task planner as presented later in this thesis, to perform REG requests in a distributed architecture.
+
+\unsure{hashmap, only storing last individual if not typed, ...}
 
 \subsection{Results}
 We present hereafter the solutions given by our algorithm to the illustrative examples. Then we provide results involving a large scale knowledge base describing a full apartment in terms of time-execution, solution length and composition. Finally, we provide comparative performance measures with two state-of-the-art methods on their own domains.
@@ -463,19 +485,20 @@ We present hereafter the solutions given by our algorithm to the illustrative ex
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width=\textwidth]{figures/chapter3/search.png}
-\caption{A simple example showing how our ontology-based referring expression generation algorithm explores the search space. The scene is depicted in the top left corner, and \textit{C} and \textit{R} represent respectively the graph of direct and inherited types of the entities and the relations between them. The graph exploration is presented to generate a referring expression for the entity \textit{P\_1}. Dotted arrows represent typing transitions and grayed nodes do not respect Constraint~\ref{theo:constraint_1} or \ref{theo:constraint_2}.}
+\includegraphics[width=0.7\textwidth]{figures/chapter3/search.png}
+\caption{A simple example showing how our ontology-based referring expression generation algorithm explores the search space. The scene is depicted in the top left corner, and \textit{C} and \textit{R} represent respectively the graph of direct and inherited types of the entities and the relations between them. The graph exploration is presented to generate a referring expression for the entity \textit{P\_1}. Dotted arrows represent typing transitions and grayed nodes do not respect \ref{theo:constraint_2}.}
 \label{fig:search_example} 
 \end{figure}
 
-In order to familiarize with solutions, we propose to present some of them. For every presented solution, the variable denoting the entity to refer to will be $x_g = ?0$.
-The first setup is for illustration purposes, and operates on the static knowledge base illustrated in Figure~\ref{fig:search_example}.
-Since this setup is really small, the context is always empty, all the relations are usable and no entity is labeled.
+In order to have a better grasp of the solutions, we propose to present some of them. For every presented solution, the variable denoting the entity to refer to will be $x_g = ?0$.
+The first setup is for illustration purposes, and operates on the static knowledge base $\knowledgebase_{pens}$ illustrated in Figure~\ref{fig:search_example}. In this setup, three pens of two colors are represented, two of them are in two different cups of different colors.
+Since this setup is really small, the context is always empty, all the relations are usable and no entity is labeled. Moreover, the knowledge base being small, we specify that all the properties $P_{pens}$ are usable.
+Thus, based on this setup we propose two REG problems. The first one $REG_1$ aims at finding a RE for the pen \textit{P\_1}: $REG_1 = \langle P\_1, \knowledgebase_{pens}, \varnothing, P_{pens} \rangle$. The second one $REG_2$ aims at finding a RE for the cup \textit{G\_1}: $REG_2 = \langle G\_1, \knowledgebase_{pens}, \varnothing, P_{pens} \rangle$.
 We only tested with two interesting entities since the others present similar characteristics.
-The solutions for \textit{P\_1} and \textit{G\_1} are respectively \textit{\{(?0, isA, Pen), (?0, isIn, ?1), (?1, isA, Cup), (?1, Color, blue)\}} and \textit{\{(?0, isA, Cup), (?0, Color, blue)\}}, which can be read respectively as "the pen in the blue cup" and "the blue cup". These two solutions are R2 (allowing to read "the" and not "a" in the verbalization), as $?0$ and $?1$ bind to only one entity. Here, we see how referring to another entity lead to interesting solutions.
+The solution for $REG_1$ is \textit{\{(?0, isA, Pen), (?0, isIn, ?1), (?1, isA, Cup), (?1, Color, blue)\}}. For $REG_2$ it is \textit{\{(?0, isA, Cup), (?0, Color, blue)\}}. They can be read respectively as "the pen in the blue cup" and "the blue cup". These two solutions are complete (as in Definition~\ref{def:complete_re}, allowing to read "the" and not "a" in the verbalization), as $?0$ and $?1$ bind to only one entity. Here, we see how referring to another entity lead to interesting solutions.
 
-In order to give the reader a sense of how the context is useful as defined in the problem, we propose to come back to the Figure~\ref{fig:pens}.
-In a knowledge base describing Figure~\ref{fig:pens}(b), with a labeled entity \textit{Bob}, representing the human, giving a empty context to the problem would lead to the solution \textit{\{(?0, isA, Pen), (?0, isReachableBy, Bob)\}}, which would read as "The pen reachable by Bob". Whereas, if the robot wants the human to give it the pen, the reachablity of the pen is obvious. So the context would become: \textit{\{(pen0, isReachableBy, Bob)\}}, the ensuing solution would be \textit{\{?0, isA, Pen)\}}, simply verbalizable as "the pen", as taking into account the given context resolve the ambiguity.
+In order to give the reader a sense of how the context is useful as defined in the problem, we propose to come back to Figure~\ref{fig:pens}.
+In a knowledge base describing Figure~\ref{fig:pens}(b), with a labeled entity \textit{Bob}, representing the human, giving a empty context to the problem would lead to the solution \textit{\{(?0, isA, Pen), (?0, isReachableBy, Bob)\}}, which would read as "The pen reachable by Bob". Whereas, if the robot wants the human to give it the pen, the reachablity of the pen is obvious. So the context would become: \textit{\{(pen0, isReachableBy, Bob)\}}, the ensuing solution would be \textit{\{(?0, isA, Pen)\}}, simply verbalizable as "the pen", as taking into account the given context resolve the ambiguity.
 
 \subsubsection{Scaling up}
 
@@ -485,55 +508,92 @@ We ran our algorithm over all the 77 entities inheriting from the "Object" class
 
 \newcommand{\us}{$\mu$s\xspace}
 
-As this algorithm must be used in a human robot interaction application, we want it not to spoil the interaction when the robot is computing an explanation. In this setup, 100\% of the entities have been referred in under 4.33ms that is well bellow 100ms which is the maximum system response time for the user to get a feeling of instantaneity \cite{miller1968response}. More over, 50\% are referred under 357\us and 75\% under 772\us. On average, 10.6 nodes are explored to refer to an object with an average of 67.35\us/node explored. These execution time are promising from a combined use with a task planner, as many requests can be performed while planning without slowing too much the task planner.
+As this algorithm must be used in a human robot interaction application, we want it not to spoil the interaction when the robot is computing an explanation. In this setup, 100\% of the entities have been referred in under 4.33ms that is well bellow 100ms which is the maximum system response time for the user to get a feeling of instantaneity \cite{miller1968response}. More over, 50\% are referred under 357\us and 75\% under 772\us (Figure~\ref{fig:scalingup}). On average, 10.6 nodes are explored to refer to an object with an average of 67.35\us/node explored\footnote{Times reported are run on a CPU Intel Core i7-7700 CPU @ 3.60GHz with 32 Go RAM}. These execution time are promising from a combined use with a task planner, as many requests can be performed while planning without slowing too much the task planner.
 
-Over the 77 entities, 32 (41.56\%) are referred with 2 or less relation meaning that only the type of the entity and one relation is needed to refer to them. We can also note that 25 entities (32.46\%) are referred using 4 or more relations with a maximum of 6 for one of them. Finally, 49.4\% need to be referred by referring to another entity and two of them need to be referred by referring to two other entities. This mean that 49.4\% of the entities can not be referred using approaches like \cite{ros2010one} or \cite{dale1995computational}. For this reason we will not compare more of these two works.
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.6\textwidth]{figures/chapter3/scalingupREG.png}
+\caption{Computation times for generating a referring expression on all the 77 objects of the knowledge base representing an three rooms apartment.}
+\label{fig:scalingup}
+\end{figure}
 
-These results over a large scale knowledge base highlight the need to be able to refer to an entity through the use of relation linking it with other entities. They also shows that the use of the type of an entity is often sufficient with the use of only one attribute. With this experiment we also demonstrate that our algorithm is suitable for a use with a realistic large scale knowledge base.
+Over the 77 entities, 32 (41.56\%) are referred with 2 or less relation meaning that only the type of the entity and one relation is needed to refer to them. We can also note that 25 entities (32.46\%) are referred using 4 or more relations with a maximum of 6 for one of them. Finally, 49.4\% need to be referred by referring to another entity and two of them need to be referred by referring to two other entities. This means that 49.4\% of the entities can not be referred using approaches like \cite{ros2010one} or \cite{dale1995computational}.
+
+These results over a large scale knowledge base highlight the need to be able to refer to an entity through the use of relation linking it with other entities. They also show that the use of the type of an entity is often sufficient with the use of only one attribute. With this experiment we also demonstrate that our algorithm is suitable for a use with a realistic large scale knowledge base.
 
 \subsubsection{Comparisons with other state-of-the-art algorithms}
 \label{subsubsec:REGcomparisons}
 
 \textbf{Longest First} The Longest First (LF)\footnote{http://www.m-mitchell.com/code} algorithm \cite{viethen2013graphs} has been tested on the GRE3D3 Corpus composed of 20 scenes with three objects with different spatial relations relative to one another (\textit{onTopOf}, \textit{atLeftOf}). Each object can be referenced by its color, its size (large or small) and its type (cube or ball). The target referent is marked by an arrow and is always in a direct adjacency relation (\textit{onTopOf} or \textit{inFrontOf}).
 Among the 20 scenes, 8 target objects can be referenced without any ambiguity using only their type, 7 can be referenced using only their type in addition to an attribute (color or size) and the other five can be referenced using their types and both color and size attribute. This means that spatial relations are never necessary to reference the target object. 
-We perform the comparison on the 19\textsuperscript{th} case which consists of a small green cube on a large green cube and a small blue cube to the right of the green cubes. We chose this case with only cubes because the LF algorithm does not consider the types when generating the RE and adds them only as a post-process. The other cases requiring only the type are resolved in less than 100\us and those requiring the type and an attribute are resolved in less than 250\us with our algorithm.
+We perform the comparison on the 19\textsuperscript{th} case which consists of a small green cube on a large green cube and a small blue cube to the right of the green cubes (Figure~\ref{fig:gre3d3}). We chose this case with only cubes because the LF algorithm does not consider the types when generating the RE and adds them only as a post-process. The other cases requiring only the type are resolved in less than 100\us and those requiring the type and an attribute are resolved in less than 250\us with our algorithm.
 
-Because of their objective of obtaining an over-specification of the RE, their results are strongly impacted by the maximum length parameter. By setting it to 4 as recommended, we get the result which we can read as \textit{"The small green cube on top of a cube"} in 311ms. By setting the maximum length to 3 we obtain the shortest admissible result which can be read as \textit{"The small green cube"} in 109ms. This last result is the one given by our algorithm in just 0.87ms \footnote{Times reported are run on a CPU Intel Core i7-7700 CPU @ 3.60GHz with 32 Go RAM}.
+Since their objective is to obtain an over-specification of the RE, their results are strongly impacted by the maximum length parameter. By setting it to 4 as recommended, we get the result which we can read as \textit{"The small green cube on top of a cube"} in 311ms. By setting the maximum length to 3 we obtain the shortest admissible result which can be read as \textit{"The small green cube"} in 109ms. This last result is the one given by our algorithm in just 0.87ms.
 
-We see here that the results given by the LF algorithm largely depend on the maximum length parameter. This parameter also has a significant impact on the execution time. Besides, in the realistic scenario presented previously, 13\% of the entity need a reference expression length greater than 4. Thus, even if the over-specification is the goal of the LF approach, it can hardly scale-up. Moreover, for a maximum length fixed at the optimal length, the two approaches give identical results.
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.4\textwidth]{figures/chapter3/GRE3D319.jpg}
+\caption{The scene 19 of the corpus GRE3D3 \cite{viethen2013graphs}.}
+\label{fig:gre3d3}
+\end{figure}
+
+We see here that the results given by the LF algorithm largely depend on the maximum length parameter. This parameter also has a significant impact on the execution time. Besides, in the realistic scenario presented previously, 13\% of the entity need a reference expression length greater than 4. Thus, even if the over-specification is the goal of the LF approach, it can hardly scale-up. Moreover, for a maximum length fixed at the optimal length, both their approach and ours give identical results.
 
 \textbf{Graph Based Algorithm}
-A speed up of the original GBA~\cite{viethen2013graphs} is presented in~\cite{li2017automatically}. It aims at extracting, from a dedicated entities relations graph $G$, the lowest cost subgraph which is graph isomorphic to one and only one subgraph in $G$ containing the entity to refer to.
-Their approach is evaluated on a corpus containing multiple tabletop scenes \cite{li2016spatial}, presenting numerous cubes of different colors.
+A computationally improved version of the original GBA~\cite{viethen2013graphs} is presented in~\cite{li2017automatically}. It aims at extracting, from a dedicated entities relations graph $G$, the lowest cost subgraph which is graph isomorphic to one and only one subgraph in $G$ containing the entity to refer to.
+Their approach is evaluated on a corpus containing multiple tabletop scenes \cite{scalise2018natural}, presenting numerous cubes of different colors.
 
-We generated the graph (relations and costs) used for the scene 1, converted it into an ontology, and ran our algorithm on it.
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.5\textwidth]{figures/chapter3/liscene1.png}
+\caption{The scene 1 of the Li \& Scalise corpus.}
+\label{fig:gbacorpus}
+\end{figure}
+
+We generated the graph (relations and costs) used for the scene 1 (Figure~\ref{fig:gbacorpus}), converted it into an ontology, and ran our algorithm on it.
 This scene contains 15 cubes, GBA algorithm and ours are able to find a solution for the same 10 of them. In all the 10 cases, as we used the same costs, both algorithms returned the same solution (with the types of used entities added in our approach). 
 For the other 5 cases, the two algorithms detect the absence of a solution in a few milliseconds.
 
-On all the 10 cases with a solution, our approach performs faster than theirs (29.4 times faster in average). We can note that the speed increase is more important in cases where there are many solutions (under 4 times faster on 50\% of the cases, but more than 50 times faster for 25\% of the cases, up to 130 times faster). 
+On all the 10 cases with a solution, our approach performs faster than the GBA algorithm (29.4 times faster in average). We can note that the speed increase is more important in cases where there are many solutions (under 4 times faster on 50\% of the cases, but more than 50 times faster for 25\% of the cases, up to 130 times faster). 
 Indeed, the GBA approach uses a branch and bound algorithm where the search graph is bounded if the branch exceeds the cost of the current best found solution. Thus, it can explore a large part of the graph if the optimal solution is not found early in the search. Whereas our approach uses an uniform cost search algorithm, ensuring the first found solution is optimal.
-Moreover, we think that on cases where the knowledge base contains entities with different types, our approach should work faster, since we prioritize the use of the type. We were not able to test this, as we could not manage to run their approach on other data than their own corpus.
+Moreover, we think that on cases where the knowledge base contains entities with different types, our approach should work faster, since we prioritize the use of the type. We were not able to test this, as we could not manage to run the GBA algorithm on other data than their own corpus.
 
 \subsection{Integration}
 
-Our ontology-based REG method has been integrated on a PR2 robotic platform and used in a tabletop scenario. %The used architecture presented in this section is represented if figure \ref{fig:archi}. 
+Our ontology-based REG method has been integrated on a PR2 robotic platform and used in a tabletop scenario. The used architecture presented in this section is represented in Figure~\ref{fig:regarchi}.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/chapter3/ArchiREG.png}
+\caption{The robotic architecture built to test the presented REG approach in real conditions. The blue components are the ones presented in this thesis.}
+\label{fig:regarchi}
+\end{figure}
+
 The objects on the tables are detected with the ROBOSHERLOCK\footnote{\url{http://robosherlock.org/}} \cite{beetz2015robosherlock} perception system. This software does not require any a priori on the environment such as CAD model, mesh or training. 
-It provides the position (not used to extract relations), the shape ("circular" or "rectangular"), the color and the size of the objects ("large", "medium" or "small"). Since the types of objects is not determined by the system, all the objects were set with the labeled type "Object". This allows us to challenge our method with situations where the robot is not able to use high-level concepts and where various ambiguities will be raised.
+It provides the position (not used to extract relations), the shape ("circular" or "rectangular"), represented through a \textit{hasShape} property in the ontology; the color, represented with a \textit{hasColor} property; and the size of the objects ("large", "medium" or "small"), represented with a \textit{hasSize} property. Since the types of objects is not determined by the system, all the objects were set in the ontology with the labeled type "Object". This allows us to challenge our method with situations where the robot is not able to use high-level concepts and where various ambiguities will be raised.
 
-The knowledge base is managed using the Ontologenius\footnote{\url{https://sarthou.github.io/ontologenius/}} system \cite{sarthou2019ontologenius}. 
+As presented before, the knowledge base is managed using the Ontologenius\footnote{\url{https://sarthou.github.io/ontologenius/}} system \cite{sarthou2019ontologenius}. 
 It uses a custom internal structure to store and manipulate assertions as triplets, and offers reasoning capabilities in the form of plugins. Ontologenius provides a low level API allowing to manipulate the knowledge base as a classical data structure in addition to a \sparql{} interface.
-The ontology is dynamically fed to keep it up to date on the basis of a simple situation assessment consisting only of filtering and object tracking. At the moment, the situation assessment used is quite simple and consists solely of filtering and object tracking. Based on the confidence on the properties extracted, it dynamically feeds the knowledge base to keep it up to date. In what follows, we also used a software such as \cite{milliez2014framework} to extract higher level relations.
-% \cite{sisbot_situation_2011} or
+The ontology is dynamically fed to keep it up to date on the basis of a simple situation assessment consisting only of filtering and object tracking. The software used is TOASTER, which is an improved version of SPARK \cite{milliez2014framework}. However, only basic capabilities are used, consisting solely of filtering and object tracking. Based on the confidence on the properties extracted, it dynamically feeds the knowledge base to keep it up to date.
 
-A simple linguistic realization has been made, taking as input a \sparql{} query and generating an English sentence as output. For example, it transforms the query "?0 isA Cup, ?0 isOn ?1, ?1 isA Table, ?1 hasColor black" into "\textit{the cup on the black table}". It is an ad hoc implementation based on a simple grammar and the labels present in the ontology. 
-%It will not be further detailed in this paper.
+A simple linguistic realization has been made, taking as input a \sparql{} query and generating an English sentence as output. For example, it transforms the query "?0 isA Cup, ?0 isOn ?1, ?1 isA Table, ?1 hasColor black" into "\textit{the cup on the black table}". It is an ad hoc implementation based on a simple grammar and on the labels contained in the ontology. 
 
-The task \footnote{Commented video available at: \url{https://frama.link/TWU\_VE0o}} involves six objects on a table. The entity to reference is obj\_4 (a white mug). The robot generates the solution \textit{"The white circular object"} since there are other non-white circular objects and other white non-circular objects. Then, a human adds a new object which is a white and circular milk bottle (obj\_5). When the robot is asked to describe the white cup, it generates the sentence \textit{"The white small circular object"}. With this simple task, we show that our REG algorithm can be used within a robotic architecture, can deal with dynamic environment and can adapt its explanation to the current situation.
+Finally, a supervision component was built by another PhD. student Amandine Mayima. This supervision component orchestrates all the other ones. It receives as input an object being clicked on the RViz visualization, finds its identifier from the ontology, requests the REG component for a referring expression to this object, then send it to the verbalization component and finally send the produced sentence to the text-to-speech component making the robot play it.
 
-\improvement{Add small transition sentence here}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/chapter3/REGIntegration.png}
+\caption{The experimental setup for the integration of the REG algorithm. The robot only perceives the size, color and shape of the objects on the table. It estimates that the human is also aware of these attributes. To refer to the white mug (\textit{obj\_4}) the sentence generated in condition (a) is \textit{"The white circular object"}, while in condition (b) it is \textit{"The white small circular object"}. Indeed, in (a) only the color and the shape of the mug are enough to discriminate it, but in (b) a milk bottle is added, as it is also small and white, the algorithm adds the size of the mug to referring expression.}
+\label{fig:setupintegrationreg}
+\end{figure}
+
+The task\footnote{Commented video available at: \url{https://frama.link/TWU\_VE0o}} involves six objects on a table (Figure~\ref{fig:setupintegrationreg}). The entity to reference is \textit{obj\_4} (a white mug). The robot generates the solution \textit{"The white circular object"} since there are other non-white circular objects and other white non-circular objects (Figure~\ref{fig:setupintegrationreg}(a)). Then, a human adds a new object which is a white and circular milk bottle (\textit{obj\_5}) (Figure~\ref{fig:setupintegrationreg}(b)). When the robot is asked to describe the white cup, it generates the sentence \textit{"The white small circular object"}. With this simple task, we show that our REG algorithm can be used within a robotic architecture, can deal with dynamic environment and can adapt its explanation to the current situation.
 
 
 \section{Planning Communication Actions Using Referring Expression Generation}
+
+We are now able to determine efficiently the content needed for the robot to refer to an object to a human based on an ontology as knowledge base. Moreover, this algorithm is able to determine if such a communication is feasible (whether it fails or not to find a solution) and gives an estimation of the cost of interpreting the referring expression. In what follows we integrate this approach in a task planner, allowing to evaluate the feasibility and the cost of verbal referring communication actions during task planning.
+
 \subsection{Method}
 \label{sec:Integration}
 
@@ -542,17 +602,19 @@ In this section, we first provide an overview of our approach and briefly descri
 \subsection{Approach}
 
 
-The communication actions that we consider in this paper are commands issued by the robot based on Referring Expressions (REs). Typical commands are \textit{"Take X"} and \textit{"Put it in Y"}. We thus have a static part and the rest depends on the situation when the communication is perfomed and must be solved by a REG. It is this variable part that could make a communication costly or infeasible. As stated before, REG must be performed on the human's partner Knowledge Base (KB) to only use facts and concepts that the robot estimates to be known by the human. Thus, we target a planner that is already suitable for HRI to integrate the estimation of communications. This means that we need a planner able to distinguish between the different agents involved in the task and to maintain a representation of the environment for each of them.
+The communication actions that we consider in this paper are instructions issued by the robot to its human partner based on Referring Expressions (REs). Typical instructions are \textit{"Take X"} and \textit{"Put it in Y"}. We thus have a static part and the rest depends on the situation when the communication is performed and must be solved by a REG. It is this variable part that could make a communication costly or infeasible. As stated before, REG must be performed on the human's partner Knowledge Base (KB) to only use facts and concepts that the robot estimates to be known by the human. Thus, we target a planner that is already suitable for HRI to integrate the estimation of communications. This means that we need a planner able to distinguish between the different agents involved in the task and to maintain a representation of the environment for each of them.
 
-Because the task the planner has to solve does not necessarily imply all the elements present in the current environment, the planner does not need a full representation of the environment. In a same way, it does not necessarily need to have all the characteristics of the entities such that their colors or their types. On the example of Figure~\ref{fig:chap3keys}, the two keys to move can only be represented as movable objects in the planner and not as keys to make the planning domain more generic. However, the REG needs all the semantic information of each entity of the environment to generate accurate RE. Furthermore, if another key which is not part of the task, thus not part of the planner internal representation, is present on the table (such as \textit{key\_3}), it will also impact the REG and thus the complexity and feasibility of the communication action. 
-Hence, the REG can not be performed on the planner internal representation.
-To solve this issue, we endow the planner with the ability to maintain a semantic KB that is used by the REG. Since maintaining this external representation can be an heavy process, it is updated only when a communication action has to be evaluated.
+Because the task the planner has to solve does not necessarily imply all the elements present in the current environment, the planner does not need a full representation of the environment. In a same way, it does not necessarily need to have all the characteristics of the entities such that their colors or their types. On the example of Figure~\ref{fig:chap3keys}, the two keys to move can only be represented as movable objects in the planner and not as keys to make the planning domain more generic. 
+
+However, the REG needs all the semantic information of each entity of the environment to generate accurate RE. Furthermore, if another key which is not part of the task, thus not part of the planner internal representation, is present on the table (such as \textit{key\_3}), it will also impact the REG and thus the complexity and feasibility of the communication action. 
+Hence, the REG can not be performed on the planner internal representation of the world only.
+To solve this issue, we endow the planner with the ability to update a semantic KB that is used by the REG. Since maintaining this external representation can be an heavy process, it is updated only when a communication action has to be evaluated.
 
 The general workflow executed for each communication action encountered during the planning process consists of: 1) updating the external semantic KB of the human partner with the expected world state 2) identifying the objects to which to refer to in the communication 3) execute the REG for each of these objects 4) calculate the feasibility and the cost of the communication action according to the feasibility and the cost of each individual RE involved in the planned communication. Note that the examples used in this paper only involve one RE but the same method can be used for communications of type \textit{"give me X and Y"}. In this case, the external semantic KB is only updated once and both REG are executed on this KB.
 
 \begin{comment}
 
-\begin{figure}[t!]
+\begin{figure}[hbtp]
 \centering
 \includegraphics[scale=0.5]{images/workflow.jpg}
 \caption{\label{fig:workflow} Workflow to compute the feasibility and cost of a referring communication for each evaluated action involving verbal communication during the planning process.}
@@ -578,27 +640,46 @@ Finally, the last argument which motivated our choice was the previous integrati
 %This also needs to update the geometrical planned world to match the symbolic planned knowledge base before running the motion planning phase. 
 %This last work greatly inspired us, and our approach is similar with the difference that we run a REG when a communication action is explored, instead of a motion planning request on a symbolic motion task exploration.
 
+\paragraph{The HATP Data Structures}
+As presented in \cite{de2015hatp}, the HATP data structures are organized around the so-called \textit{HATP entities}. These entities are a collection of any number of attributes being manipulated during the planning process. The \textit{type of the attributes} can either be a basic type (\textit{i.e.} integer, floating point number, boolean or string) or another entity type. Besides, an attribute can either be \textit{a set}, holding multiple values of the specified type or \textit{an atom}, being a unique element of the specified type. Finally, an attribute can either be set as \textit{static} or \textit{dynamic}. Static attributes cannot be modified once they have been set in the world state initialization, they will only be read during the planning process, whereas dynamic attributes can also be changed by the effects of the primitive tasks (actions). The Listing~\ref{lst:hatpcubes} gives an example of entity definitions in order to represent the situation in Figure~\ref{fig:chap3keys}.
+
+\begin{lstlisting}[caption={Example of a part of the HATP domain describing the situation of Figure~\ref{fig:chap3keys}.}, label={lst:hatpcubes}, emph={define, entityType, entityAttributes, dynamic, atom, set, static}, emphstyle={\bfseries}, captionpos=b, frame=single]
+// Agent entity type is implicit
+define entityType Key, Area;
+define entityAttributes Key{
+  dynamic atom Area isIn;
+  dynamic atom Agent isHeldBy;
+}
+define entityAttributes Area{
+  dynamic set Cube hasIn;
+}
+define entityAttributes Agent{
+  static atom string type;
+  dynamic atom Cube isHolding;
+}
+\end{lstlisting}
+
 
 \subsubsection{Integration of REG within Action Planning}
 \textbf{The representation of the communication action:}
 % Scénars 
-For clarity purposes, we only place ourselves in scenarios where only the robot knows the goal of a joint task and issues command to its human partner one at a time when the human has to do an action. Thus, while planning, if a task is allocated to the human, as she has no way of guessing it, a preceding communication is required. In the HATP domain, this translates as a method being decomposed into a sequence of a communication action and an action made by the human when the task is attributed to the human. The communication action feasibility is determined by both symbolic preconditions (\textit{e.g.} the human and the robot are in the same room) and REG result (whether a solution is found or not). If the communication action is feasible, the cost of the communication action is then computed as the sum of a fixed cost depending on the type of communication and the REG solution cost depending on the human receiver and the entities to refer to in the communication.
+For clarity purposes, we only place ourselves in scenarios where only the robot knows the goal of a joint task and issues command to its human partner one at a time when the human has to do an action. Thus, while planning, if a task is allocated to the human, as she has no way of guessing it, a preceding communication is required. In the HATP domain, this translates as a method being decomposed into a sequence of a communication action (the instruction to the human) and an action made by the human when the task is attributed to the human. The communication action feasibility is determined by both symbolic preconditions (\textit{e.g.} the human and the robot are in the same room) and REG result (whether a solution is found or not). If the communication action is feasible, the cost of the communication action is then computed as the sum of a fixed cost depending on the type of communication and the REG solution cost depending on the human receiver and the entities to refer to in the communication.
 
-We have chosen here for illustration purposes a simple planning problem where a communication needing a REG is involved in each plan step, but the method is general and compatible with problems which need to  estimate and ensure the pertinent context and plan step (the \textit{when}) of a communication action during plan elaboration (\textit{e.g.} \cite{devin2016implemented}, \cite{unhelkar2020decision}).
+We have chosen here for illustration purposes a simple planning problem where a communication needing a REG is involved in each plan step concerning the human, but the method is general and compatible with problems which need to  estimate and ensure the pertinent context and plan step (the \textit{when}) of a communication action during plan elaboration (\textit{e.g.} \cite{devin2016implemented}, \cite{unhelkar2020decision}).
 
-\textbf{Maintaining the right knowledge base, at the right time:}
+\textbf{Updating the right knowledge base, at the right time:}
 % Ontology et planning KB
 On one hand, we have large, complete semantic knowledge bases on which a REG algorithm is able to run and to return the feasibility, the cost and the content of a verbal entity referring communication for a specified agent (top part of Figure~\ref{fig:integration}). On the other hand, we have reduced knowledge bases dedicated to task planning (bottom part of Figure~\ref{fig:integration}). In order to know the feasibility and cost of a verbal communication action during the planning, we have to reconcile both sides. Indeed, the estimated ontology of the communication receiver must be updated to reflect her planned estimated beliefs at the time of the communication. All the knowledge representation used here are from the robot point-of view and managed internally by the robot decisional and knowledge management processes.
 
 % Initilization, ne modifions pas l'originale, donc copie de planning
-First, the attributes of all the entities present in the planning knowledge base are initialized for each agent (left part of Figure~\ref{fig:integration}). To do so, every entity types declared in the planning domain are retrieved from the ontologies by their name, and entities inheriting from these types in the ontologies are created in the planning knowledge base. Then, each attribute (both static and dynamic) of every entities declared in the domain has its value updated. If the attribute is a set, multiple relations with the same name originating from the same entity and pointing to different ones can be found in the ontologies. If so, all the pointed entities are added to the set.
-Finally, a planning ontology is created by copy of the present one for every agent other than the robot present in the planning domain. These copies are made to avoid modifying the original ontologies during the planning process as other components may rely on them.
+First, the attributes of all the entities present in the planning knowledge base are initialized for each agent (left part of Figure~\ref{fig:integration}). To do so, the name every HATP entity types declared in the planning domain are listed. Then, for each entity type, the entities in the ontology inheriting from these types are created in the planning knowledge base. Then, each attribute (both static and dynamic) declared in the domain of every entities has its value updated. If the attribute is a \textit{set}, multiple relations with the same name originating from the same entity and pointing to different ones can be found in the ontology. If so, all the pointed entities are added to the set. If the attribute is an \textit{atom}, only one value is retrieved from the ontology and is set to the planner entity attribute. For instance, if we initialize the planning knowledge base defined in Listing~\ref{lst:hatpcubes} with the content of the ontology depicted in Figure~\ref{fig:chap3aboxtbox} and Figure~\ref{fig:chap3aboxrel} representing the situation of Figure~\ref{fig:chap3keys}, the entity types retrieved from the domain would be \textit{Agent}, \textit{Key}, \textit{Area}, the planning knowledge base would then be initialized with the entities \textit{human\_3}, \textit{pr2\_robot} as Agent; \textit{key\_1}, \textit{key\_2}, \textit{key\_3} as Key; and \textit{area\_red}, \textit{area\_white}, \textit{area\_black} as Area. Then, the attributes of \textit{key\_1} would be retrieved from the ontology and set as $isIn = area\_red$, the same process is repeated for all the other attributes. Attributes that are not in the ontology can be set in the planning domain manually.
+Finally, an ontology dedicated to the task planning process (called planning ontology) is created by copy of the present one for every agent other than the robot present in the planning domain. These copies are made to avoid modifying the original ontologies during the planning process as other components may rely on them.
 
 
 % Pendant la planif ontseules les planning KB sont updates, mais le REG tourne sur l'ontologie complète
 %During the task tree exploration (right part of Figure~\ref{fig:integration}), when a communication action needing to refer to entities is encountered, the ontology of the communication receiver needs to be updated for the REG to run on and check whether the referring is feasible and what is its cost.
 When a communication action is encountered during the task tree exploration (right part of Figure~\ref{fig:integration}), the ontology of the communication receiver needs to be updated to be able to run the REG on it.
-The planning ontology copy of the receiver human is retrieved by her identifier. Then, for each of the entities of her planned beliefs at the time of the communication, an update is made. The update is only made on dynamic attributes as static ones do not change during the planning process. All the relations having the same name as the attribute of the entity in the planning domain are deleted from the ontology, and replaced with new planned values. If the attribute is a set, a new relation with the same name is created for every value in the set.
+The planning ontology copy of the receiver human is retrieved by her identifier. Then, for each of the entities of her planned beliefs at the time of the communication, an update is made. The update is only made on \textit{dynamic} attributes as \textit{static} ones do not change during the planning process. All the relations having the same name as the attribute of the entity in the planning domain are deleted from the ontology, and replaced with new planned values. If the attribute is a \textit{set}, a new relation with the same name is created for every value in the set.
 
 A REG request is then issued on the updated ontology with the goal individual being the entity to refer. The REG returns a solution with a cost or a failure which is taken into account by the planner as classical cost or a non fulfillment of the action preconditions respectively. Alternatively, a communication action may need to refer to multiple entities. In that case, multiple REG requests are issued on the same updated ontology and their costs are summed.
 
@@ -610,27 +691,24 @@ With this approach, we are able to change the \textit{context} and \textit{usabl
 \caption{\label{fig:integration} A representation of the exploration of potential mental states and ontologies conducted by the planner. The ontology representing estimated human knowledge is first copied in order to plan it without altering the original one. The human and robot planning information is extracted from the ontologies. During the tree exploration, for each verbal communication action, the planned human ontology is updated with the current explored state and the REG is executed on it.}
 \end{figure}
 
-\unsure{Adds implementation section ? HATP, ROS, ...}
-
 \subsection{Case Studies}
 \label{sec:Case_studies}
 
 In this section, we present three case studies. The two first ones are run in simulation on a minimalist setup and show respectively that the estimation of the communication content during the planning can prevent from execution dead-end and can reduce the global communication complexity during the task. The third case study is run on a PR2 robot with a perception of its environment and presents a more complex task with twelve objects to organize. With this last case, we show that our method makes it possible to compare different means of communication and to choose the most appropriate.
 
-To realize tests in laboratory conditions, we chose to replace the keys of Figure~\ref{fig:chap3keys} with cubes (Figure~\ref{fig:chap3scen1}). Thus, all the three cases studies are based on a cube arrangement task. The human can distinguish the cubes by their color and the digit written on them (one or two) if there is one. As shown in Figure~\ref{fig:chap3keys}, the table surface is composed of three storage areas of different colors and cubes can be placed only in one of them. This position information can also be used by the human to distinguish the cubes. By this way, the robot can refer to a cube with a REG of the type: \textit{"the black cube with the number 2 which is in the black area"}. In all the cases, only the robot knows the goal position the cubes but can not manipulate them. It thus has to guide the human in the arrangement task. The robot can only point the cubes in the third case study. In the first two, he can only use verbal communication.
+To realize tests in laboratory conditions, we chose to replace the keys of Figure~\ref{fig:chap3keys} with cubes (Figure~\ref{fig:chap3scen1}). Thus, all the three cases studies are based on a cube arrangement task. The human can distinguish the cubes by their color and the digit written on them (one or two) if there is one. As in Figure~\ref{fig:chap3keys}, the table surface is composed of three storage areas of different colors and cubes can be placed only in one of them. This symbolic position information can also be used by the human to distinguish the cubes. By this way, the robot can refer to a cube with a REG of the type: \textit{"the black cube with the number 2 which is in the black area"}. In all the cases, only the robot knows the goal position of the cubes but can not manipulate them. It thus has to guide the human in the arrangement task. The robot can only point at the cubes in the third case study. In the first two, it can only use verbal communication.
 
-\subsubsection{Preventing execution dead-ends}
-\todo{Add the legend}
+\subsubsection{Preventing execution deadlocks}
 \begin{figure}[t!]
 \centering
 \includegraphics[width=\textwidth]{figures/chapter3/Chap3scen1.png}
-\caption{\label{fig:chap3scen1} Legend TODO}
+\caption{\label{fig:chap3scen1}The situation depicted in Figure~\ref{fig:chap3keys} with keys replaced with cubes to realize the setup in laboratory conditions. The human and the robot are in the situation depicted in (a). Only the robot knows the goal configuration (b) but cannot move the cube. It has to elaborate a plan in which it asks the human to move the cubes.
 \end{figure}
-In this case study, we consider the initial state presented in Figure~\ref{fig:chap3scen1}(a). The cube C1 is in the red area and the cube C2 in the black one. The goal state is to have the cube C1 in the black area and the cube C2 in the white one (Figure~\ref{fig:chap3scen1}(b)).
-Taking into account the cost and the feasibility of the communication, we found with our method the plan 1. Cube C2 is moved first because otherwise the two cubes would be in the black area at the same time. Such a situation would cause a dead-end during the execution of the plan or require another communication mean.
+In this case study, we consider the initial state presented in Figure~\ref{fig:chap3scen1}(a). The cube \textit{C1} is in the red area and the cube \textit{C2} in the black one. The goal state is to have the cube \textit{C1} in the black area and the cube \textit{C2} in the white one (Figure~\ref{fig:chap3scen1}(b)).
+Taking into account the cost and the feasibility of the communication, the planner elaborated the plan presented in Listing~\ref{list:case1}. Cube \textit{C2} is moved first because otherwise the two cubes would be in the black area at the same time. Such a situation would cause a dead-end during the execution of the plan or require another communication mean.
 
 %footnotesize
-\begin{lstlisting}[frame=single, basicstyle=\scriptsize\ttfamily, caption={\label{list:case1} The obtained plan for the first case study where cube C1 must be moved from the red to the black area and cube C2 moved from the black to the white area. The lines beginning with H represent the actions of the human and the lines beginning with HR represent actions involving the human and the robot (communication actions). In green are the REG results for each communication action.},captionpos=b, style=customPlan]
+\begin{lstlisting}[frame=single, basicstyle=\scriptsize\ttfamily, caption=The obtained plan for the first case study where cube C1 must be moved from the red to the black area and cube C2 moved from the black to the white area. The lines beginning with H represent the actions of the human and the lines beginning with HR represent actions involving the human and the robot (communication actions). In green are the REG results for each communication action.},captionpos=b, style=customPlan, label={list:case1}]
 HR - TellHumanToTake(C2) // (?0, isA, Cube), (?0, isIn, ?1), 
                          // (?1, isA, Area), (?1, hasColor, black)
 H  - Take(C2)
@@ -643,8 +721,8 @@ HR - TellHumanToPlace(C1, AB)  // (?0, isA, Area), (?0, hasColor, black)
 H  - Place(C1, AB)
 \end{lstlisting}
 
-We consider once again the initial state presented in Figure~\ref{fig:chap3scen1}(a). This time the goal is to invert the positions of the two cubes. In this situation, if the communication cost and feasibility is not taken into account during planning, both actions directly leading to the goal state (\textit{i.e.} cube C1 moved to black area or cube C2 to red area) will lead to a dead-end at plan execution.
-The solution found with our method is to add a supplementary action. It consists in putting the cube C1 away (in the white area). This additional action avoids a dead-end by making communication about cube C2 feasible.
+We consider once again the initial state presented in Figure~\ref{fig:chap3scen1}(a). This time the goal is to invert the positions of the two cubes. In this situation, if the communication cost and feasibility is not taken into account during planning, both actions directly leading to the goal state (\textit{i.e.} cube \textit{C1} moved to black area or cube \textit{C2} to red area) will lead to a deadlock at plan execution. Indeed, regardless of the first cube moved, if it is moved directly to its goal position, it will end up in the same area as another cube of the same color. In such a situation, no RE can be found for the other cube, leading to a deadlock in the execution.
+The solution found with our method is to add a supplementary action. It consists in putting the cube \textit{C1} away (in the white area). This additional action avoids a deadlock by making the referring to the cube \textit{C2} feasible.
 
 \subsubsection{Reduction of the overall communication complexity}
 
@@ -654,16 +732,16 @@ The solution found with our method is to add a supplementary action. It consists
 \caption{\label{fig:case2} The initial state (left) and the goal state (right) of a task where the robot has to explain to the human partner how to move the cubes to complete the task. }
 \end{figure}
 
-In this second case study, we show how estimation of communication by verbal designation can be used to reduce the complexity of global communication. This time we consider the initial state and the target state represented in Figure~\ref{fig:case2}. Only cubes C2 and C3 should be moved. Our method finds the solution consisting in moving cube C2 first, then cube C3. With this order, cube C2 is referred by three relations: its type (\textit{i.e.} cube), the number on it and the colored area in which it is located. After that, the cube C3 can also be referred only by three relationships being its type, its color and the colored area in which it is located. Considering the reverse order, this would have generated a more complex RE first for cube C3 with four relationships: its type, its color, the number on it and the colored area in which it is located.
-The solution chosen by our method communicates a sum of six relations rather than seven with the reverse order.
+In this second case study, we show how estimation of communication by verbal designation can be used to reduce the complexity of global communication. This time we consider the initial state and the target state represented in Figure~\ref{fig:case2}. Only cubes \textit{C2} and \textit{C3} should be moved. The extended HATP with REG capabilities finds the solution consisting in moving cube \textit{C2} first, then cube \textit{C3}. With this order, cube \textit{C2} is referred by three relations: its type (\textit{i.e.} cube), the number on it and the colored area in which it is located. After that, the cube \textit{C3} can also be referred only by three relationships being its type, its color and the colored area in which it is located. Considering the reverse order, this would have generated a more complex RE first for cube \textit{C3} with four relationships: its type, its color, the number on it and the colored area in which it is located.
+The solution chosen by HATP extended with REG capabilities communicates a sum of six relations rather than seven with the reverse order.
 
-\subsubsection{Compare with other communication means}
+\subsubsection{Balancing Between Communication Means}
 
-In this last case study, we show how the estimation of verbal designation communication cost can be used to compare it with other communication means, here pointing. Now, we consider twelve cubes. The initial state and the goal state are represented on Figure~\ref{fig:case3}. Such a number of similar objects leads to long explanations to refer to certain cubes. Therefore, we aim the task planner to choose another means of communication to refer to these cubes (\textit{e.g.} a pointing action). The pointing action has a constant cost which is higher than a simple verbal communication but lower than a complex one (with three or more relations to verbalize). To exemplify the comparison with other communication means, the arrangement order is predefined in this setup. %reduce the planning complexity and 
+In this last case study, we show how the estimation of verbal designation communication cost can be used to compare it with other communication means, here pointing. Now, we consider twelve cubes. The initial state and the goal state are represented on Figure~\ref{fig:case3}. Such a number of similar objects leads to long explanations to refer to certain cubes. Therefore, we would like to end with the task planner choosing another means of communication to refer to these cubes (\textit{e.g.} a pointing action). We model the pointing action has having a constant cost which is higher than a simple verbal referring expression but lower than a complex one (with three or more relations to verbalize). To exemplify the comparison with other communication means, the arrangement order is predefined in this setup. %reduce the planning complexity and 
 
 %For demonstration purpose, we ran HATP with unambiguous referring expression generation calls on this setup. We are not considering the order of the cube motion in this setup. The human partner can pick and place cubes only if they have been told which one and where to place them. The robot can also pick and place cubes, but the actions are much more costly to represent the slow motion of the robot and the uncertain success. Besides, the robot can verbally communicate to the human to take a cube or to place it in an area, in these cases, the referring expression generator is used to get the cost to refer to the cube or the area respectively. Finally, the robot can also designate a cube or a place by pointing at it along with saying to take it or to place the held cube there. This pointing action has a constant cost which is higher than a simple verbal communication but lower than a complex one (with three or more relations to verbalize).
 
-The execution of the computed plan can be found in the video available at \url{https://youtu.be/3YnGh\_t-UpY}. The cubes C5 and C7 are chosen to be pointed instead of verbalized. Indeed, in the world states where these cubes need to be moved, verbal referring is considered to be too costly, thus a pointing motion is preferred. For example, the cube C5 in the initial situation needs a long and complex explanation that is: \textit{"take the black cube with the number two which is in the black area"}. Even in the case the pointing action takes more execution time, it could require less cognitive load for the human partner and so make the human action faster.
+The execution of the computed plan can be found in the video available at \url{https://youtu.be/3YnGh\_t-UpY}. The cubes \textit{C5} and \textit{C7} are chosen to be pointed instead of verbalized. Indeed, in the world states where these cubes need to be moved, verbal referring is considered to be too costly, thus a pointing motion is preferred. For example, the cube \textit{C5} in the initial situation needs a long and complex explanation that is: \textit{"take the black cube with the number two which is in the black area"}. Even in the case the pointing action takes more execution time, it could be faster for the human partner to interpret and so make the human action faster.
 
 Here, we see another benefit of our approach, it allows the planner to balance between the use of verbal communication actions, which can become complex in some states (hard to predict without a task planner), and other communication modalities. %Here, balancing was done with other means of communication, but it could also be done with other actions such as a pick and place by the robot. In the task presented here, this has no advantage, because a pick and place by the robot would be slower than an explanation or a pointing and is more likely to fail.
 %Here, balancing is done with other communication mean, but can also be done other action requiring less or no communication. In our example, the robot would be slower at pick and place than explaining at or pointing to the human.
@@ -680,11 +758,11 @@ Here, verbal communication is balanced with other communication means, but it ca
 %\section{Using Past Actions in Referring Expression Generation}
 
 \section{Conclusion}
-In this chapter, we presented an approach allowing to accurately estimate the feasibility and the cost of verbal communication actions during task planning.
+In this chapter, we have presented an approach allowing to accurately estimate the feasibility and the cost of verbal communication actions containing referring expressions during task planning.
 
-First, we introduced the referring expression generation problem and proposed a formalization of it dedicated to human robot interaction scenarios. Then, we presented an efficient algorithm generating referring expression by using ontology commonly used in robotics as knowledge base.
+First, we introduced the referring expression generation problem and proposed a formalization of it dedicated to human robot interaction scenarios. Then, we presented an efficient algorithm generating referring expression by using an ontology as a knowledge base.
 
-Finally, we integrated this approach into a task planner, allowing it to resolve the content of such verbal communication when needed. By doing so, the planner can check if communication can be done in the planned world state, and it can plan different order or sequence of action depending on the communication estimation.
+Finally, we integrated this algorithm into a task planner HATP, allowing it to resolve the content of such verbal communication when needed. With this extended version of HATP enhanced with REG capabilities, the planner can check if communication can be done in the planned world state, and it can plan different order or sequence of action depending on the communication estimation.
 
 However, even if HATP is able to maintain one belief base per agent during the planning process, it only allocates task between agents (considering the capability of each one) but does not ensure that the generated plan is known to the human nor that they have every piece of information needed to accomplish the task. Moreover, we do not take into account that the human might also plan for their own goal (which may or may not be shared with the robot). 
 We propose to extend this approach by not only planning for the robot and the human, but instead planning for the robot and emulating the action, reaction and planning processes of the human the robot is interacting with.
