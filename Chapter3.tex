@@ -28,7 +28,6 @@ These questions can boil down to \textit{what} and \textit{when} to communicate 
 Similarly, the content of a communication will not be the same depending on when it is done. The evolving world state along the plan execution will change the way to refer to an object. Some other objects can be added or removed as the task progresses. Some communications will be crucial for the plan at certain point while others appearing to be needed will reveal to be optional. Thus, we also need to the \textit{when} to communicate to know \textit{what} will be communicated.
 
 \subsection{Example}
-\todo{caption}
 \begin{figure}[hbtp]
 \centering
 \includegraphics[scale=0.3]{figures/chapter3/Chap3illustrative.png}
@@ -180,8 +179,15 @@ Finally, we want to be able to estimate and reason on the human beliefs. To do s
 
 % Content of the ontology
 \paragraph{The content of the ontology in HRI}
-\todo{Complete !}
-The content of the ontology should be carefully chosen for HRI. In our architecture, the content of the robot ontology can be decomposed in three parts. First, 
+The content of the ontology should be carefully chosen for HRI. In our architecture, the content of the robot ontology can be decomposed in three parts (usually not exclusive). 
+
+First, there are the classes and properties used for consistency and to reason on the represented world state. They correspond for example to the inheritance of properties, disjoint classes, inverse properties. 
+
+Then, some classes and properties are dedicated to the "programming" of the robot. They allow to abstract some facts in the knowledge base in such a manner that other components can easily access the data they need. For example, the \textit{Container} and \textit{Support} classes can be used by a task planner to easily retrieve objects in the environment that can contain other objects or on which other objects can be placed. Another example can be the \textit{hasMesh} property, allowing the components of the architecture (\textit{e.g.} motion planner, situation assessment) to share the same geometrical model of an entity.
+
+Finally, some classes and properties are more HRI oriented as they allow to make the interface between the robot knowledge representation and the human. They allow to verbally communicate about entities, to understand situated dialog or to draw the scene for example. They include the classes such as \textit{Cube}, \textit{Key}, \textit{Color} and properties such as the label of entities or \textit{hasColor}.
+
+It is clear that some of the knowledge does not intend to bu communicated to the human, however it can still be in their estimated ontology. For example the \textit{hasMesh} property cannot be verbally communicated but is in the human estimated ontology as it allows to represent how the human may perceive an object, and allow for perspective taking.
 
 
 \subsection{REG feature for communication action estimation during task planning}
@@ -226,14 +232,14 @@ The referring expression generation (REG) problem is a tuple $\regproblem = \lan
 It is important to note that the knowledge base we use is the hearer's one. Indeed, for the referring expression to make sense, we need to ensure that all the types and attributes used are known to the hearer. We see here that such a problem requires the robot to perform perspective taking.
 
 A solution to the REG problem is a set of relations (the attribute of object, their relations between them and their type) which could be verbalized afterwards. We define more precisely what must be a solution to the REG problem.
-Because some entities (actually the vast majority) are \textit{not} labeled (anonymous,) and thus cannot be referred to directly (their id \textit{e.g.} \textit{key\_1} is only an internal identifier, and does not make any sense for the human), some of the relations might be under-specified. For instance in Figure~\ref{fig:chap3keys}, the sentence ``the black key'' is under-specified in that ``the key'' does not identify a unique entity but any entity with the class ``key''.
-In addition, it might be the case that a unique, anonymous, entity participates in more than one relation, e.g., ``the black key on the table''. 
-To keep track of anonymous entities in underspecified relations, we introduce a variable set $X$, representing the anonymous entities, just as in \sparql{} queries. Again, we choose a syntax where variables will be prefixed with a question mark (e.g. $?y \in X$).
-An underspecified relation is thus a triplet $(s, p, o) \in (X \cup \indivset) \times \usablepropset \times (X \cup \indivset)$, e.g., \textit{(?y, hasColor, black)} where $?y \in X$ is a variable and $black \in A$ is a labeled entity in the knowledge base.
+Because some entities (actually the vast majority) are \textit{not} labeled (anonymous,) and thus cannot be referred to directly (their id \textit{e.g.} \textit{key\_1} is only an internal identifier, and does not make any sense for the human), some of the relations might be under-specified. For instance in Figure~\ref{fig:chap3keys}, the sentence ``the black key'' is under-specified in that ``the key'' does not identify a unique entity but any entity with the class \textit{Key}.
+In addition, it might be the case that a unique, anonymous, entity participates in more than one relation, \textit{e.g.} ``the black key on the table''. 
+To keep track of anonymous entities in underspecified relations, we introduce a variable set $X$, representing the anonymous entities, just as in \sparql{} queries. Again, we choose a syntax where variables will be prefixed with a question mark (\textit{e.g.} $?y \in X$).
+An underspecified relation is thus a triplet $(s, p, o) \in (X \cup \indivset) \times \usablepropset \times (X \cup \indivset)$, \textit{e.g.} \textit{(?y, hasColor, black)} where $?y \in X$ is a variable and $black \in A$ is a labeled entity in the knowledge base.
 
 
-When speaking about anonymous entities, one must know its type to serve as a placeholder in sentences (e.g. "the pen").
-Thus, the solution should associate each variable and a type (previously denoted as "isA" relations). For simplicity, we chose to represent them also as triplets: $X \times "isA" \times T$ (e.g. \textit{(?y, isA, Cube)}). 
+When speaking about anonymous entities, one must know its type to serve as a placeholder in sentences (\textit{e.g.} "the pen").
+Thus, the solution should associate each variable and a type (previously denoted as "isA" relations). For simplicity, we chose to represent them also as triplets: $X \times "isA" \times T$ (\textit{e.g.} \textit{(?y, isA, Cube)}). 
 
 \begin{definition}[Reference]
 \label{def:reference}
@@ -455,7 +461,7 @@ The $\harddiff$ (resp. $\softdiff$) operator returns all the relations that are 
 The \textsc{TypingTransitions} function (Algorithm~\ref{alg:typingtrans}) stops at the first entity which has no label nor type. This specificity reduces the branching factor while ensuring that each entity has a label or at least a type. Since typing actions are the first tested in the \textsc{GetTransitions} function, all entities not typed during a first execution will be during the next ones. In the implementation, this function has been optimized by observing that once all the entities from the context are typed, the only entities in $\mathcal{T}_{\node}$ which may be be not typed are added as the \textit{object} of a \textsc{DifferenceTransitions}. Thus, by storing the object entity of a transition and only checking if it is labeled or has already been typed (and is thus present in $A_{\node}$) we reduce the complexity of the \textsc{TypingTransitions} function.
 
 \textbf{\textsc{UsableClass}:}
-The function \textsc{UsableClasses} returns the most specific \textit{labeled} classes of an entity $\indiv$, i.e., the set of classes $t \in \classset$ such that $(\indiv, t) \in C$, $\class$ is labeled and there are no labeled subclasses of $t$.
+The function \textsc{UsableClasses} returns the most specific \textit{labeled} classes of an entity $\indiv$, \textit{i.e.} the set of classes $t \in \classset$ such that $(\indiv, t) \in C$, $\class$ is labeled and there are no labeled subclasses of $t$.
 
 This strategy differs from the one of \cite{dale1995computational} that prefers the least specific types (so called basic-level classes).
 However, in domain-independent knowledge bases such as ours their scheme could often result to "Object" or "Thing" which can lead to confusion.
@@ -702,13 +708,13 @@ To realize tests in laboratory conditions, we chose to replace the keys of Figur
 \begin{figure}[t!]
 \centering
 \includegraphics[width=\textwidth]{figures/chapter3/Chap3scen1.png}
-\caption{\label{fig:chap3scen1}The situation depicted in Figure~\ref{fig:chap3keys} with keys replaced with cubes to realize the setup in laboratory conditions. The human and the robot are in the situation depicted in (a). Only the robot knows the goal configuration (b) but cannot move the cube. It has to elaborate a plan in which it asks the human to move the cubes.
+\caption{\label{fig:chap3scen1}The situation depicted in Figure~\ref{fig:chap3keys} with keys replaced with cubes to realize the setup in laboratory conditions. The human and the robot are in the situation depicted in (a). Only the robot knows the goal configuration (b) but cannot move the cube. It has to elaborate a plan in which it asks the human to move the cubes.}
 \end{figure}
 In this case study, we consider the initial state presented in Figure~\ref{fig:chap3scen1}(a). The cube \textit{C1} is in the red area and the cube \textit{C2} in the black one. The goal state is to have the cube \textit{C1} in the black area and the cube \textit{C2} in the white one (Figure~\ref{fig:chap3scen1}(b)).
 Taking into account the cost and the feasibility of the communication, the planner elaborated the plan presented in Listing~\ref{list:case1}. Cube \textit{C2} is moved first because otherwise the two cubes would be in the black area at the same time. Such a situation would cause a dead-end during the execution of the plan or require another communication mean.
 
 %footnotesize
-\begin{lstlisting}[frame=single, basicstyle=\scriptsize\ttfamily, caption=The obtained plan for the first case study where cube C1 must be moved from the red to the black area and cube C2 moved from the black to the white area. The lines beginning with H represent the actions of the human and the lines beginning with HR represent actions involving the human and the robot (communication actions). In green are the REG results for each communication action.},captionpos=b, style=customPlan, label={list:case1}]
+\begin{lstlisting}[frame=single, basicstyle=\scriptsize\ttfamily, caption={The obtained plan for the first case study where cube C1 must be moved from the red to the black area and cube C2 moved from the black to the white area. The lines beginning with H represent the actions of the human and the lines beginning with HR represent actions involving the human and the robot (communication actions). In green are the REG results for each communication action.},captionpos=b, style=customPlan, label={list:case1}]
 HR - TellHumanToTake(C2) // (?0, isA, Cube), (?0, isIn, ?1), 
                          // (?1, isA, Area), (?1, hasColor, black)
 H  - Take(C2)
