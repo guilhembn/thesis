@@ -11,6 +11,7 @@
 
 \chapter{Emulating the human decision action and processes during task planning}
 \label{chapter:doublehtn}
+\chaptermark{Planning accounting for human decisions}
 \minitoc
 
 \section{Introduction}
@@ -592,7 +593,7 @@ The model of the human primitive tasks are:
 \item \verb'put_coffee_in_machine' as defined for the robot.
 \end{itemize}
 
-The initial conditions are the same as presented before, but we also add that the kitchen cupboard contains coffee in the human beliefs. In addition to the two plans where the robot does not seek help to the human (Figure~\ref{fig:chap4coffeesimple}(a) and (b)), another valid plan is found. This plan is presented in Figure~\ref{fig:chap4coffeecoopnodivergence}. This conditional plan has two alternatives, depending on the initiative taken by the human.
+The initial conditions are the same as presented before, but we also add that the kitchen cupboard contains coffee in the human beliefs. In addition to the two plans where the robot does not seek human help (Figure~\ref{fig:chap4coffeesimplerobotonly}(a) and (b)), another valid plan is found. This plan is presented in Figure~\ref{fig:chap4coffeecoopnodivergence}. This conditional plan has two alternatives, depending on the initiative taken by the human.
 
 Moreover, we see how recursive abstract tasks are used to reevaluate the agents state later in the plan to adapt for the other agent planned actions. However, recursions in abstract task usually breaks the semantic of the returned plan hierarchy and can prevent (or alter) their communication or storing. We envision in the future to allow to flag some abstract tasks as iterative to decouple their exploration from the returned plan hierarchy.
 
