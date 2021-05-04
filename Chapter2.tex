@@ -9,7 +9,7 @@
 \faketableofcontents
 \fi
 
-\chapter{Coplanning for navigation}
+\chapter{Coplanning for Navigation}
 \label{chapter:navigation}
 \minitoc
 
@@ -36,7 +36,7 @@ Although, even if the robot computes an optimal solution for the human and itsel
 
 In a broader sense, the changes in an agent's own behavior in order to make easier the interaction with another agent are called coordination smoothers \cite{vesper_minimal_2010}. Actually, Vesper \textit{et al.} identify two types of coordination smoothers: either slight changes in an agent behavior --- called behavior modulations --- to ease the coordination or the use of special objects of which affordances invite to coordination. In the case of navigation, we are interested in the former as no objects are manipulated in our examples. They define four types of behavior modulation. First, modulation making the behavior more predictable, by reducing the variation of a repetitive motion for instance. Then, they identify modulation delimiting and structuring the other agent tasks. Executing motions staying far away from the human allows to delimit both workspaces. Another type is coordination signal, this include legible motions allowing to infer the goal quicker. Finally, synchronization is also identified as a coordination smoother. Copying and synchronizing motions between agents allow for a increased predictability. It is clear that a robot should exhibit some coordination smoothers when interacting with a human to increase its usability. Moreover, all the coordination smoothers are not equal, as some can bring more information than others. A simple blinking light and beeping sound when the robot is moving are conveying less information than turn signals for example. In our case, since we deal with anthropomorphic robots, we can try to make even more efficient coordination smoothers by using what can be identified as the head of the robot.
 
-\subsection{Communicating Intents Via the Robot Gaze}
+\subsection{Communicating Intents via the Robot Gaze}
 Some robots have a movable part which can be identified as an head, and often contains camera or similar devices that can be recognized as eyes. the resulting robot \textit{gaze} has already been used to effectively increase the user attention and engagement \cite{mutlu_storytelling_2006}, \cite{zaraki_designing_2014}. Besides, it can be used to show what the robot is attentive to and what it is monitoring \cite{breazeal2005effects}. Moreover, the robot gaze has also been shown useful in navigation to indicate turning intentions \cite{lu_towards_2013}, \cite{may_show_2015}, and thus increase legibility. More precisely, May \textit{et al.} compares two navigation intention signals during a crossing with a human: the head motion and a blinking light on the side the robot planned to move to. They find that turning signals are more effective and that the human is more comfortable when the robot uses them compared to head motion. However, we argue that their experimental setup does not require precise turning indication, as the area in which the human and the robot cross is wide, and only showing roughly if the robot is going left or right is enough to ease the crossing. This may not be true in cluttered environment where showing more precisely the planned trajectory is required. 
 
 On the other hand, Lu and Smart propose a gaze behavior where the robot alternatively cycles between looking straight ahead and looking at a detected human \cite{lu_towards_2013}. They performed a user study where the human and the robot cross each other in a narrow corridor. The study reveals that when the robot gaze is alternating between the human and ahead of the robot, the crossing is less efficient (\textit{i.e.} the human goes slower) than if the robot gaze is only straight ahead. They hypothesize that the head behavior was distracting as it may have stayed on the human for too long, which may have been interpreted by the human as an intent to start an interaction. This is supported by the definition of \textit{civil inattention} coined by Goffman specifying that eye contacts made between strangers to manifest their mutual awareness of their presence are kept under a certain duration to avoid opening a possibility of further interaction \cite{goffman_behavior_1966}.
@@ -54,7 +54,7 @@ The only work to our knowledge being able to, in real time, plan trajectories fo
 
 The idea of HATEB is to not only plan a trajectory for the robot while accounting for the current position of humans, but also planning a trajectory for the human. Using an elastic band optimization scheme, the planner is able in real time to generate a trajectory for the robot and a trajectory for the human. By doing so, the planner is able to find solutions where both agents must make an effort, whereas other approaches only planning for the robot would fail. Moreover, it allows to express constraints between the trajectory of the robot and the trajectory of the human, not only considering the human as static or moving linearly but also accounting for their decision capabilities (provided with an accurate enough human model). Finally, by planning for the human, the robot can compute the effort taken by the human (\textit{e.g.} trajectory length and threat induced by the robot) and try to minimize it by balancing between multiple solutions.
 
-\subsection{General scheme}
+\subsection{General Scheme}
 The human aware timed elastic band algorithm is based on the timed elastic band (TEB) approach from Rosmann et al. \cite{rosmann_efficient_2013}. This approach is a local optimization problem where the successive positions $(x_i, y_i) \in \realset$ and orientations $\theta_i \in S^1$ of the robot along with the time steps $\Delta T_i \in \realset$ between each consecutive poses are optimized to minimize a multi criteria cost function up to a fixed length horizon $n \in \intset$. To put it otherwise, the elastic band trajectory of the robot is represented by its poses: 
 \[Q = \{\textbf{s}_i\}_{i=0..n} with \textbf{s}_i = [x_i, y_i, \theta_i]^T\] to which are added the time intervals between two consecutive poses: \[\tau = {\Delta T_i}_{i=0..n-1}\] Resulting in the \textit{time elastic band} \[B := (Q, \tau)\] having to be optimized to minimize the cost function $f(B)$ to get the optimal trajectory \[B^* = \mathop{\mathrm{argmin}}_B\,f(B)\]
 This function takes the form of a multi criteria weighted sum cost function which can be rewritten as: \[ f(B) = \sum_{k} \gamma_k f_k(B) \] where $\gamma_k \in \realset$ are weights allowing the designer to balance the importance between cost functions $f_k$.
@@ -100,13 +100,13 @@ It is worth noting that different weights can be set for each constraint, and th
 
 In what follows we want to use this approach to study if planning for both agents can allow to make more proactive and more legible robot trajectories and if in turn this would result in a more efficient and satisfactory navigation for the human. We hypothesize that such an approach is required in intricate navigation scenarios where human and robot must cooperate to navigate successfully. This is the case in confined locations.
 
-\section[Evaluation Through a User Study]{Evaluating enhanced mutual manifestness in a crossing scenario}
+\section[Evaluation Through a User Study]{Evaluating Enhanced Mutual Manifestness in a Crossing Scenario}
 
 The user study reported in this section has been made realized with Nathan Compan intern in psychology at the CLLE laboratory (University of Toulouse Jean Jaurès), Lo\"ic Caroux associate professor in cognitive ergonomics at the CLLE laboratory and Ophélie Carreras associate professor in cognitive psychology at the CLLE laboratory. A journal article has been submitted and is currently under review for the \textit{IEEE Transactions on Human-Machine Systems Journal}.
 
 In this section we present a user study aiming at assessing the pertinence of using a conavigation planner in a situation where a human and a robot must cross each other in a narrow corridor. This task of crossing in narrow corridor is challenging as both agents start in the center of either end of the corridor, and there is no way for one agent to find a way if the other agent does not move to the other side. Thus, we state that not only coplanning is required to find a plan reaching the other end of the corridor (by planning that the other agent will also cooperate and move on one side), but showing intentions and awareness of the other agent is crucial for the interaction to unfold without trouble.
 
-\subsection{Robot behavior design}
+\subsection{Robot Behavior Design}
 For this user study we were particularly interested in finding if and how navigation coplanning would lead to higher mutual manifestness and to higher efficiency in crossing.
 To do so, we designed a robot behavior using the HATEB navigation planner.
 In their work Kambhaita et al. showed that during a narrow crossing the robot is able to plan that the human and the robot will choose opposite sides of the corridor. But if the robot shows its plan when it faces the human, they would have little time to react, and might also move to the same side as the robot, needing negotiation and replanning, reducing the overall efficiency of the crossing. The robot must thus, indicate the plan (\textit{i.e.} the planned trajectory, or here, the side of the corridor it plans to take) early enough in the crossing.
@@ -136,7 +136,7 @@ Moreover, as stated before several papers show that using the \textit{head} of a
 \label{fig:head_gaze_behavior}
 \end{figure}
 
-\subsection{User study protocol}
+\subsection{User Study Protocol}
 
 \subsubsection{Objective}
 The aim of this study was to evaluate the impact of the TTC cost constraint and head behavior on usability. We designed a user study where actual individuals have to walk through a corridor facing a fully autonomous navigating robot. The afore-explained robot behavior was used. We measured the quality of the crossing between the robot and the human with both objective (visual behavior) and subjective data. The subjective evaluation was based on three dimensions: (1) perceived efficiency of the robot navigation, (2) user satisfaction and (3) situation awareness.
@@ -169,7 +169,7 @@ Three questionnaires and an interview were used to collect the subjective measur
 \end{itemize}
 
 
-\subsubsection{Experimental design}
+\subsubsection{Experimental Design}
 The user study was a 2 $\times$ 2 within-participants user study to evaluate how the time-to-collision constraint and the head behavior impact the robot navigation effectiveness efficiency and satisfaction. The independent variables were the HATEB time-to-collision cost parameters (both weight and threshold) and the head behavior. The conditions for the time-to-collision variable were $\gamma_{ttc} = 0.01$ (in Equation~\ref{eq:hateb_obj_function}) with $\tau = 1s$ (in Equation~\ref{eq:ttc})  for the \textit{low TTC} condition and $\gamma_{ttc} = 15$ (in Equation~\ref{eq:hateb_obj_function}) with $\tau = 4s$ (in Equation~\ref{eq:ttc}) for the \textit{high TTC} condition. For the both \textit{continuous} and \textit{alternated} head behavior conditions the robot head was pointing towards the robot planned position in 1.5s in the future at 1m above the ground. In addition, in the \textit{alternated} head behavior, the robot pointed its head towards the human when they entered the long part of the corridor during 1.5s and again during 1.2s when the robot and human were 3.5m apart. The conditions \textit{low TTC} with \textit{continuous} head behavior and \textit{high TTC} with \textit{alternated} head behavior are presented in Figure~\ref{fig:realttc} (a) and (b) respectively.
 
 \begin{figure}[hbtp]
@@ -181,7 +181,7 @@ The user study was a 2 $\times$ 2 within-participants user study to evaluate how
 
 The participant goal position was marked with a square on the ground, and was the starting point of the robot. The robot final position was 10m straight ahead of its starting position. So, the participant was able to reach their natural walking speed before turning at the corner of the L shaped corridor. The robot was only started when the participant was about to turn (2m before the turn), giving the impression that the robot was coming from further away while ensuring that the crossing happened around the same place independently of the participant walking speed.
 
-\subsubsection{Study procedure}
+\subsubsection{Study Procedure}
 The evaluation was cut into 4 blocks. A block consisted in two same condition crossing followed by questionnaires filling. A crossing was composed by the placement of the participant and the robot on their respective starting positions, then the participant was free to go to their previously indicated goal location while crossing the robot. The three questionnaires were filled next to the participant starting location and were concerning only the two crossings made in the current block. The 4 conditions order were randomized between participants and the condition change was made between two block but never between the two crossings inside the same block.
 
 Before starting the experiment trials, a training trial was made with the robot starting shifted to one side of the corridor and going in straight line with its head fixed looking straight. Just after this training trial, the participant was brought close to the robot and invited to inspect it. A specific head behavior was triggered making the robot head to follow the human allowing the participant to notice without being told that the robot was able to know their position and that its head could move. Moreover, the experimenter showed that robot arms were locked in place in a tucked position, and that they kept the emergency stop remote and was able to stop the robot at any time.
@@ -221,7 +221,7 @@ Prior to the experiment, the participants were asked to fill a questionnaire inq
 \end{enumerate}
 
 \subsection{Results}
-\subsection{Quantitative results}
+\subsection{Quantitative Results}
 During the crossing almost all participants (95\%) went to their left (thus, letting the robot go to their right) because the experimental setup led them to do so as the interview revealed. The robot also planned that the optimal path (given the constraints described above) was to go to the right of the human. Participants who went to their right stated they were ``testing'' the robot, thus not respecting the given goal (which was to go to the marked goal and not to test the robot). These trials have been removed from the data.
 
 \subsubsection{Pertinence of Robot Decision In joinT Action}
@@ -234,7 +234,7 @@ The mean score of the hedonic qualities dimension was higher with an alternating
 
 There was not any significant effect of TTC on hedonic qualities (\textit{F}(1,26) = 3.25, \textit{p} = .08), on pragmatic qualities (\textit{F}(1,26) = 2.97, \textit{p} = .10), and on attractiveness neither (\textit{F}(1,26) = 0.37, \textit{p} = .55). No interaction between TTC and head behaviors reached significance.
 
-\subsubsection{Situation awareness}
+\subsubsection{Situation Awareness}
 The mean score of global situation awareness was significantly higher with an alternating head behavior (\textit{M} = 4.64, \textit{SD} = 0.98), than with a continuous one (\textit{M} = 4.33, \textit{SD} = 1.12), \textit{F}(1,26) = 7.77, \textit{p} < .01, $\eta_{p}^{2}$ = .23.
 
 The mean scores of all the three dimensions of situation awareness were higher with an alternating head behavior than with a continuous one. Perception was significantly higher with an alternating head behavior (\textit{M} = 4.60, \textit{SD} = 1.08), than with a continuous one (\textit{M} = 4.15, SD = 1.29), \textit{F}(1,26) = 8.20, \textit{p} < .01, $\eta_{p}^{2}$ = .24. Comprehension was higher with an alternating head behavior (\textit{M} = 4.64, \textit{SD} = 1.05), than on a continuous one (\textit{M} = 4.36, \textit{SD} = 1.14), \textit{F}(1,26) = 5.99, \textit{p} < .05, $\eta_{p}^{2}$ = .19. Projection was higher (strong tendency) with an alternating head behavior (\textit{M} = 4.67, \textit{SD} = 0.96), than on a continuous one (\textit{M} = 4.47, \textit{SD} = 1.16), \textit{F}(1,26) = 3.52, \textit{p} = .07, $\eta_{p}^{2}$ = .12.
@@ -281,7 +281,7 @@ There was not any significant effect of the robot head behaviors on the mean num
 The ANOVA for the mean duration of eye fixations was not possible due to an absence of data in some experimental conditions.
 \end{itemize}
 
-\subsection{Qualitative results}
+\subsection{Qualitative Results}
 All the participants saw differences between blocks, 19 of them saw head behavior differences and 10 of them saw trajectory differences. When the participant talked about the alternated head behavior, positive adjectives were employed (``reassuring'', ``sympathetic'', ``interactive''\footnote{``sécurisant'', ``sympathique'', ``interactif'' in French}), when they talked about the continuous head behavior, negative adjectives were employed (``unsettling''\footnote{``troublant'' in French}).
 
 After the experimenter revealed that the robot behavior was different in each block, the participants preferred when the robot was ``moving its head'' (12 participants). Five participants also preferred when the robot changes its direction long before they cross. Participants did not appreciate when the robot kept a ``fixed head'' because they thought the robot was not aware of them (8 participants), when the robot was ``hesitating'' (4 participants) and when it came ``too close'' (4 participants).
@@ -318,30 +318,30 @@ In some HRI studies, a questionnaire is administered before the interaction task
 
 Finally, HRI studies have frequently few participants. For example, about 44\% of user studies published in the proceedings of the conference HRI'17 involve fewer than 30 participants. However, the size of the sample is a prerequisite for obtaining sufficient statistical power to conclude on the results obtained, and to avoid type I errors (false positive) or type II (false negative). Beyond the statistical issues, it seems important to be modest about the conclusions drawn from studies involving too few participants, and therefore not to generalize to the population the results obtained.
 
-\subsection*{The particular case of web studies}
+\subsection*{The Particular Case of Web Studies}
 
 To respond to this difficulty and have a large number of participants, it is now frequent to be confronted to web studies (as in \cite{khambhaita_head-body_2016}), especially via the crowdsourcing web platform Amazon Mechanical Turk. Indeed, it is then much easier to recruit participants and have them take small tasks or questionnaires directly online. It seems however important to be vigilant on the study conclusions, since we are not in a context of human-robot interaction in its strictest sense; the participant is not confronted to the robot, does not share its physical space, and therefore will not have the same reactions that he would have during an interaction in the real world. Nevertheless, it could be an interesting tool for participatory design studies, \textit{i.e.} all the studies that do not deal with a fully implemented robot that must be evaluated but rather that serve to explore the responses of users to certain specific behaviors and to collect their opinion. 
 
-\section{Evaluation methods}
+\section{Evaluation Methods}
 \label{sec:evaluation}
 
 The key concept in HCI is usability, which regroups effectiveness (ability to perform a task), efficiency (ability to perform the task without wasting resources) and satisfaction. More often than not, HRI user studies focus on user satisfaction (and \textit{acceptability}) evaluated with questionnaires created or adapted specifically for this context of interaction or borrowed from HCI. Even if HRI studies join the field of Human-Computer Interaction and user experience design by the fact that they are both trying to improve the human use of interactive systems, it is a hugely different experience to interact either with a robot or a computer. We must not forget that in the case of HRI studies, there are two agents that interact and no longer an agent that interacts with a product/an interface. Therefore, the methods and tools of HCI are not always suitable to be used during a situation of interaction between a human agent and a robotic agent. First of all, people tend to attribute mental states and human traits to robots. This human tendency to anthropomorphism is not only dedicated to robots but also animals, objects or natural phenomenon. However, robots are more perceived as an agent endowed with lifelike qualities than other technologies. 
 In addition, the perceived risks to evolve in the same environment as a robot are obviously not the same than when we use computers or other technologies, and can induce negative emotions or feeling of insecurity \cite{dautenhahn2006may}. 
 Thus, these particularities in the subjective experience of interacting with a robot has to be considered in the build of experimental and evaluation tools.
 
-\subsection{Use of self-assessment methods}
+\subsection{Use of Self-Assessment Methods}
 
 Although the simplest and most widespread evaluation method in HRI studies is the self-assessment method with questionnaires, it is necessary to understand that there may be a significant difference between what subjects self-report of their own experience and what they really experienced and felt, for example because of the social desirability bias \cite{fisher1993social}. In addition, there are very few questionnaires created for HRI studies that meet the validity and standardization criteria of these methods. Indeed to be validated, a questionnaire must be reliable and consistent, \textit{i.e.} the results must be replicate in comparable situations; it must be valid, that is to say it actually measures what it is supposed to and not another dimension; and finally, it must be sensitive to change. More often than not, HRI questionnaires are simply evaluated on their internal consistency (all the items from one dimension are correlated to each other) with Cronbach's alpha. However, to valid that the questionnaire measures the construct of interest, it would be important to use on a pilot study another method of evaluation for this same construct and use correlation matrices between them \cite{tsang2017guidelines}. 
 
 Finally, it is common to see questionnaires used in another language. However, if a questionnaire is created in a specific language it has to be used only in that language. It is therefore absolutely necessary when using a questionnaire from another language to use the back translation method (\textit{i.e.} translate back into the original language the questionnaire previously translated into the target language). In addition, the questionnaire once translated must imperatively be validated following the same rules as an original questionnaire, to ensure that the translated version measure the exact same construct at the original, as it was the case for example for the French translation of the UX questionnaire AttrakDiff \cite{lallemand_creation_2015}.
 
-\subsection{Other evaluation methods for acceptability}
+\subsection{Other Evaluation Methods for Acceptability}
 
 Including heart rates, brain or skeletal muscles electrical activity, blood pressure, respiratory frequency or even galvanic skin responses, there are a number of different physiological measures that can be used to evaluate the participant's physiological response in touch with a robot. These evaluation methods have the advantage of being able to prevent participants from consciously modifying their answers, as this is the case with self-assessment measures.
 
 In interaction situations and even more in cooperative situations, taking social signals into account may also be useful for assessing the human ability to accept to engage into a task with a robotic partner. Behavior observation techniques are for example used to measure shared gazes, in particular with video recording and eye tracking \cite{gharbi2015toward}.
 
-\subsection{Evaluate efficiency and effectiveness in human-robot interaction}
+\subsection{Evaluate Efficiency and Effectiveness in Human-Robot Interaction}
 But what is the point of making a robot behavior satisfying but useless? 
 Once more, tools exist in HCI to measure the other components of usability but are not always adapted to HRI studies. For example, freeze-probe techniques are frequently used in the case of evaluating the situation awareness (\textit{i.e.} the perception, comprehension and projection of elements in the environment \cite{endsley_design_1988}). They consist of freezing the task in progress and administrating a questionnaire about the situation at the exact moment of the freeze point \cite{salmon2006situation}. Such a device, mostly developed for use in the aviation or military domain, is a real challenge and almost impossible to apply in HRI, since we are in the case of a real-world physical interaction with a robotic agent and we can not just make the robot disappear.
 
@@ -352,7 +352,7 @@ Moreover, adding efficiency/effectiveness measurements in a study can be pretty 
 
 Whether it concerns the evaluation of acceptability or efficiency and effectiveness in human-robot interactions, a more frequent use of objective measures (\textit{e.g.} physiological or task performance measures) could improve the validity of the results of HRI studies and their methodological rigor. These different techniques must still be consistent with each other in their use in a user study, this recommendation is not always feasible but should be taken into account when establishing the methodological plan.
 
-\section{The replication crisis in HRI}
+\section{The Replication Crisis in HRI}
 \label{sec:replication}
 
 Replication of results is an important concept for any discipline following the scientific approach; it is a question of repeating a study to determine if the results are reproducible and therefore reliable. Psychology and more generally social and medical sciences have known since the 2000s what is called the replication crisis.
@@ -379,7 +379,7 @@ By taking all those issues and solutions coming from different fields we might p
 \section{Extending HATEB}
 Closing this general parenthesis about user studies in HRI, we continue on the HATEB navigation planner development. Having shown that providing co-navigation solution using HATEB can effectively be used to enhance the efficiency of the interaction, we will present in this section the different extensions made to HATEB.
 
-\subsection{Adapting HATEB to other robots}
+\subsection{Adapting HATEB to Other Robots}
 Khambhaita et al. \cite{khambhaita_head-body_2016} successfully used HATEB on a PR2 robot, both in simulation and on the real platform. As the approach is general, we implemented it on other robots.
 
 \subsubsection{Using HATEB on a Legged Humanoid Robot}
@@ -404,7 +404,7 @@ However, using HATEB we constraining even more the motion of the legged robot. I
 
 This preliminary work not only shows the versatility of the approach, but also that planning for both can be useful for a constrained robot. Indeed, with a slow dynamic robot, a classical navigation planner may find no solution to avoid an approaching human, but by planning that the human can make a great effort to avoid the robot, it can generate a trajectory for the robot that elicit a plan for the human to follow.
 
-\subsubsection{An experiment with the Pepper robot for close human robot motions}
+\subsubsection{An Experiment With the Pepper Robot for Close Human Robot Motions}
 The European project MuMMER\footnote{\url{http://mummer-project.eu/}} aimed at deploying a Pepper robot in a shopping mall in Finland to entertain and guide customers \cite{foster2019mummer}. The project regrouped seven different stakeholders bringing their knowledge to the project. The LAAS-CNRS goal was to make the guide task. However, in order to serve the most customers possible and to cope with large navigation issues of the Pepper platform, we choose not to go with the customer all the way to the asked shop, but instead, as the mall employees usually do, give directions to the customer to help them find the requested shop. We call this more precise task \textit{route description}.
 However, giving only verbal instructions concerning the route is not sufficient, we chose to make the robot point the shop, if it is visible from the current position, or point its direction and the first visible element of the route otherwise.
 
@@ -434,7 +434,7 @@ It has thus been decided in the project to not use HATEB, but simply an holonomi
 
 This allowed to point out some of the limitations of HATEB, it performs poorly for small, intricate displacements. This led to the creation of HATEB2 \cite{singamaneni2020hateb}, which is able to switch online between the HATEB planner, the TEB planner with social constraints or a velocity obstacle planner. Moreover, tracking the human position was really challenging. Indeed, we were provided with a human detection system based on the head mounted camera which presented two drawbacks. First, when the robot was moving, the picture was blurred, preventing any human detection. Then, as the robot and the human were moving to the planned pointing position, the human disappeared from the robot field of view. Because of these tracking problems, any navigation scheme using social constraints (based on human position) revealed hard to use.
 
-\subsection{Using the estimated time to goal to measure the execution of the planned trajectory}
+\subsection{Using the Estimated Time to Goal to Measure the Execution of the Planned Trajectory}
 
 Another benefit of the HATEB approach is that it does not only compute speed command to follow a global plan while avoiding obstacles like other classic local planner, but also returns a complete short term trajectory for both the robot and the human. Moreover, as the trajectories contains the expected duration between each pose, simply by summing them, we can have an estimate of the time remaining to execute the local trajectories. Besides, we also compute the estimated time remaining for the global trajectories after the local ones by dividing the computed speed at the last local trajectory pose by its length. By summing these two estimated remaining times, we can have a estimation of the remaining navigation time (the time to goals) for all the considered agents.
 

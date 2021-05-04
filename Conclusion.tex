@@ -23,7 +23,7 @@ In Chapter~\ref{chapter:doublehtn} we propose a new task planning scheme enrichi
 
 Finally, in Chapter~\ref{chapter:integration}, we presented how this new task planning scheme can be integrated into a complete robotic architecture dedicated to HRI. Moreover, we introduced a new task for HRI inspired from psychology experiments along with an implemented robotic architecture including our planning scheme, allowing to tackle some of the challenges of this task.
 
-\section*{On the human agent interaction guidelines}
+\section*{On the Human Agent Interaction Guidelines}
 \markright{HUMAN-AGENT INTERACTION GUIDELINES}
 We presented in Chapter~\ref{chapter:sota} maxims coined by Bradshaw \textit{et al.}~\cite{bradshaw2011human} for human-agent interaction. We propose here to sum up which maxims have guided the work presented in this thesis and to what extent we were able to implement them.
 
@@ -41,12 +41,12 @@ Besides, we allowed to make the robot more \textit{selective} as we showed in Ch
 
 Finally, we showed in Chapter~\ref{chapter:navigation} that planning navigation for both the human and the robot allows to make the robot deconflict the trajectories earlier increasing the robot \textit{predictability}. Moreover, we implemented a head behavior for the navigation aiming at showing its future trajectory while acknowledging the human presence.
 
-\section*{Limitations and future work}
+\section*{Limitations and Future Work}
 \markright{LIMITATIONS AND FUTURE WORK}
 We think there is plenty of potential for the task planning approach presented in Chapter~\ref{chapter:doublehtn} and it must be refined and enriched. While it seems promising, as it allows to represent and find plans for intricate interaction scenarios, has been integrated with a domain-specific communication planner and used into a robotic architecture, limitations can be identified. First, the turn-taking approach used does not translate the duration of actions. Indeed, some actions will be longer than others, and not accounting for it may lead to suboptimal plans and wrong prediction of human actions. Then, by not pruning some part of the exploration graph during the search, the approach is not efficient for large HTN domains. Efficiency can also by gained by a better implementation in C++ rather than in Python. However, pruning while searching would prevent applying plan-wide costs.
 
 
-\subsection*{Bringing planning and supervision closer}
+\subsection*{Bringing Planning and Supervision Closer}
 Some future work has already been identified to extend the approaches presented in this thesis. The first one, already mentioned before, is to build a stronger link with supervision. In common robotic architectures, the link between the supervision and geometric and task planning come down to planning request and plan response. However, this link may not be enough for long term interaction or intricate and dynamic situations usually found in HRI.
 
 For HATEB, the navigation scheme presented in Chapter~\ref{chapter:navigation}, the solution proposed assumes the human will respect the model provided, and adjust the robot trajectory accordingly. For example, if the robot is following the human in a narrow corridor, if the human goes slower than what is set in the navigation planner parameters, the robot will never overtake them. Indeed, the planned trajectory for the human is for them to accelerate making the robot following the human permanently. The human model provided to the planner ($\humanmodel$) must be as accurate as possible. Providing a perfect model for each human encountered is obviously impossible, that is why the supervision must not only provide an initial model to the planner with the planning request but must also update this human model during the execution, especially if contingencies are detected to happen while following the plan. Here for example, a supervision system might decrease the human speed parameter if they are repeatedly detected to move slower than expected.
@@ -59,7 +59,7 @@ To reduce the branching factor in human HTN exploration, we can also try to nego
 
 In addition to considering the possible human actions in the conditional plan, the planner could also expose the effects of the actions and more precisely the observable effects of them. By doing so, the supervision would know what to expect from the human and what to monitor to determine which action the human did, influencing the branch of the plan executed. Going further, the supervision may use the entire human action model to be able to also predict human behavior, in case of plan repair for example.
 
-\subsection*{Theory of mind level up}
+\subsection*{Theory of Mind Level Up}
 To make a better prediction of the human decisions and actions, some advanced scenarios require the robot to represent the model the human has made of it ($\robotinhumanmodel$). Indeed, as shown by Chakraborti \textit{et al.}~\cite{chakraborti2017plan}, using it can lead to more legible and predictable plans. As described in the Chapter~\ref{chapter:sota}, joint action theory informs about the capabilities a human is using when interacting with another agent. Especially, humans can \textit{predict} other's actions and \textit{integrate them into their own plan}. Thus, the model the human is making about the robot will influence their decision process and how they will perform a task. This is why it is important to build this model. One approach to do so is to analyze the actions performed by the robot by taking the perspective of the human and emulate an inferring process to build a robot model.
 
 For example, in the navigation scheme from Chapter~\ref{chapter:navigation}, integrating this model would lead to a better prediction of human trajectory. The robot trajectory costs would also be more accurate, as more constraints could be added. A surprise cost for instance can be estimated by comparing the planned robot trajectory ($\robotmodel$), with the one expected by the human ($\robotinhumanmodel$). This could, in turn, be used to better respect and evaluate the respect of the maxim of \textit{predictability} and \textit{dependability}.

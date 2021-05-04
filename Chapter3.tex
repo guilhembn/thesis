@@ -44,7 +44,7 @@ With this example, we showed that computing communication content during task pl
 
 To do so, we propose to use a multi-modal planning approach, where a \textit{domain-independant} task planner delegates, for specific verbal communication actions, to a \textit{domain-specific} planner designed to resolve the content of referring expressions. While the former will provide specific requests along with the context and the planed world state in which the communication is made, the latter will indicate not only the feasibility of the communication in the specific wold state, but will also return a cost representing the estimated complexity to intepret this referring expression, allowing for balancing between multiple plans. This approach is greatly inspired from combined task and motion planning schemes \cite{gharbi2015combining} where a task planner uses a geometrical planner to refine motion action at task planning level, allowing to find more precise plans.
 
-\subsection{References and acknowledgments}
+\subsection{References and Acknowledgments}
 A large part of this chapter is excerpted from our work, published for the RO-MAN 2020 conference \cite{buisan2020efficient} and for the ISCR 2020 conference \cite{buisan2020human}. However, in this manuscript, the examples are more detailed and the approaches explained more in depth. Besides, we hope that the link between these two works appears more clearly.
 
 The work presented in this chapter has been done in close collaboration with Guillaume Sarthou, who is working on knowledge bases for HRI and their uses.
@@ -88,7 +88,7 @@ To the best of our knowledge, none of these approaches have been used to determi
 
 
 
-\subsection{Task Planning with Communication Actions}
+\subsection{Task Planning With Communication Actions}
 
 Recently, more and more research is dedicated to human robot verbal communication planning, mainly to answer the \textit{what} and the \textit{when} to communicate \cite{mavridis2015review}. The vast majority of contributions treats these questions during execution. Indeed, they assume a given plan (multi-agents or not) and insert verbal communication actions when needed.
 \textit{Chaski} is a plan execution system allowing to perform collaborative activity with a human \cite{shah2011improved}. The system generates verbal communication when starting or finishing a task allowing agents to coordinate their actions and to update their plans. However, it does so without any reasoning on the communication necessity and expects the human do also communicate each task they start and end.
@@ -106,11 +106,11 @@ It is interesting to note that in the presented work, the communication costs ar
 Finally, it appears clear in the presented studies that planning for communication can only be done if the robot plans for both agents.
 
 
-\section[Referring Expression Generation for HRI]{Ontology based Referring Expression Generation for Human Robot Interaction}
+\section[Referring Expression Generation for HRI]{Ontology-Based Referring Expression Generation for Human Robot Interaction}
 To estimate the feasibility and the cost of communication action during task planning, we need to be able to quickly find if a communication is feasible and what is its content. To further study verbal communication planning we restrain ourselves to only one type of verbal communication: referring expressions.
 In this section we present an efficient algorithm that is able to generate referring expression for human-robot interaction based on ontologies. We first introduce the ontology representation and argue about its use in human-robot interaction scenarios. Then we propose a list a features needed for REG in human-robot interaction. Next, we formally define the problem of ontology-based REG for HRI, and present an efficient algorithm to solve it. Finally, we show the results of this approach both in terms of found solutions and time complexity.
 
-\subsection{Using ontologies for human robot interaction}
+\subsection{Using Ontologies for Human Robot Interaction}
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=\textwidth]{figures/chapter3/AboxTbox.png}
@@ -193,7 +193,7 @@ Finally, some classes and properties are more HRI oriented as they allow to make
 It is clear that some of the knowledge does not intend to bu communicated to the human, however it can still be in their estimated ontology. For example the \textit{hasMesh} property cannot be verbally communicated but is in the human estimated ontology as it allows to represent how the human may perceive an object, and allow for perspective taking.
 
 
-\subsection{REG feature for communication action estimation during task planning}
+\subsection{REG Features for Communication Action Estimation During Task Planning}
 We saw previously that REG is an important and interesting problem for human-robot interaction scenarios. However, as its application will be on an environment perceived in real-time, along with a collaborative task and with respect to a specific human, additional constraints have to been considered.
 
 \begin{figure}[hbtp]
@@ -217,7 +217,7 @@ Determining the right context (what are the implicit relations, which do not nee
 
 \end{enumerate}
 
-\subsection{Ontology based REG problem definition}
+\subsection{Ontology Based REG Problem Definition}
 To formally define the REG problem for HRI, we need to enhance our knowledge base with three functions.
 First, we define a class labeling function $\labelfunc_t: T \mapsto str \cup \bot$ where $str$ denotes a set of character strings used as words in the common human robot vocabulary. We define that a class $t \in T$ is labeled iif $\labelfunc_t(t) \neq \bot$ and call $\labelfunc_t(t) \in str$ the label of $t$. Besides, we require this label to be unique, \textit{i.e.} for any pair of labeled classes $t, t' \in T^2, t \neq t' \Leftrightarrow \labelfunc_t(t) \neq \labelfunc_t(t')$. We define similarly a an entity labeling function $\labelfunc_a: \indivset \mapsto str \cup \bot$ associating some entities to their speakable/writable unique names (grey names in Figure~\ref{fig:chap3aboxtbox}). These functions can be defined in the ontology by using the commonly used property \textit{rdf:label} to the labeled classes and entities. Adding them that way, allows to make these function agent dependent. In the example depicted in Figure~\ref{fig:chap3keys}(a) we would have among others $\labelfunc_t(Table) = "table"$, $\labelfunc_t(Pickable) = \bot$ and $\labelfunc_t(Key) = "key"$. Indeed, the types and entities are defined by their identifier in the ontology, however these identifiers usually make no sense to the human (\textit{e.g.} \textit{key\_1}), or are not intended to be verbalized (\textit{e.g.} \textit{Pickable}). The labels serve to distinguish the individuals and types that are verbalizable from the other and to give a unique verbalizable name to them. In practice, entities are rarely named except for very specific objects that would have been given a unique name.
 
@@ -299,10 +299,10 @@ The aim of the hearer is then to instantiate all the variables from their knowle
 Finally, we define an optimal solution (referring expression) $S^* = \langle E^*, x_g \rangle$ as being the a solution minimizing $\sum_{(s, p, o) \in E^*}\costcompfunc(p)$ over the set of all possible solutions for a REG problem, where $\costcompfunc: P \mapsto \realset^{+*}$ is the properties cost function defined previously. In this thesis, all the properties will have a unit cost, the optimal referring expression will then be the shortest one.
 
 
-\subsection{Efficient REG algorithm presentation}
+\subsection{Efficient REG Algorithm Presentation}
 We aim at building an algorithm to find a solution to the REG problem. The algorithm must build a set of relations, from the content of a provided ontology, of which all possible substitution of variables would result, for a specific variable $x_g$ to a unique entity of the ontology, the target entity. We choose to inspire from the previous contributions of REG and to formalize the problem as a graph search. The nodes of this graph are references (as defined in Definition~\ref{def:reference}), and the transitions (edges) are relations from the ontology being added to this reference.
 
-\subsubsection{Formalization as a graph search problem}
+\subsubsection{Formalization as a Graph Search Problem}
 \label{sec:SCFormalisation}
 
 Let \textbf{node} $\node = \langle \mathcal{T}_\node, X_\node, A_\node, \mathcal{S}_\node \rangle$. $\mathcal{T} \subseteq \relationset \cup C$ is a set of triplet relations representing some relations in the knowledge base $\knowledgebase$. $X_\node \subseteq X$ is the variable set used in this node, $A_\node \subseteq \indivset$ is the set of anonymous entities of $\mathcal{T}_\node$ and $\mathcal{S}_\node: X_\node \mapsto A_\node$ is the bijective mapping function linking variables to the anonymous entities they represent. We will note $\mathcal{S}^{-1}(T)$ the resulting \textit{reference} (as defined in Definition~\ref{def:reference}) after the application of $\mathcal{S}^{-1}$ on all the entities in each triplet of $T$ which is also in $A_\node$.
@@ -328,7 +328,7 @@ As the hard differences respect the \textbf{open-world assumption} but the soft 
 
 Finally, the \textbf{cost} of a node is the sum of the costs of each transition leading to this node. If we assume that each transition $\transition_j$ corresponds to the addition of a triplet $(s_j, p_j, o_j)$ to the set $\mathcal{T}_\node$ of a node $\node$ with a cost $\costcompfunc(p_j)$, the cost to $\node$ is $\costcompfunc_\node = \sum_{(s, p, o) \in \mathcal{T}_\node} \costcompfunc(p)$. 
 
-\subsubsection{Algorithm presentation}
+\subsubsection{Algorithm Presentation}
 We chose to perform this search and solve the REG problem to use an uniform cost search algorithm on the graph presented before.
 From an initial node built from the context of the query, the algorithm generates new nodes by adding possibly disambiguating relation to the current node. We use an uniform-cost search which is \textbf{optimal} and \textbf{complete} with positive transition costs and a finite number of entities and properties in $\knowledgebase$. Just like Dijkstra's algorithm, it expands the nodes in increasing cost order until a solution is discovered or the search space is exhausted.
 %On this basis, we can use a transposition table with the hash of the explored states and thus detect if a state has already been explored or not.
@@ -490,7 +490,7 @@ Besides, the software has been integrated has a ROS node allowing other componen
 \subsection{Results}
 We present hereafter the solutions given by our algorithm to the illustrative examples. Then we provide results involving a large scale knowledge base describing a full apartment in terms of time-execution, solution length and composition. Finally, we provide comparative performance measures with two state-of-the-art methods on their own domains.
 
-\subsubsection{Solutions analysis}
+\subsubsection{Solutions Analysis}
 
 \begin{figure}[hbtp]
 \centering
@@ -509,7 +509,7 @@ The solution for $REG_1$ is \textit{\{(?0, isA, Pen), (?0, isIn, ?1), (?1, isA, 
 In order to give the reader a sense of how the context is useful as defined in the problem, we propose to come back to Figure~\ref{fig:pens}.
 In a knowledge base describing Figure~\ref{fig:pens}(b), with a labeled entity \textit{Bob}, representing the human, giving a empty context to the problem would lead to the solution \textit{\{(?0, isA, Pen), (?0, isReachableBy, Bob)\}}, which would read as ``The pen reachable by Bob''. Whereas, if the robot wants the human to give it the pen, the reachablity of the pen is obvious. So the context would become: \textit{\{(pen0, isReachableBy, Bob)\}}, the ensuing solution would be \textit{\{(?0, isA, Pen)\}}, simply verbalizable as ``the pen'', as taking into account the given context resolve the ambiguity.
 
-\subsubsection{Scaling up}
+\subsubsection{Scaling Up}
 
 To assess the relevance of our approach, we created a larger, realistically-sized, knowledge base (101 entities, 36 classes, 40 properties and 497 relations), describing an apartment with three rooms including several furniture (tables, shelves) and objects (cups, boxes) linked through geometrical relations (\textit{atLeftOf}, \textit{onTopOf}) and attributes (color, weight).
 %\footnote{The complete ontology is available at [hidden for review]}. 
@@ -530,7 +530,7 @@ Over the 77 entities, 32 (41.56\%) are referred with 2 or less relation meaning 
 
 These results over a large scale knowledge base highlight the need to be able to refer to an entity through the use of relation linking it with other entities. They also show that the use of the type of an entity is often sufficient with the use of only one attribute. With this experiment we also demonstrate that our algorithm is suitable for a use with a realistic large scale knowledge base.
 
-\subsubsection{Comparisons with other state-of-the-art algorithms}
+\subsubsection{Comparisons With Other State-of-the-Art Algorithms}
 \label{subsubsec:REGcomparisons}
 
 \textbf{Longest First} The Longest First (LF)\footnote{http://www.m-mitchell.com/code} algorithm \cite{viethen2013graphs} has been tested on the GRE3D3 Corpus composed of 20 scenes with three objects with different spatial relations relative to one another (\textit{onTopOf}, \textit{atLeftOf}). Each object can be referenced by its color, its size (large or small) and its type (cube or ball). The target referent is marked by an arrow and is always in a direct adjacency relation (\textit{onTopOf} or \textit{inFrontOf}).
@@ -669,7 +669,7 @@ define entityAttributes Agent{
 \end{lstlisting}
 
 
-\subsubsection{Integration of REG within Action Planning}
+\subsubsection{Integration of REG Within Action Planning}
 \textbf{The representation of the communication action:}
 % Scénars 
 For clarity purposes, we only place ourselves in scenarios where only the robot knows the goal of a joint task and issues command to its human partner one at a time when the human has to do an action. Thus, while planning, if a task is allocated to the human, as she has no way of guessing it, a preceding communication is required. In the HATP domain, this translates as a method being decomposed into a sequence of a communication action (the instruction to the human) and an action made by the human when the task is attributed to the human. The communication action feasibility is determined by both symbolic preconditions (\textit{e.g.} the human and the robot are in the same room) and REG result (whether a solution is found or not). If the communication action is feasible, the cost of the communication action is then computed as the sum of a fixed cost depending on the type of communication and the REG solution cost depending on the human receiver and the entities to refer to in the communication.
@@ -709,7 +709,7 @@ In this section, we present three case studies. The two first ones are run in si
 
 To realize tests in laboratory conditions, we chose to replace the keys of Figure~\ref{fig:chap3keys} with cubes (Figure~\ref{fig:chap3scen1}). Thus, all the three cases studies are based on a cube arrangement task. The human can distinguish the cubes by their color and the digit written on them (one or two) if there is one. As in Figure~\ref{fig:chap3keys}, the table surface is composed of three storage areas of different colors and cubes can be placed only in one of them. This symbolic position information can also be used by the human to distinguish the cubes. By this way, the robot can refer to a cube with a REG of the type: ``\textit{the black cube with the number 2 which is in the black area}''. In all the cases, only the robot knows the goal position of the cubes but can not manipulate them. It thus has to guide the human in the arrangement task. The robot can only point at the cubes in the third case study. In the first two, it can only use verbal communication.
 
-\subsubsection{Preventing execution deadlocks}
+\subsubsection{Preventing Execution Deadlocks}
 \begin{figure}[t!]
 \centering
 \includegraphics[width=\textwidth]{figures/chapter3/Chap3scen1.png}
@@ -735,7 +735,7 @@ H  - Place(C1, AB)
 We consider once again the initial state presented in Figure~\ref{fig:chap3scen1}(a). This time the goal is to invert the positions of the two cubes. In this situation, if the communication cost and feasibility is not taken into account during planning, both actions directly leading to the goal state (\textit{i.e.} cube \textit{C1} moved to black area or cube \textit{C2} to red area) will lead to a deadlock at plan execution. Indeed, regardless of the first cube moved, if it is moved directly to its goal position, it will end up in the same area as another cube of the same color. In such a situation, no RE can be found for the other cube, leading to a deadlock in the execution.
 The solution found with our method is to add a supplementary action. It consists in putting the cube \textit{C1} away (in the white area). This additional action avoids a deadlock by making the referring to the cube \textit{C2} feasible.
 
-\subsubsection{Reduction of the overall communication complexity}
+\subsubsection{Reduction of the Overall Communication Complexity}
 
 \begin{figure}[t!]
 \centering

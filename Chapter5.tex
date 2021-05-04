@@ -9,7 +9,7 @@
 \faketableofcontents
 \fi
 
-\chapter{Task Planner Integration with other component in a complete robotic architecture for Human Robot Interaction}
+\chapter{Task Planner Integration With Other Component in a Complete Robotic Architecture for Human Robot Interaction}
 \label{chapter:integration}
 \chaptermark{Integrating Planning in an Architecture}
 \minitoc
@@ -21,12 +21,12 @@ In this short chapter, we present how this prototype planner has been integrated
 
 Integrating in a complete robotic architecture is obviously not only a personal work, so we want to thank two other PhD. students Guillaume Sarthou, designing and developing the ontology engine used by the planner in this chapter and Amandine Mayima designing and developing the supervision component in charge of requesting plans and using them to perform the task while managing the interaction and handling any contingencies.
 
-\section{Integrating with other components}
+\section{Integrating With Other Components}
 \label{sec:chap5integratingwithothers}
 
 Such task planning component as the one presented earlier only takes on its full meaning when integrated into a robotic architecture. Indeed, its use is quite limited if initial world states have to be set by hand in the planning domain and if the elaborated plans are not executed. In this section we describe how we integrated the planner presented in the last chapter with other components allowing to retrieve the initial states (including human beliefs) from an ontology, to match the hybrid approach presented in Chapter~\ref{chapter:comm} by using the REG component and to communicate with the supervision through ROS.
 
-\subsection{Retrieving the current state and beliefs from the knowledge base}
+\subsection{Retrieving the Current State and Beliefs From the Knowledge Base}
 Before any planning process could start, the planner must be initialized with the current world state (robot beliefs) and the estimation of the human's beliefs. To do so, we use the knowledge base presented in Chapter~\ref{chapter:comm}: the ontologies. In our architecture, each human the robot is interacting with has a dedicated ontology, fed by a perspective taking component estimating the human beliefs; in addition to the robot own ontology, representing the world state. Thus, each agent beliefs $\agentstate$ are initialized with the facts in its respective ontology.
 However, ontologies can contain a lot of information that are not needed for planning, and worse, that can hamper keeping world state consistency if the planning domains do not consider some of these facts (\textit{e.g.} an action deleting a fact but not deleting the inverse relation). To cope with this issue, we define two special attributes in the world state objects: the \textit{types} and the \textit{individuals} attributes.
 
@@ -87,12 +87,12 @@ print(state.isOn)
 
 Besides reading an initial state from the knowledge base, the prototype planner is also able to write in it. Indeed, HTNs can not only be used as operational models for planning, but also can be used as a semantic source making verbal communications able to use past plans. To do so however, the knowledge base must be informed with the decompositions of task and with the parameters and their types they require. Our prototype is able to parse a planning domain in order to extract the required information and write them in an ontology friendly format.
 
-\subsection{Using REG at planning time}
+\subsection{Using REG at Planning Time}
 In Chapter~\ref{chapter:comm}, we presented how we integrated referring expression generation algorithm during task planning to precisely evaluate communication feasibility and cost. We showed how we successfully integrated this approach in HATP. However, because of the HATP architecture, its use was restrained to compute only action feasability and cost when an action was explored by the planner.
 With this new planning scheme, we are able to make a REG request and fully use the returned RE at any time in action or decomposition functions (as they are Python functions). For example, in a decomposition, we can request a REG for multiple entities and return sub-tasks concerning only the least costly one. 
 Besides, we can also use the REG failure information to know which entities prevent another from being referred and select decomposition accordingly. For example, if an entity is not distinguishable from another through the REG, we can try to rely on an other communication mean, such as pointing, or to move the distractor entity to remove it from the context entities.
 
-\subsection{Communicating through ROS}
+\subsection{Communicating Through ROS}
 Finally, even if the planning process can be initialized and started through a Python script, it is not enough to make it useful in a real robotic architecture. Thus, we integrated planning requests support via the ROS framework. This allows the supervision component to use the planner with a specified domain by requesting a sequence of tasks to decompose for both agents. The resulting conditional plan is then used to manage the execution.
 
 Once the planning service is launched, the specified domains are loaded for controllable and uncontrollable agents, then a service server is started, waiting for planning requests. 
@@ -105,7 +105,7 @@ In the future, we envision to change this ROS interface to allow for replanning 
 \section{The Director Task}
 This work has been made in close collaboration with two other PhD. students Amandine Mayima and Guillaume Sarthou.
 
-\subsection{A task used in psychology}
+\subsection{A Task Used in Psychology}
 The director task is an experiment setup largely used and derived in psychology. It places two agents, the director and the receiver, in front of each other with a shelf in between. Usually, only the receiver is the participant, and the director is either an accomplice or a remote controlled agent (for computer-based experiment). The shelf consists in several compartments possibly containing objects. Each compartment can either be open on both opposite faces or open on only the receiver's side (hiding any contained object from the director, and being obvious for the receiver that the director cannot see inside it).
 
 \begin{figure}[hbtp]
@@ -146,7 +146,7 @@ Besides, to make the task interesting for both the director and receiver roles, 
 In addition, to increase the number of ambiguous situations, we prohibit the use of geometrical relations during the communications (\textit{e.g.} ``the leftmost block'', ``the block above the green one'') to only allow the use of the block attributes. Likewise, pointing at a block is forbidden.
 Finally, every blocks and compartments are equipped with AR-tags (different on each face) allowing the robot to easily detect them and to make an accurate representation of the environment (Figure~\ref{fig:chap5material}).
 
-\subsection{The robotic architecture}
+\subsection{The Robotic Architecture}
 The robotic architecture (Figure~\ref{fig:chap5dtarchi} is inspired by the one described by Lemaignan \textit{et al.}~\cite{lemaignan2017artificial} and is composed of several elements.
 
 \begin{figure}[hbtp]
@@ -206,7 +206,7 @@ A video presenting the architecture used in a real interaction to both tackle th
 \label{fig:chap5dtdemoreceiver}
 \end{figure}
 
-\subsection{Challenges for planning}
+\subsection{Challenges for Planning}
 To spice up the planning challenge in the director task, we propose some extensions to the presented task.
 First, by adding blocks with identical visual features to the shelf, and asking to remove a precise one of them, we introduce situations where verbal communication (and REG) is not enough to refer to a block. To solve this problem, we could for example add a decomposition to \verb'clear_one_block'. In this decomposition, we could have the robot moving one distractor of the REG in a non visible compartment to be able to refer to the intended block. The planner would then have to balance between making the referring easier by moving a block before giving the instruction and giving a long and complex instruction (when feasible).
 
