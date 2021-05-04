@@ -39,7 +39,20 @@
 \renewcommand{\nomname}{Liste des Abréviations}
 }
 
+\usepackage{etoolbox}
+\renewcommand\nomgroup[1]{%
+  \item[\bfseries
+  \ifstrequal{#1}{A}{Number Sets}{%
+  \ifstrequal{#1}{G}{Agents Beliefs and Action Models}{%
+  \ifstrequal{#1}{N}{Navigation}{%
+  \ifstrequal{#1}{O}{Ontology}{%
+  \ifstrequal{#1}{R}{Referring Expression Generation}{%
+  \ifstrequal{#1}{Z}{Controllable and Uncontrollable Agents Task Planning}{}}}}}}%
+]}
+
 \makenomenclature
+
+
 
 % My pdf code
 
