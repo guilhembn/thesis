@@ -143,7 +143,7 @@ Besides, to make the task interesting for both the director and receiver roles, 
 \label{fig:chap5dtpersp}
 \end{figure}
 
-In addition, to increase the number of ambiguous situations, we prohibit the use of geometrical relations during the communications (\textit{e.g.} "the leftmost block", "the block above the green one") to only allow the use of the block attributes. Likewise, pointing at a block is forbidden.
+In addition, to increase the number of ambiguous situations, we prohibit the use of geometrical relations during the communications (\textit{e.g.} ``the leftmost block'', ``the block above the green one'') to only allow the use of the block attributes. Likewise, pointing at a block is forbidden.
 Finally, every blocks and compartments are equipped with AR-tags (different on each face) allowing the robot to easily detect them and to make an accurate representation of the environment (Figure~\ref{fig:chap5material}).
 
 \subsection{The robotic architecture}
@@ -210,7 +210,7 @@ A video presenting the architecture used in a real interaction to both tackle th
 To spice up the planning challenge in the director task, we propose some extensions to the presented task.
 First, by adding blocks with identical visual features to the shelf, and asking to remove a precise one of them, we introduce situations where verbal communication (and REG) is not enough to refer to a block. To solve this problem, we could for example add a decomposition to \verb'clear_one_block'. In this decomposition, we could have the robot moving one distractor of the REG in a non visible compartment to be able to refer to the intended block. The planner would then have to balance between making the referring easier by moving a block before giving the instruction and giving a long and complex instruction (when feasible).
 
-With the same scenario, using the REG extension presented in the previous chapter, allowing the RE to contain relations to past common actions, we could introduce another way for the robot to refer to a block. The planner would need to balance previous communication means with creating a unique past experience with a block to easily refer to it (\textit{e.g.} "the blue block that I just moved").
+With the same scenario, using the REG extension presented in the previous chapter, allowing the RE to contain relations to past common actions, we could introduce another way for the robot to refer to a block. The planner would need to balance previous communication means with creating a unique past experience with a block to easily refer to it (\textit{e.g.} ``the blue block that I just moved'').
 
 Besides, we can add multiple distinct disposal areas for blocks. The director would then have to instruct the receiver not only the block to pick but also which area they have to place it in. Furthermore, we could also add a decomposition where the robot ask to pick an under specified block, ensuring that all the matching ones need to be removed, and plan for all the possible blocks picked by the human matching this description. Depending on the block picked, it would be planned to ask to place the cube in its corresponding area. This may result in a better efficiency as it would lead to less complex referring expressions.
 
