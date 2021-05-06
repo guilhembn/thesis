@@ -9,28 +9,28 @@
 \faketableofcontents
 \fi
 
-\chapter{Task Planner Integration With Other Component in a Complete Robotic Architecture for Human Robot Interaction}
+\chapter{Task Planner Integration in a Robotic Architecture for Human Robot Interaction}
 \label{chapter:integration}
 \chaptermark{Integrating Planning in an Architecture}
 \minitoc
 
 \section{Introduction}
-In the last chapter, we presented a task planning approach dedicated to \acrshort{hri} where we not only plan for the robot but also model the human decisions, actions and reactions in order to predict and adapt to their actions and guide their decisions. This approach has been implemented on a prototype planner and be used on several examples demonstrating its strengths and drawbacks.
+In the last chapter, we have presented a task planning approach dedicated to \acrshort{hri} where the robot not only plans for itself but also models the human decisions, actions and reactions in order to predict and adapt to their actions and elicit or even guide their decisions. This approach has been implemented on a prototype planner named \acrfull{hatpehda} and used on several examples demonstrating its strengths and drawbacks.
 
-In this short chapter, we present how this prototype planner has been integrated in a complete robotic architecture, once again showing the versatility and usefulness of this new task planning approach. First, we detail the integration of the planner with different components of the architecture. We end this chapter by presenting a new simple yet challenging task for human robot interaction which, to our knowledge, has not been tackled by the community and for which we developed a robotic architecture, integrating our task planner, to handle it in the nominal case.
+In this short chapter, we present how this prototype planner has been integrated in a complete robotic architecture, once again showing the versatility and usefulness of this new task planning approach. First, we provide details on the integration of \acrshort{hatpehda} with different components of the architecture. We conclude this chapter by presenting a new simple yet challenging task for human robot interaction which, to our knowledge, has not been tackled by the community and for which we have developed a robotic architecture, integrating \acrshort{hatpehda}, to handle it in the nominal case.
 
 Integrating in a complete robotic architecture is obviously not only a personal work, so we want to thank two other PhD. students Guillaume Sarthou, designing and developing the ontology engine used by the planner in this chapter and Amandine Mayima designing and developing the supervision component in charge of requesting plans and using them to perform the task while managing the interaction and handling any contingencies.
 
 \section{Integrating With Other Components}
 \label{sec:chap5integratingwithothers}
 
-Such task planning component as the one presented earlier only takes on its full meaning when integrated into a robotic architecture. Indeed, its use is quite limited if initial world states have to be set by hand in the planning domain and if the elaborated plans are not executed. In this section we describe how we integrated the planner presented in the last chapter with other components allowing to retrieve the initial states (including human beliefs) from an ontology, to match the hybrid approach presented in Chapter~\ref{chapter:comm} by using the \acrshort{reg} component and to communicate with the supervision through ROS.
+Such task planning component as the one presented earlier only takes on its full meaning when integrated into a robotic architecture. Indeed, its use is quite limited if initial world states have to be set by hand in the planning domain and if the elaborated plans are not executed. In this section we describe how we have integrated \acrshort{hatpehda} with other components allowing to retrieve the initial states (including human beliefs) from an ontology, to match the hybrid approach presented in Chapter~\ref{chapter:comm} by using the \acrshort{reg} component and to communicate with the supervision through ROS.
 
 \subsection{Retrieving the Current State and Beliefs From the Knowledge Base}
-Before any planning process could start, the planner must be initialized with the current world state (robot beliefs) and the estimation of the human's beliefs. To do so, we use the knowledge base presented in Chapter~\ref{chapter:comm}: the ontologies. In our architecture, each human the robot is interacting with has a dedicated ontology, fed by a perspective taking component estimating the human beliefs; in addition to the robot own ontology, representing the world state. Thus, each agent beliefs $\agentstate$ are initialized with the facts in its respective ontology.
+Before any planning process could start, the planner must be initialized with the current world state (robot beliefs) and the estimation of the human's beliefs. To do so, we use the knowledge base presented in Chapter~\ref{chapter:comm}: Ontologenius, a component managing the acquired symbolic knowledge and representing it as ontologies. In our architecture, each human the robot is interacting with has a dedicated ontology, fed by a perspective taking component estimating the human beliefs; in addition to the robot own ontology, representing the world state. Thus, each agent beliefs $\agentstate$ are initialized with the facts in its respective ontology.
 However, ontologies can contain a lot of information that are not needed for planning, and worse, that can hamper keeping world state consistency if the planning domains do not consider some of these facts (\textit{e.g.} an action deleting a fact but not deleting the inverse relation). To cope with this issue, we define two special attributes in the world state objects: the \textit{types} and the \textit{individuals} attributes.
 
-The \textit{types} attribute must be set by the user before retrieving the current world state. It is a dictionary linking a type name to a list of property names. A world state must be initialized solely with this attributes before being passed to a function retrieving the world state from the ontology. This function takes the agent name as the argument, and will fill the world state with the ontology matching to this name. This function fills the \textit{individuals} attribute of the world state with a dictionary linking the types specified as keys of the  \textit{types} dictionary to a list of entities/individuals inheriting from these types. Then, a world state attribute is created for each property defined in the \textit{type} attribute, and filled with a map linking a subject entity to existing entities list according to the relations in the ontology. Communication with the ontology is done using the Ontologenius~\cite{sarthou2019ontologenius} python API. For example, in the ontology from Chapter~\ref{chapter:comm} describing the siutation of Figure~\ref{fig:chap3keys}(a) represented in Figure~\ref{fig:chap3aboxtbox} and \ref{fig:chap3aboxrel}, in a domain aiming at sorting the keys collaboratively does not need to represent the color of the keys nor of the areas. In this example, the \textit{type} attribute would be set to: 
+The \textit{types} attribute must be set by the user before retrieving the current world state. It is a dictionary linking a type name to a list of property names. A world state must be initialized solely with these attributes before being passed to a function retrieving the world state from the ontology. This function takes the agent name as the argument, and will fill the world state with the ontology matching to this name. This function fills the \textit{individuals} attribute of the world state with a dictionary linking the types specified as keys of the  \textit{types} dictionary to a list of entities/individuals inheriting from these types. Then, a world state attribute is created for each property defined in the \textit{type} attribute, and filled with a map linking a subject entity to existing entities list according to the relations in the ontology. Communication with the ontology is done using the Ontologenius~\cite{sarthou2019ontologenius} python API. For example, in the ontology from Chapter~\ref{chapter:comm} describing the situation of Figure~\ref{fig:chap3keys}(a) represented in Figure~\ref{fig:chap3aboxtbox} and \ref{fig:chap3aboxrel}, in a domain aiming at sorting the keys collaboratively does not need to represent the color of the keys nor of the areas. In this example, the \textit{type} attribute would be set to: 
 
 \definecolor{greenstring}{RGB}{6, 125, 23}
 \definecolor{bluekeyword}{RGB}{0, 51, 179}
@@ -96,9 +96,40 @@ Besides, we can also use the \acrshort{reg} failure information to know which en
 Finally, even if the planning process can be initialized and started through a Python script, it is not enough to make it useful in a real robotic architecture. Thus, we integrated planning requests support via the ROS framework. This allows the supervision component to use the planner with a specified domain by requesting a sequence of tasks to decompose for both agents. The resulting conditional plan is then used to manage the execution.
 
 Once the planning service is launched, the specified domains are loaded for controllable and uncontrollable agents, then a service server is started, waiting for planning requests. 
-The requests need to be filled with the controllable and uncontrollable agents name, used to retrieve their belief and to run \acrshort{reg} on their ontologies if needed. 
-They also need to be given the tasks sequence to decompose along with their parameters for both the controllable and the uncontrollable agents. While the tasks for the controllable agent are simply the tasks a classical \acrshort{htn} planner would have to decompose, the uncontrollable agent's ones represent the tasks that the robot estimates the human is performing. Such information can be given via actions and intentions recognition components. The parameters of the task can be given as strings if they are simple enough (\textit{e.g.} entity names, agent names) but they also can be formatted through JSON, allowing for more complex parameters (\textit{e.g.} goals --- which are represented as partial world state). The complex parameters are then deserialized into corresponding Python objects.
-Once a request is received the planning process can start, and, once a conditional plan has been elaborated is sent back as an response to the request. The response is constituted of a list of tasks each having an unique id, a list of their parameters, the name of the agent executing it, its type (either abstract or primitive/action), an id of the previous task (if any), an id of the task it decomposes from (if any), a list of id of the following tasks (if any) and a list of id of the task it decomposes into (for abstract task only). Using this information a component can easily reconstruct the conditional plan computed.
+
+The \textbf{requests} need to be filled with two parameters for each of the both controllable and uncontrollable agents:
+\begin{itemize}
+\item The \textbf{name} of each agent is used to retrieve their beliefs and to run the \acrshort{reg} on their ontologies (retrieved by name) if needed.
+
+\item The sequence of tasks to decompose (which will be inserted in the initial agentda) along with their parameters for both the controllable and the uncontrollable agents. 
+
+While the tasks for the controllable agent are simply the tasks a classical \acrshort{htn} planner would have to decompose, the uncontrollable agent's ones represent the tasks that the robot estimates the human is performing. Such information can be given via actions and intentions recognition components. 
+
+The parameters of the task can be given as strings if they are simple enough (\textit{e.g.} entity names, agent names) but they also can be formatted through JSON, allowing for more complex parameters (\textit{e.g.} goals --- which are represented as partial world state) allowing more subtle reasoning in the decomposition functions. The complex parameters are then deserialized into corresponding Python objects.
+\end{itemize}
+
+Once a request is received the planning process can start, and, once a conditional plan has been elaborated is sent back as an response to the request. 
+
+The \textbf{response} is constituted of a list of tasks each containing multiple fields: 
+\begin{itemize}
+\item an unique id,
+
+\item a list of their parameters,
+
+\item the name of the agent to whom it has been assigned,
+
+\item its type (either abstract or primitive/action),
+
+\item the id of the previous task (if any),
+
+\item the id of the task it decomposes from (if any)
+
+\item a list of ids of the following tasks (if any),
+
+\item and a list of ids of the task it decomposes into (for abstract task only)
+\end{itemize}
+
+Using this information a component can easily reconstruct the conditional plan computed.
 
 In the future, we envision to change this ROS interface to allow for replanning accounting for past failed plan; and to perform anytime planning, by being able to return a plan early in the search while keeping refining plans to decrease the solution cost.
 
@@ -115,17 +146,19 @@ The director task is an experiment setup largely used and derived in psychology.
 \label{fig:chap5dtapple}
 \end{figure}
 
-The director asks the receiver to move some objects by describing them. However, some descriptions of the director will also match other objects ---called competitors--- that are only visible by the receiver. Hence, the receiver must think that the object matching the description cannot be the one referred by the director as they are not aware of it, and find the object matching the description in the director's beliefs. This process must then be maintained all along the interaction as the situation evolves. For example, to designate the starred apple in Figure~\ref{fig:chap5dtapple}, the director may say ``the small apple'', however in the receiver's perspective, directly interpreting this sentence does not result in the starred apple. A decisional process is required, called perspective taking, to decide that the smallest apple in the receiver's perspective cannot be the one designated by the director as they cannot see it, so they are referring to the second smallest (being the smallest in their perspective)
+The director asks the receiver to move some objects by (verbally) giving information allowing to discriminate them. However, some descriptions of the director will also match other objects ---called competitors--- that are only visible by the receiver. Hence, the receiver must think that the object matching the given director's utterance cannot be the one referred by the director as they are not aware of it, and find the object matching the description in the director's beliefs. This process must then be maintained all along the interaction as the situation evolves. For example, to designate the starred apple in Figure~\ref{fig:chap5dtapple}, the director may say ``the small apple'', however in the receiver's perspective, directly interpreting this sentence does not result in the starred apple. A decisional process is required, called perspective taking, to decide that the smallest apple in the receiver's perspective cannot be the one designated by the director as they cannot see it, so they are referring to the second smallest (being the smallest in their perspective)
+
+\medskip
 
 This task is used in psychology to study how perspective-taking is used for communication understanding while performing a task with another agent \cite{keysar2000taking}. Results show that, even if the receiver considered or took a competitor for the first trial, they are able to take the one designated by the director during subsequent trials. This shows that even if participants understand language in an egocentric way, they are able to do perspective-taking to successfully perform the task \cite{keysar2003limits}. 
 
-Even if this task is well known by psychologists, to our knowledge, no robot managed to handle it. A robot that does would prove its architecture being able to maintain self-other distinction of beliefs but also to perform perspective taking on its human partner. We propose a robotic architecture integrating our planner, that is able to handle both side of the director task. Besides, we propose some changes for both the director and receiver roles to be interesting along with planning challenges some modifications of the task can arise.
+Even if this task is well known by psychologists, to our knowledge, no robot has ever performed it. A robot that does would illustrate its ability to maintain self-other distinction of beliefs but also to perform perspective taking on its human partner. We propose a robotic architecture integrating \acrshort{hatpehda}, that is able to handle both sides of the director task: both the director role giving instructions to its human partner and the receiver role interpreting instructions and selecting the right object. Besides, we propose some changes for both the director and receiver roles to be interesting along with planning challenges some modifications of the task can arise.
 
 \subsection{Setup}
 The setup we propose is a slight variation of the original director task used in psychology. First, instead of moving objects between compartments, the high level known goal is to remove a subset of the objects in the compartments and to place them in a receiver accessible only area (on top of a table). 
 
 
-Then, objects are replaced with blocks having four special attributes: their color, the color of their border, the shape drawn on them and the color of this shape. The colors can either be blue or green, and the shapes either a triangle or a circle. This allows for a maximum of ambiguity between the blocks. The used material is presented in Figure~\ref{fig:chap5material}.
+Then, objects are replaced with blocks having four special attributes: their color, the color of their border, the shape drawn on them and the color of this shape. The colors can either be blue or green, and the shapes either a triangle or a circle. This allows for a maximum of ambiguity between the blocks. The material used is presented in Figure~\ref{fig:chap5material}.
 
 \begin{figure}[hbtp]
 \centering
@@ -134,7 +167,7 @@ Then, objects are replaced with blocks having four special attributes: their col
 \label{fig:chap5material}
 \end{figure}
 
-Besides, to make the task interesting for both the director and receiver roles, compartment are not only either fully opened or hiding content from the director, they can also be hiding content from the receiver while being opened towards the director. Thus, not only the receiver must take the perspective of the director to understand the right block, but the director has also to take the perspective of the receiver to make the smallest instruction possible to respect the maxim of quantity~\cite{grice1975logic}. In the example depicted in Figure~\ref{fig:chap5dtpersp}, the minimal sentence to designate the circled block is ``the blue block'', but it requires both agents to perform perspective taking. Indeed, to rule out the distractors (designated with an arrow on the figure), it require to deduce that they cannot have been referred by the other as they are not visible (and to an other extent, not known) by them.
+Besides, to make the task interesting for both the director and receiver roles, compartment are not only either fully opened or hiding content from the director, they can also be hiding content from the receiver while being opened towards the director. Thus, not only the receiver must take the perspective of the director to understand the right block, but the director has also to take the perspective of the receiver to make the smallest instruction possible to respect the maxim of quantity~\cite{grice1975logic}. In the example depicted in Figure~\ref{fig:chap5dtpersp}, the minimal sentence to designate the circled block is ``the blue block'', but it requires both agents to perform perspective taking. Indeed, to rule out the distractors (designated with an arrow on the figure), it requires to deduce that they cannot have been referred by the other as they are not visible (and to an other extent, not known) by them.
 
 \begin{figure}[hbtp]
 \centering
@@ -144,7 +177,8 @@ Besides, to make the task interesting for both the director and receiver roles, 
 \end{figure}
 
 In addition, to increase the number of ambiguous situations, we prohibit the use of geometrical relations during the communications (\textit{e.g.} ``the leftmost block'', ``the block above the green one'') to only allow the use of the block attributes. Likewise, pointing at a block is forbidden.
-Finally, every blocks and compartments are equipped with AR-tags (different on each face) allowing the robot to easily detect them and to make an accurate representation of the environment (Figure~\ref{fig:chap5material}).
+
+Finally, all blocks and compartments are equipped with AR-tags (different on each face\footnote{Even if we assume that the humans cannot read and use the tags, we still stipulate to the participant that they are not the same on both sides of the cubes and compartments.}) allowing the robot to easily detect them and to make an accurate representation of the environment (Figure~\ref{fig:chap5material}).
 
 \subsection{The Robotic Architecture}
 The robotic architecture (Figure~\ref{fig:chap5dtarchi} is inspired by the one described by Lemaignan \textit{et al.}~\cite{lemaignan2017artificial} and is composed of several elements.
@@ -156,15 +190,15 @@ The robotic architecture (Figure~\ref{fig:chap5dtarchi} is inspired by the one d
 \label{fig:chap5dtarchi}
 \end{figure}
 
-First, the knowledge base chosen is an ontology. As we have shown before, ontologies are more and more common in robotics as they allow for rich and complete reasoning mechanisms and efficient requests of symbolic facts. The software used is \textit{Ontologenius}~\cite{sarthou2019ontologenius}. An ontology is created for the robot ($\robotmodel$, which we use as the true state of the environment) and another one is created for the human ($\humanmodel$) representing the robot estimation of the human knowledge. As stated in the previous chapter, these ontologies can be queried or updated through an efficient low-level API or higher-level \sparql{} queries. The interfaces between the ontologies and our planner are presented in Section~\ref{sec:chap5integratingwithothers}. The ontology is initialized with static facts being (1) the link between each AR-tag and their matching block and compartment, (2) the attributes of each block, (3) the 3D models of each block and compartment.
+First, the knowledge base chosen is managed by Ontologenius and is structured as multiple ontologies. As we have shown before, ontologies are more and more common in robotics as they allow for rich and complete reasoning mechanisms and efficient requests of symbolic facts. The software used is \textit{Ontologenius}~\cite{sarthou2019ontologenius}. An ontology is created for the robot ($\robotmodel$, which we use as the true state of the environment) and another one is created for the human ($\humanmodel$) representing the robot estimation of the human knowledge. As stated in the previous chapter, these ontologies can be queried or updated through an efficient low-level API or higher-level \sparql{} queries. The interfaces between the ontologies and our planner are presented in Section~\ref{sec:chap5integratingwithothers}. The ontology is initialized with static facts being (1) the link between each AR-tag and their matching block and compartment, (2) the attributes of each block, (3) the 3D models of each block and compartment.
 
-To gather all the robot sensing data, create a geometric representation of the environment, compute symbolic facts from it for both the robot and the human and update the ontologies with them, a situation assessment component is added to the architecture. This component is based on underwolds~\cite{lemaignan2018underworlds} allowing for modular and reusable reasoners. It first gathers the data from perception algorithm (AR-tags positions for the objects and motion capture for the human), then creates a geometrical scene of the environment. Based on it, the component is able to compute symbolic facts: \textit{isIn}, \textit{isVisibleBy}, \textit{isReachableBy}, \textit{isOnTopOf}; and feed them in real time to the ontology. This component also estimates the geometrical scene viewed and known by the human, computes symbolic facts on it and feed the corresponding ontology.
+To gather all the robot sensing data, create a geometric representation of the environment, compute symbolic facts from it for both the robot and the human and update the ontologies with them, a situation assessment component is added to the architecture. This component is based on \textit{Underwolds}~\cite{lemaignan2018underworlds} allowing for modular and reusable reasoners. It first gathers the data from perception algorithm (AR-tags positions for the objects and motion capture for the human), then creates a geometrical scene of the environment. Based on it, the component is able to compute symbolic facts on the objects present in the scene (and whose tags are detected): \textit{isIn} when a block is inside a compartment, \textit{isVisibleBy} when an agent is seeing an object, \textit{isReachableBy} when an agent can reach (pick) an object and \textit{isOnTopOf} when a object is on top of another. These symbolic facts are then fed in real time to the robot ontology. This component also estimates the geometrical scene viewed and known by the human, computes the symbolic facts defined before on this estimated scene and feeds the human ontology.
 
 Then, to be able to give and understand instructions, the REG component presented in the previous chapter is also included. A grammar-based verbalization component allows to transform the generated \acrshort{re} into natural language. Similarly, a natural language request can be interpreted as a \sparql{} query and matched against an ontology.
 
 To orchestrate all the components, the supervision system called JAHRVIS (Joint Action-based Human-aware supeRVISor) is dedicated to manage the interaction. It not only handles the robot actions but also estimates the human mental state, monitors the human actions and manages the communication with them. It manages five facets of the interaction: (1) interactions sessions, (2) communication, (3) human, (4) task and (5) quality of interaction. It is responsible for task planning requests and plan execution and monitoring.
 
-Finally, the task planning component used in this architecture is the one presented in this chapter. Task planning is only required when the robot is the director, since when the robot is receiver it only has to execute commanded instructions. When the robot is the director, the supervision system is given a list of blocks (via their ids) to remove from the shelves. This list is then passed as the goal parameter of a task to decompose to the planner.
+Finally, the task planning component used in this architecture is \acrshort{hatpehda}, presented in the previous chapter. Task planning is only required when the robot is the director, since when the robot is receiver it only has to execute the director instructions one at a time after a request. When the robot is the director, the supervision system is given a list of blocks (via their ids) to remove from the shelves. This list is then passed as the goal parameter of a task to decompose to the planner.
 The task to decompose is called \verb'clear_blocks' and is filled with a parameter representing the goal and another being the human id. The goal is simply an under specified world state, composed of triplets containing for example \verb'(block_23, isIn, disposalArea)'.
 The robot task planning domain ($\robotmodel$) is presented hereafter. 
 \begin{itemize}
@@ -192,7 +226,7 @@ In the proposed version of the director task, only the cube order can be planned
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width=0.5\textwidth]{figures/chapter5/dt_demo.png}
+\includegraphics[width=0.6\textwidth]{figures/chapter5/dt_demo.png}
 \caption{The director task handled by an autonomous PR2 robot in the director role. The computed human perspective is displayed in the bottom left hand corner of picture. The robot said sentence is printed under each picture.}
 \label{fig:chap5dtdemodirector}
 \end{figure}
@@ -220,7 +254,7 @@ Finally, performing this task will necessarily bring errors, either from the hum
 % Communicating about multiple blocks at once
 
 \section{Conclusion}
-In this chapter, we showed how the task planning scheme presented earlier can be integrated in a robotic architecture. It can use larger knowledge bases to initialize the robot and the human beliefs, interface with domain-specific planners such as the \acrshort{reg} approach presented in Chapter~\ref{chapter:comm} and provide a service mechanism of ROS for the supervision to make planning requests.
+In this chapter, we have shown how the task planning scheme presented earlier can be integrated in a robotic architecture. It can use larger knowledge bases to initialize the robot and the human beliefs, interface with domain-specific planners such as the \acrshort{reg} approach presented in Chapter~\ref{chapter:comm} and provide a service mechanism of ROS for the supervision to make planning requests.
 
 Finally, an easy to reproduce yet challenging task for \acrshort{hri} was presented, along with a robotic architecture to handle this task. The planning scheme presented in Chapter~\ref{chapter:doublehtn} was used when the robot is director to plan for the sequence of actions minimizing the communication complexity, and the \acrshort{reg} component presented in Chapter~\ref{chapter:comm} was used for both the director and receiver role to either find referring expressions for objects to be included in the instructions or to refine a human instruction when it has been detected as ambiguous.
 
