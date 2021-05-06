@@ -9,45 +9,52 @@
 \faketableofcontents
 \fi
 
-\chapter{Emulating the Human Decision Action and Processes During Task Planning}
+\chapter{Emulating the Human Decision and Action Processes During Task Planning}
 \label{chapter:doublehtn}
 \chaptermark{Planning accounting for human decisions}
 \minitoc
 
 \section{Introduction}
-In the previous chapter we successfully integrated a verbal communication planner for referring expressions into a multi agent human-aware task planner. This allows for a communication action containing reference to an object of the environment, to find its feasibility by not relying only on symbolic facts the task planner is manipulating but by precisely determining its content. Moreover, by determining the content of the referring expression, the complexity for the human to understand it can be estimated and is returned as a cost to the planner. Thus, during the execution we can avoid many plan failures, repair actions or unefficiency. Although we saw that this approach needs a task planner able to maintain one set of beliefs per agent during the planning process, \acrshort{hatp}, the planner used was only allocating tasks to the human without considering if the human was aware or not of the generated plan.
+In the previous chapter we successfully integrated a verbal communication planner for referring expressions into a multi agent human-aware task planner. This allows for a communication action containing reference to an object of the environment, to find its feasibility by not relying only on symbolic facts the task planner is manipulating but by precisely determining its content. Moreover, by determining the content of the referring expression, the complexity for the human to understand it can be estimated and is returned as a cost to the task planner. Thus, during the execution we can avoid many plan failures, repair actions or unefficiency. Although we saw that this approach needs a task planner able to maintain one set of beliefs per agent during the planning process, \acrshort{hatp}, the planner used was only allocating tasks to the human without considering if the human was aware or not of the generated plan.
 
-\acrshort{hatp} is provided with a human model ($\humanmodel$) in several ways. The human has the actions they can perform in the domain and their beliefs are updated all along the planning process. Moreover, human preferences can be set on the plan through the \textit{social cost}, adding extra-cost to the plan if some criteria are met such as a bad chaining of actions (\textit{e.g.} the robot mopping the floor just before making a sandwich). However, \acrshort{hatp} assumes that a shared goal is given to the robot and to the human. This shared goal is supposed to have been acquired previously in the interaction, for example via a human request. Besides, as stated before, it generates a plan which is unknown if it needs to be communicated to the human or if it can be easily \textit{guessed} (\textit{i.e.} which is predictable) by the human. Finally, the plan is ``fixed'' and does not account whether the human chooses to perform a different path of actions or not. Any deviation of the human from their generated stream of action either need the supervision to perform repair actions or to request for a replanning. This approach has been shown to be suitable and pertinent in some applications (\textit{e.g.} when communication can easily been done at any point of the plan).
+\acrshort{hatp} is provided with a human model ($\humanmodel$) in several ways. The planning domain contains the actions the humans can perform and their beliefs are updated all along the planning process. Moreover, human preferences can be set on the plan through the \textit{social cost}, adding extra-cost to the plan if some criteria are met such as a bad chaining of actions (\textit{e.g.} the robot mopping the floor just before making a sandwich). However, \acrshort{hatp} assumes that a shared goal has been established between the robot and to the human. This shared goal is supposed to have been acquired previously in the interaction, for example via a human request. Besides, as stated before, it generates a plan which is unknown if it needs to be communicated to the human or if it can be easily \textit{guessed} (\textit{i.e.} which is predictable) by the human. Finally, the plan is ``fixed'' and does not account whether the human chooses to perform a different path of actions or not. Any deviation of the human from their generated stream of action either needs the supervision to perform repair actions or to request for a replanning. This approach has been shown to be suitable and pertinent in some applications (\textit{e.g.} when communication can easily been done at any point of the plan).
 
 \smallskip
 
-In this chapter, we present a novel task planning approach dedicated to \acrshort{hri} which, by planning for both the human and the robot, tries to meet multiple objectives:
+In this chapter, we present a novel task planning approach dedicated to \acrshort{hri} which, by planning for both the human and the robot, tries to satisfy multiple objectives:
 
 \begin{enumerate}
-\item \textbf{Plan without assuming a prior shared goal}. In \acrshort{hri} scenarios, the robot and the human are not always sharing a goal. The robot can for example plan to perform a task around human that are not involved at first, or it may be requested by a human to do a task without wanting to take a part in it. By doing so, our planner can balance between integrating the sharing of a goal with a human (assumed to be collaborative) in the plan and making the robot do the task alone, or integrate to ask for punctual human help.
+\item \textbf{Plan without assuming a prior shared goal}. In \acrshort{hri} scenarios, the robot and the human are not always sharing a goal. The robot can for example plan to perform a task around human that are not involved at first, or it may be requested by a human to do a task without wanting to take a part in it. By doing so, our planner can balance between integrating the sharing of a goal with a human (assumed to be collaborative) in the plan and making the robot do the task alone, or integrate the eventuality to ask for punctual human help.
 
 \item \textbf{Model the human decision processes}. When taking part in a task, a human (assumed willing to collaborate with the robot) will also plan to reach their (potentially shared) goal. Our planner must be able to account for this to provide plans that are expected and explainable by the human partner.
 
 \item \textbf{Help the human decision, but not compel it}. Unlike \acrshort{hatp}, our planner should account for the human flexibility in their decision. While by modelling the human decision processes it is possible to narrow down the possible human actions, the generated plans must be able to help the supervision to avoid to replan or to repair during the execution by considering several human actions.
 
-\item \textbf{Model the potential human reactions}. It is possible to predict that the human may react to some situations, interrupting or helping their current task. We identifies two causes of these reactions. First, they can ensue some specific world states, that have been perceived and interpreted by the human. Then, they can also originate from explicit communications issued by the robot. These communication can either be a belief alignment, updating the human knowledge and impacting their decisions; a request to perform a specific action or a request to help the robot along with a shared goal, needing the human to plan for it.
+\item \textbf{Model the potential human reactions}. It is possible to predict that the human may react to some situations, interrupting or helping their current task. We identify two causes of these reactions. First, they can ensue some specific world states, that have been perceived and interpreted by the human. Then, they can also originate from explicit communications issued by the robot. These communications can either be a belief alignment, updating the human knowledge and impacting their decisions; a request to perform a specific action or a request to help the robot along with a shared goal, needing the human to plan for it.
 
 \item \textbf{Act and decide on the different agents beliefs}. It is important to be able to represent actions as having different effects in the beliefs of the robot or the human. Indeed, some robot actions are partially or not observable by the human, when performing them, the human has no way of knowing the complete new world state. Besides, these effects and their observability often depend on the current world state, which representation must be supported in the planner. Then, decisions made while planning may require to reason on both the robot and the human beliefs. This is especially the case with communication actions aiming at aligning knowledge or ask questions for example. Finally, some actions of pure decision have no direct effect on the world, but only on the internal beliefs of the agents. For example, observation actions will only update the beliefs of the agent doing it.
 
-\item \textbf{Decide not only on the world state but also on the decision processes of agents}. Some decisions made during the planning process require to access not only on the beliefs of the agents representing the world state, but also on the estimation of their planning processes. For example, the decomposition of a task by the robot may be impossible if a certain task has been plan as already been performed by itself in the partial plan. Other decisions may also need the estimation of the human current planning process. For example, if it has been estimated earlier in the plan that the human will perform a certain decomposition of a task, the planner would assign a complementary task to the robot.
+\item \textbf{Decide not only on the world state but also on the decision processes of the agents}. Some decisions made during the planning process require to access not only the beliefs of the agents representing the world state, but also on the estimation of their planning processes. For example, the decomposition of a task by the robot may be impossible if some other task is already performed in its partial plan. Other decisions may also need the estimation of the human current planning process. For example, if it has been estimated earlier in the plan that the human will perform a certain decomposition of a task, the planner would assign a complementary task to the robot.
 
 \item \textbf{Adapt to the human experience, trust and preferences}. We also want the planning process to be adjusted depending on the actual human it is planning with. It must perform its plan search differently whether the human has the habit to perform this particular task with the robot or not. Moreover, the human model can be adjusted to the trust the human has in the robot and to their preferences. 
 \end{enumerate}
 
-First, we describe our approach and introduce the notations used in this chapter before detailing the planning process. Then, we demonstrate the planner capabilities on two example situations. Finally, we present a task inspired from psychology which is particularly interesting for \acrshort{hri} and has never been tackled in robotics yet, and we show how our planner has been integrated in a fully functional robotic architecture dedicated to this new task.
+First, we describe our approach and introduce the notations used in this chapter before detailing the planning process. Then, we present the implementation of this approach into a prototype planner in Python that we named \acrfull{hatpehda}. Finally, we demonstrate the planner capabilities on two illustrative situations.
 
 \section{Description}
-We separate the agents who may take part in a given task into two categories: the controllable agent (\textit{i.e.} the robot) for which the planner needs to select the best course of actions to generate a plan; and the uncontrollable agent (\textit{i.e.} the human) on whom the planner has no direct control but, still, has a representation of their decision, action and reaction models. The two agent types are fundamentally different: (1) the robot is controllable since the process is run by the robot, (2) the human agent is not controllable since the process can only ``speculate'' on their decisions and actions, but can model that the robot actions can still influence them and that some of them are observable by the robot, (3) the two agents are not equivalent, the robot agent role is to help, assist and facilitate human and to synthesize pertinent, legible and acceptable behavior.
+We separate the agents who may take part in a given task into two categories: the controllable agent (\textit{i.e.} the robot) for which the planner needs to select the best course of actions to generate a plan; and the uncontrollable agent (\textit{i.e.} the human) on whom the planner has no direct control but, still, has a representation of their decision, action and reaction models.
+
+The two agent types are fundamentally different: 
+\begin{enumerate}
+\item the robot is controllable since the process is run by the robot,
+\item the human agent is not controllable since the process can only ``speculate'' on their decisions and actions, but can model that the robot actions can still influence them and that some of them are observable by the robot,
+\item the two agents are not equivalent, the robot agent role is to help, assist and facilitate human and to synthesize pertinent, legible and acceptable behavior.
+\end{enumerate}
 We want to devise a planner allowing the controllable agent to plan for its actions while anticipating the decisions, actions and reactions of the uncontrollable agent. Moreover, we want the planner to be able to generate plans where the robot actions elicit situations calling for human decision, action and reaction, thus creating and anticipating collaboration and interaction.
 
 \smallskip
 
-This problem may be seen as a classical non deterministic planning problem, but enriched with the ability of the robot to model the actions, beliefs and decision process of the human. Thus, we have to consider distinct action models, beliefs and execution streams for each of the agents involved. Doing so with classical STRIPS-style planning approaches would potentially lead to an intractable search space. Moreover, \acrshort{htn} approaches have already been shown to be suitable for \acrshort{hri} as they allow to communicate about the plan more easily~\cite{lallement2014hatp}. Therefore, we chose to use \acrshort{htn} planning for both the controllable and uncontrollable agents. \acrshort{htn} planning aims at decomposing abstract tasks into atomic primitive tasks by choosing from a list of available context-dependent refinements for each abstract task, ensuring that preconditions and effects of refined primitives tasks are respected throughout the created plan. Similarly to HATP~\cite{sebastiani2017dealing}, our planner elaborates a plan with several streams of actions each associated to an agent involved in the task. But while in \acrshort{hatp}, all the streams are built starting from on initial root node corresponding to a shared goal between all agents, our planner starts from multiple initial root nodes corresponding to the decision process of the different agents.
+This problem may be seen as a classical non deterministic planning problem, but enriched with the ability of the robot to model the actions, beliefs and decision process of the human. Thus, we have to consider distinct action models, beliefs and execution streams for each of the agents involved. Doing so with classical STRIPS-style planning approaches would potentially lead to an intractable search space. Moreover, \acrshort{htn} approaches have already been shown to be suitable for \acrshort{hri} as they allow to communicate about the plan more easily~\cite{lallement2014hatp}. Therefore, we chose to use \acrshort{htn} planning for both the controllable and uncontrollable agents. \acrshort{htn} planning aims at decomposing abstract tasks into atomic primitive tasks by choosing from a list of available context-dependent refinements for each abstract task, ensuring that preconditions and effects of refined primitives tasks are satisfied throughout the created plan. Similarly to HATP~\cite{sebastiani2017dealing}, our planner elaborates a plan with several streams of actions each associated to an agent involved in the task. But while in \acrshort{hatp}, all the streams are built starting from on initial root node corresponding to a shared goal between all agents, our planner starts from multiple initial root nodes corresponding to the decision process of the different agents.
 
 The main structure manipulated by our planner is the \textbf{agent}, more precisely two will be represented, the \textit{human} and the \textit{robot}. Each agent has their own \textbf{beliefs}, \textbf{action model}, \textbf{agenda}, \textbf{plan} and \textbf{triggers}. The planner has to use their action models and beliefs to decompose the tasks in their agenda into primitive tasks (actions) that are inserted in their plan. By doing so, it also has to update the beliefs of each agent and to model their reaction by executing the triggers.
 
@@ -70,16 +77,23 @@ An agenda $\agenda_{\agent}$ and a plan $\plan_{\agent}$ (this agent only stream
 \paragraph{\bf Agent triggers:}
 Finally, we define for each agent $\agent$ a set of so-called \textit{trigger functions} $\triggerset_{\agent}$. These trigger functions aim at representing reactions of agents to certain situations (subsets of worlds states). They are useful to model event driven behavior, as in PRS~\cite{ingrand1996prs}, when a specific world state \textit{triggers} a reaction from an agent. Besides, these triggers can be used to represent social norms as defined in \cite{carlucci2015explicit}, where the user can specify literals which, if true in the world state during the planning process, add some specific robot actions to the plan.
 
-Triggers function are defined as: $\triggerset \ni t: \agentsstatesset \rightarrow (\operators \cup \abstracttasks)^n \cup ()$ with $n \in \intset^*$, returning a sequence of tasks to be inserted in an agent agenda as a reaction to specific agent states. For now, the tasks returned by a trigger function are added at the beginning of the agenda, thus preempting any task that may have started to be decomposed. A considered solution is to support the flagging of some abstract tasks in the domain as being \textit{atomic}. We can then prevent the tasks returned by a trigger to be inserted between any tasks resulting of the decomposition of an atomic task.
+Triggers function are defined as: $\triggerset \ni t: \agentsstatesset \rightarrow (\operators \cup \abstracttasks)^n \cup ()$ with $n \in \intset^*$, returning a sequence of tasks to be inserted in an agent agenda as a reaction to specific agent states. For now, the tasks returned by a trigger function are added on top of the agenda, thus preempting any task that may have started to be decomposed. A considered solution is to support the flagging of some abstract tasks in the domain as being \textit{atomic}. We can then prevent the tasks returned by a trigger to be inserted between any tasks resulting of the decomposition of an atomic task.
 
-\section{Planning Process}
+\section{The Proposed Planning Process}
 The cooperative agents planning problem consists in two agents $\agents_{start}$ with their respective agenda filled with tasks to achieve and their beliefs about the current world. For the controllable agent (\textit{i.e.} the robot), the beliefs correspond to the planner ground truth, for the uncontrollable agent, their beliefs need to be estimated, through, for example, situation assessment component~\cite{milliez2014framework, lemaignan2018underworlds}. Both beliefs are then updated separately during the planning process, allowing to detect and correct belief divergences for example. 
 
 The result is a robot conditional plan $\policy$ being a tree of alternating robot and human primitive tasks. Any path from the root to the leaves is a feasible sequence of primitive tasks (\textit{i.e.} each primitive task application leads to a state where the following one is applicable) leading to a state where the robot agenda is empty\footnote{We also intend to make the planner stops at a certain depth. Thus, it could be used during the execution to plan a few steps ahead but not until the task is over.}
 
 To solve such a problem we need to augment the search space from world states $\statespace$ only to all the agents states considered by the planner $\agentsstates$, with their agenda, plan and beliefs. The exploration starts with $\agentsstates^{start}$ and consecutively applies operators associated to the robot and to the human, leading to new agents states $\agentsstates^{i}$ until the controllable agent has an empty agenda: $\agenda_{robot} = ()$.
 
-The search, which will be detailed after, is done in two parts. First, the robot and human HTNs are explored to find all the feasible plans (and in future works, also all the failing plans). This first exploration results in a tree of alternating robot and human primitive tasks but where robot ones are not selected yet (in the tree, several robot actions can be issued after a human one). Moreover, this tree has an additional dimension corresponding to the task hierarchy originating from the \acrshortpl{htn} decompositions. Then, a conditional plan is selected from this tree. The conditional plan is also an tree of alternating human and robot primitive tasks, but the robot tasks have been selected (according to cost functions detailed later in this chapter) so only one robot primitive task can follow a human one (\textit{i.e.} the human primitive tasks now have only one child). Again, the generated conditional plan keeps the task hierarchy of the \acrshortpl{htn} decomposition, allowing the supervision component to more easily communicate about it, to be reasoned on or to be stored with a semantic meaning to reuse it later in other components. Selecting robot actions while still accounting for the possible human ones allows for a simpler plan post-processing at the execution. For example, Levine and Williams propose to let the robot actions choices and causality analysis to the execution~\cite{levine2014concurrent}. While with this approach repairing plan is easier, the execution component may not have all the information to take decisions.
+The search, which will be detailed after, is done in two parts:
+\begin{enumerate}
+\item First, the robot and human HTNs are explored to find all the feasible plans (and in future works, also all the failing plans). This first exploration results in a tree of alternating robot and human primitive tasks but where robot ones are not selected yet (in the tree, several robot actions can be issued after a human one). Moreover, this tree has an additional dimension corresponding to the task hierarchy originating from the \acrshortpl{htn} decompositions.
+
+\item  Then, a conditional plan is selected from this tree. The conditional plan is also an tree of alternating human and robot primitive tasks, but the robot tasks have been selected (according to cost functions detailed later in this chapter) so only one robot primitive task can follow a human one (\textit{i.e.} the human primitive tasks now have only one child).
+\end{enumerate}
+
+Again, the generated conditional plan keeps the task hierarchy of the \acrshortpl{htn} decomposition, allowing the supervision component to more easily communicate about it, to be reasoned on or to be stored with a semantic meaning for it to be reused later in other components. Selecting robot actions while still accounting for the possible human ones allows for a simpler plan post-processing at the execution. For example, Levine and Williams propose to let the robot actions choices and causality analysis to the execution~\cite{levine2014concurrent}. While with this approach repairing plan is easier, the execution component may not have all the information to take decisions.
 
 \subsection{Action Models Restriction}
 
@@ -92,30 +106,33 @@ Some constraints on the operator, method and trigger functions must be respected
  \hline
  Agent type & Readable & Writable \\
  \hline
- Controllable (robot) & \begin{tabular}[c]{@{}l@{}}$\worldstate_{robot}, \worldstate_{human},$ \\ $\plan_{robot}, \plan_{human}$ (1)\end{tabular} & \begin{tabular}[c]{@{}l@{}}$\worldstate_{human}, \worldstate_{robot},$(2)\\ $\agenda_{human}, \agenda_{robot}$ (3)\end{tabular}\\
+ Controllable (robot) & \begin{tabular}[c]{@{}l@{}}$\worldstate_{robot}, \worldstate_{human},$ \\ $\plan_{robot}, \plan_{human}$ (a)\end{tabular} & \begin{tabular}[c]{@{}l@{}}$\worldstate_{human}, \worldstate_{robot},$(b)\\ $\agenda_{human}, \agenda_{robot}$ (c)\end{tabular}\\
  \hline
- Uncontrollable (human) & $\worldstate_{self}, \plan_{self}$ (4) & $\worldstate_{self}, \worldstate_{other}, \agenda_{self}$ (5)\\
+ Uncontrollable (human) & $\worldstate_{self}, \plan_{self}$ (d) & $\worldstate_{self}, \worldstate_{other}, \agenda_{self}$ (e)\\
  \hline
 \end{tabular}
 \caption{Readable and writable elements (belief states, agenda, plan) of the agents state by method, primitive task and trigger functions.}
 \label{table:function_restrictions}
 \end{table}
-\paragraph{(1)}During robot planning, the decision and the action can depend on the beliefs of the robot and on the planned estimated beliefs of the human. Moreover, the current partial plan of the robot and the anticipated plan of human one can also be used to make decisions.
 
-\paragraph{(2)} The effects of robot actions obviously impact its own belief state (considered as the real world state by the planner), but also the beliefs of the human, for example, through their observation process and first order logic reasoning. More elaborate schemes to compute the effects can also be devised such as those described in~\cite{gharbi2015combining}.
+\paragraph{Table~\ref{table:function_restrictions}(a):} During robot planning, the decision and the action can depend on the beliefs of the robot and on the planned estimated beliefs of the human. Moreover, the current partial plan of the robot and the anticipated plan of human one can also be used to make decisions.
 
-\paragraph{(3)} Besides, a robot action can add a new task to the agenda of the human. This is to account for communication actions requesting the human to do something.
+\paragraph{Table~\ref{table:function_restrictions}(b):} The effects of robot actions obviously impact its own belief state (considered as the real world state by the planner), but also the beliefs of the human, for example, through their observation process and first order logic reasoning. More elaborate schemes to compute the effects can also be devised such as those described in~\cite{gharbi2015combining}.
 
-\paragraph{(4)} The human decisions and actions can only be done according to her own beliefs and partial plan. Indeed, we cannot add the robot ones as it is, or we would consider that the human estimation of the robot knowledge and past actions is always perfect. This would require a third type of agents, being the robot model as estimated by our estimation of the human. For now, we chose not to represent the estimation of the robot partial plan in the human beliefs. Indeed, it would require to reason on the observability of the robot actions to represent them in the human beliefs. However, the human beliefs can be updated through robot actions.
+\paragraph{Table~\ref{table:function_restrictions}(c):} Besides, a robot action can add a new task to the agenda of the human. This is to account for communication actions requesting the human to do something.
 
-\paragraph{(5)}The effects of the human actions obviously impact their beliefs and the robot (planner) ones. Moreover, the human agenda could also be updated through, for example, a positive answer of a task request.
-%\end{itemize}
+\paragraph{Table~\ref{table:function_restrictions}(d):} The human decisions and actions can only be done according to her own beliefs and partial plan. Indeed, we cannot add the robot ones as it is, or we would consider that the human estimation of the robot knowledge and past actions is always perfect. This would require a third type of agents, being the robot model as estimated by our estimation of the human. For now, we chose not to represent the estimation of the robot partial plan in the human beliefs. Indeed, it would require to reason on the observability of the robot actions to represent them in the human beliefs. However, the human beliefs can be updated through robot actions.
+
+\paragraph{Table~\ref{table:function_restrictions}(e):} The effects of the human actions obviously impact their beliefs and the robot (planner) ones. Moreover, the human agenda could also be updated through, for example, a positive answer of a task request.
 
 
 \subsection{Exploration Algorithm}
 Our planner operates in a turn-taking scheme, based on the update of the agents beliefs states, the \acrshortpl{htn} of the robot and the human are explored successively.
 
-\begin{algorithm}[H]
+\subsubsection{Controllable Agent HTN Exploration}
+The robot \acrshort{htn} exploration is a pretty standard depth first algorithm presented in Algorithm~\ref{alg:seek_plans}. The first task $\lambda$ from its agenda $\agenda_{robot}$ its popped, then if it is an abstract task $\lambda \in \abstracttasks$, all the applicable methods are applied, and their result are prepended to the agenda, thus giving new agents states (with the same beliefs as the previous ones but with the robot agenda updated) and branching our search space. We iterate with the new task popped from the new robot agenda. Eventually, the popped task will be a primitive one $\lambda \in \operators$, its function will then be applied to the currently explored agent states. If it returns \textit{false}($\bot$), the action is not applicable, and the exploration backtracks to another decomposition of an abstract task. However, if the action is applicable (returns a new agents state), the triggers are run for each agent, updating their agenda if necessary. Then, we question the human \acrshort{htn} to get their possible next actions from this new agents state, and, for each possible new agents state, we apply the triggers of each agent then we continue the robot \acrshort{htn} exploration. This exploration continues until the robot agenda is empty, or all the branches return \textit{false}.
+
+\begin{algorithm}[htb!]
 \begin{algorithmic}[1]
 \Function {SeekPlans}{$robot$, $human$}
 \State $solutions \leftarrow$ an empty list of plans
@@ -154,7 +171,7 @@ Our planner operates in a turn-taking scheme, based on the update of the agents 
 	\State $\worldstate_{r'}, \agenda_{r'}, \worldstate_{h'}, \agenda_{h'} \leftarrow \textsc{Apply}(result)$
 	\State $\plan_{r'} \leftarrow \plan_{r'}.\lambda$
 	\State $\agenda_{r'}, \agenda_{h'} \leftarrow \textsc{ApplyTriggers}(\worldstate_{r'}, \plan_{r'}, \agenda_{r'}, \worldstate_{h'}, \plan_{h'}, \agenda_{h'})$
-	\State $humanApplicableOperators \leftarrow \textsc{GetHumanApplicableOperators}(h')$
+	\State $humanApplicableOperators \leftarrow \textsc{GetHApplicableOperators}(h')$
 	\State $isOneOperatorValid \leftarrow$ false
 	\ForEach{$o$}{$humanApplicableOperators$}
 		\State $r'', h'' \leftarrow \textsc{Copy}(r', h')$
@@ -171,9 +188,12 @@ Our planner operates in a turn-taking scheme, based on the update of the agents 
   \label{alg:seek_plans}
 \end{algorithm}
 
-\begin{algorithm}[H]
+\subsubsection{Uncontrollable Agent HTN Exploration}
+The human \acrshort{htn} exploration differs from classical HTN planner as the goal is not to produce a complete plan, but rather to list all the actions the human is likely to perform in a given agents state. As presented in Algorithm~\ref{alg:gethactions}, we recursively decompose the first task of the human agenda $\agenda_{human}$ with every applicable methods, until we reach an applicable operator. All the operators from all the applicable decompositions are returned to the robot \acrshort{htn} exploration, and applied.
+
+\begin{algorithm}[htb!]
 \begin{algorithmic}[1]
-\Function {GetHumanApplicableOperators}{$h$}
+\Function {GetHApplicableOperators}{$h$}
 \State $solution \leftarrow ExploreApplicableOps(h)$
 \If {$solution = ()$}
 	\Return $(WAIT)$
@@ -212,12 +232,6 @@ Our planner operates in a turn-taking scheme, based on the update of the agents 
  \label{alg:gethactions}
 \end{algorithm}
 
-\subsubsection{Controllable Agent HTN Exploration}
-The robot \acrshort{htn} exploration is a pretty standard depth first algorithm presented in Algorithm~\ref{alg:seek_plans}. The first task $\lambda$ from its agenda $\agenda_{robot}$ its popped, then if it is an abstract task $\lambda \in \abstracttasks$, all the applicable methods are applied, and their result are prepended to the agenda, thus giving new agents states (with the same beliefs as the previous ones but with the robot agenda updated) and branching our search space. We iterate with the new task popped from the new robot agenda. Eventually, the popped task will be a primitive one $\lambda \in \operators$, its function will then be applied to the currently explored agent states. If it returns \textit{false}($\bot$), the action is not applicable, and the exploration backtracks to another decomposition of an abstract task. However, if the action is applicable (returns a new agents state), the triggers are run for each agent, updating their agenda if necessary. Then, we question the human \acrshort{htn} to get their possible next actions from this new agents state, and, for each possible new agents state, we apply the triggers of each agent then we continue the robot \acrshort{htn} exploration. This exploration continues until the robot agenda is empty, or all the branches return \textit{false}.
-
-\subsubsection{Uncontrollable Agent HTN Exploration}
-The human \acrshort{htn} exploration differs from classical HTN planner as the goal is not to produce a complete plan, but rather to list all the actions the human is likely to perform in a given agents state. As presented in Algorithm~\ref{alg:gethactions}, we recursively decompose the first task of the human agenda $\agenda_{human}$ with every applicable methods, until we reach an applicable operator. All the operators from all the applicable decompositions are returned to the robot \acrshort{htn} exploration, and applied.
-
 \subsubsection{Default Actions} Two special cases are handled during the exploration. If the human agenda is empty whereas the robot one is not, the exploration returns a default action \textit{IDLE} --- which does not modify agents beliefs nor agendas --- for the human. This action represents the non-involvement of the human in a task. Besides, if for the human no applicable action is found a default action \textit{WAIT} --- which does not modify agents nor agendas --- is returned. This action represents the impossibility of the human to act in the current situation, making them wait for the robot to proceed. This default action can also be used in a domain to represent the human decision to wait for the robot to act.
 
 Once the robot agenda is emptied, the agents state is set as a success, the plan is added to the valid plans tree and the search can be continued until no decomposition is left for any task.
@@ -234,36 +248,40 @@ Moreover, like in \acrshort{hatp} we allow to define \textit{social costs} funct
 \subsubsection{Minimizing the Average Cost}
 The first approach we propose for plan selection is to minimize the average cost (Algorithm~\ref{alg:minaverage}). It represents the human potentially selecting any course of actions in their stream (while still respecting the action model defined in their \acrshort{htn}).
 
-The algorithm is given at start the root action of the task network previously generated, and return the cost of the conditional plan selected while having selected the robot actions in the task network. The functions used in Algorithm~\ref{alg:minaverage} are described hereafter:
+The algorithm is given at start the root action of the task network previously generated, and returns the cost of the conditional plan selected while having selected the robot actions in the task network. The functions used in Algorithm~\ref{alg:minaverage} are described hereafter:
 
 \begin{itemize}
-\item \textbf{\textsc{PathEndingWith}}: This function recursively backtracks from an action to get all its parent. This result in a path in the conditional plan tree, \textit{i.e.} a plan as a sequence of alternating human and robot actions on which a social cost can be computed.
+\item \textbf{\textsc{PathEndingWith}}: This function recursively backtracks from an action to get all its parents. This results in a path in the conditional plan tree, \textit{i.e.} a plan as a sequence of alternating human and robot actions on which a social cost can be computed.
 
-\item \textbf{\textsc{AgentPerforming}}: This function returns the agent performing the action given as argument (either the robot or the human).
+\item \textbf{\textsc{PerformingAgent}}: This function returns the agent performing the action given as argument (either the robot or the human).
 
-\item \textbf{\textsc{State}}: Return the state $\agentsstates$ on which the action given as argument is applied.
+\item \textbf{\textsc{ApplicationState}}: Return the state $\agentsstates$ on which the action given as argument is applied.
 \end{itemize}
 
 While this is a first step and additional work is required for conditional plan selection, it has proven to work on several examples shown later in this chapter.
 
-\begin{algorithm}[H]
+\begin{algorithm}[htb]
 \begin{algorithmic}[1]
-\Function{SelectRobotActions}{$action$, $actualcost$}
+\Function{SelectRobotActions}{$action$, $actualCost$}
 \If{$\textsc{NextActions}(action) = \bot$} \Comment{If it is the last action, we compute the social cost of the plan and return its addition with the per-action cost.}
-	\State $actualcost \leftarrow actualcost + \textsc{Cost}(action)$
-	\State \Return $actualcost$ + $\textsc{SocialCost}(\textsc{PathEndingWith}(action))$
+	\State $actualCost \leftarrow actualCost + \textsc{Cost}(\textsc{ApplicationState}(action), action)$
+	\State \Return $actualCost$ + $\textsc{SocialCost}(\textsc{PathEndingWith}(action))$
 \EndIf
-\If{$\textsc{AgentPerforming}(action) =$ robot} \Comment{If this action is done by the robot, the followings are performed by the human}
+\If{$\textsc{PerformingAgent}(action) =$ robot} \Comment{If this action is done by the robot, its direct children are performed by the human}
 	\State $totalCost \leftarrow 0$
+	\State $actionCost \leftarrow \textsc{Cost}(\textsc{ApplicationState}(action), action)$
 	\ForEach{$child$}{$\textsc{NextActions}(action)$}
-		\State $totalCost \leftarrow \textsc{SelectRobotActions}(child, actualcost + \textsc{Cost}(\textsc{State}(action), action))$
+		\State $totalCost \leftarrow \textsc{SelectRobotActions}(child,$\\
+		\hfill$actualCost + actionCost)$
 	\EndFor
 	\State \Return $totalCost / \textsc{Card}(\textsc{NextActions}(action))$
-\Else \Comment{This action is done by the human, the next ones are done by the robot and need to be selected}
+\Else{} \Comment{This action is done by the human, its direct children are done by the robot and need to be selected}
 	\State $minCost \leftarrow +\infty$
 	\State $chosenChild \leftarrow$ null
+	\State $actionCost \leftarrow \textsc{Cost}(\textsc{ApplicationState}(action), action)$
 	\ForEach{$child$}{$\textsc{NextActions}(action)$}
-		\State $childCost \leftarrow \textsc{SelectRobotActions}(child, actualcost + \textsc{Cost}(\textsc{State}(action), action))$
+		\State $childCost \leftarrow \textsc{SelectRobotActions}(child,$\\
+		 \hfill$actualCost + actionCost)$
 		\If{$actionCost < minCost$}
 			\State $minCost \leftarrow childCost$
 			\State $chosenChild \leftarrow child$
@@ -280,10 +298,14 @@ While this is a first step and additional work is required for conditional plan 
  \label{alg:minaverage}
 \end{algorithm}
 
-\subsubsection{The Human as a Limited Depth Planner}
-Another method to select the robot action that yet to be implemented is to consider the human as being able to plan a few step ahead. Thus, instead of considering the average cost of all the possible human actions, we could set less importance to the ones failing a few step ahead and more importance to the ones leading to smaller cost in the near future.
+\subsubsection{The Human Planning Process Modeled as a Limited Depth Planner}
+Another method to select the robot actions that yet needs to be implemented is to consider the human as being able to plan a few step ahead. Thus, instead of considering the average cost of all the possible human actions, we could set less importance to the ones failing a few steps ahead and more importance to the ones leading to a smaller cost in the near future.
 
-To do so would require to also store the failing operators in the valid plans tree during the first exploration step. Moreover, it would require a new parameter being the depth at which the human is modeled to foresee in the plan. Then, when exploring the valid plans tree, if a failing operator is encountered at a depth smaller than the depth parameter, the cost of the corresponding plan would not be added to the average as we assume the human would not make an action leading to a failure that they can foresee. Moreover, the average can be weighted with smaller number for plans being evaluated more costly than others at the depth specified as parameter. This models that the human will not perform actions that they estimate to lead in costly plans.
+To do so would require to also store the failing operators in the valid plans tree during the first exploration step. Moreover, it would require a new parameter being the depth at which the human is modeled to foresee in the plan. 
+
+Then, when exploring the valid plans tree, if a failing operator is encountered at a depth smaller than the depth parameter, the cost of the corresponding plan would not be added to the average as we assume the human would not make an action leading to a failure that they can foresee. 
+
+Moreover, the average can be weighted with smaller number for plans being evaluated more costly than others at the depth specified as parameter. This models that the human will not perform actions that they estimate to lead in costly plans.
 
 This approach still needs refinement but is seen as a great improvement over considering only the cost average.
 
@@ -295,13 +317,13 @@ Such communication can hardly be inserted in the \acrshortpl{htn} or during the 
 Finally, the decision to add or not such a communication can also depend on the trust the robot has in this human and on the estimated experience the human has in doing this specific task or in working with the robot.
 
 \section{Implementation}
-The previous section presented the general ideas and concepts behind this new planning paradigm. This short section shows some interesting details about the actual implementation of a prototype of the planner, along with some explanations preparing the following examples presentation. In the next chapter we will also show how it has been integrated with other components to extend its capabilities and be used in a real robotic architecture.
+The previous section presented the general ideas and concepts behind this new planning paradigm. This short section shows some interesting details about the actual implementation of a prototype of the planner, along with some explanations preparing the following examples presentation. We named this prototype planner \acrfull{hatpehda}. In the next chapter we will also show how it has been integrated with other components to extend its capabilities and be used in a real robotic architecture.
 
 \subsection{A Python Planner}
 We chose to implement the prototype of the planner in Python. It is originally based upon the \acrfull{pyhop} from Nau but has been largely modified, and only remain the general data structures. As in \acrshort{pyhop}, it allows to represent world states as Python objects having dictionary as attributes. For example \verb|s.isReachableBy["cube_23"] = ["human_3", "pr2_robot"]| specifies that the \textit{cube\_23} is reachable by both the \textit{human\_3} and the \textit{pr2\_robot}. 
 %A more detailed state representation with a beliefs divergence is available in Listing~\ref{list:pystatedef}.
 Moreover, like in \acrshort{pyhop} the planning domains (\acrshortpl{htn} for both the robot and the human) are written using plain Python functions. While using a separate domain specific language (DSL) for writing planning domains enables some optimizations and advanced search algorithms, it tremendously reduces the expressiveness, and makes representing real worlds scenarios them more complex. Besides, Python being an interpreted language, iterating over these domains is quicker as, unlike \acrshort{hatp}, they do not require any compiling before being planned upon.
-The decomposition functions take the world states (beliefs), partial plans of the agents (depending on the type of the agent~Table~\ref{table:function_restrictions}) and any other optional parameters (\textit{e.g.} goals, entities) as arguments, and return a list of tasks with optional parameters to be put in the agent's agenda. Likewise, the actions expect the world states, the partial plans and the agendas of the agents (also depending on the type of the agent~Table~\ref{table:function_restrictions}) and return new states and agendas.
+The decomposition functions take the world states (beliefs), partial plans of the agents (depending on the type of the agent~Table~\ref{table:function_restrictions}) and any other optional parameters (\textit{e.g.} goals, entities) as arguments, and return a list of tasks with optional parameters to be put in the agent's agenda. Likewise, the actions receive as arguments the world states (beliefs), the partial plans and the agendas of the agents (also depending on the type of the agent~Table~\ref{table:function_restrictions}) and return new world states and agendas.
 
 The search algorithms have also been implemented in Python. A lot of optimization can be done, and it is planned to entirely rewrite the software in C++. The current prototype, while not being efficient compared to other approaches, still allows to find plans in a reasonable time for realistic human robot scenarios.
 
@@ -370,7 +392,9 @@ def pick_mug(self_agent, other_agent, mug):
 \end{comment}
 
 \subsection{Drawing the Plans}
-Thinking about the robot programmer is almost as important as considering the human partner the robot will interact with. Thus, in order to debug the designed \acrshortpl{htn}, we provide a way of visualizing the valid plans tree and the generated conditional plan. A example of visualization of valid plans tree (before selecting a conditional plan) is presented in Figure~\ref{fig:chap4mugsss}. The ellipses correspond to primitive tasks while rectangles represent abstract ones. The octagons represent the default actions (\textit{IDLE} and \textit{WAIT}). The blue shapes are robot tasks and the yellow ones are the human's. Finally, red arrows indicate the sequence of actions in the plans and grey ones represent hierarchical links, \textit{i.e.} the links between the tasks as defined in the \acrshortpl{htn}, along with the decomposition numbers next to them.
+Thinking about the robot programmer is almost as important as considering the human partner the robot will interact with. Thus, in order to debug the designed \acrshortpl{htn}, we provide a way of visualizing the valid plans tree and the generated conditional plan. 
+
+A example of visualization of valid plans tree (before selecting a conditional plan) is presented in Figure~\ref{fig:chap4mugsss}. The ellipses correspond to primitive tasks while rectangles represent abstract ones. The octagons represent the default actions (\textit{IDLE} and \textit{WAIT}). The blue shapes are robot tasks and the yellow ones are the human's. Finally, red arrows indicate the sequence of actions in the plans and grey ones represent hierarchical links, \textit{i.e.} the links between the tasks as defined in the \acrshortpl{htn}, along with the decomposition numbers next to them.
 
 It is interesting to note that in Figure~\ref{fig:chap4mugsss} some human actions are followed by two potential robot actions (yellow shapes of which originate red arrows leading to several blues shapes). Indeed, these actions are feasible by the robot, but no plan has been selected yet. Whereas in Figure~\ref{fig:chap4mugtrialerror}, representing a conditional plan selected from the previous figure, the robot actions are set, and the non determinism is only on the human actions.
 
@@ -504,7 +528,7 @@ The robot is now heading to the coffee machine with the right mug in its gripper
 \label{subsubsec:chap4coffeerobotonly}
 \begin{figure}[hbtp]
 \centering
-\includegraphics[height=0.5\textwidth, angle=90, origin=c]{figures/chapter4/HTN_r_coffee.png}
+\includegraphics[height=0.47\textwidth, angle=90, origin=c]{figures/chapter4/HTN_r_coffee.png}
 \caption{The action models (HTN) of the robot for the coffee preparation task. Rectangles represent abstract tasks and ellipses represent primitive tasks. The links with an arrow are ``and'' links, the others are ``or'' links. Please note that some decompositions have been merged for clarity.}
 \label{fig:chap4rhtncoffee}
 \end{figure}
@@ -556,7 +580,7 @@ As we also want the robot to be able to ask the idle human to help it, we add, t
 \begin{itemize}
 \item \verb'r_make_coffee' containing the previous decomposition and the new one, represented in Figure~\ref{fig:chap4rhtncoffee}(b):
 	\begin{itemize}
-	\item \verb'r_make_coffee_collaboratively' returning the primitive task \verb'r_ask_human_for_help' and the abstract task \verb'help_make_coffee'
+	\item \verb'r_make_coffee_collaboratively' returning a sequence containing the primitive task \verb'r_ask_human_for_help' and the abstract task \verb'help_make_coffee'
 	\end{itemize}
 \item \verb'help_make_coffee' representing the ways for the robot to help another agent to make coffee. It has only one decomposition:
 	\begin{itemize}
@@ -638,12 +662,12 @@ Indeed, the planner may choose to leave the human with their false beliefs as it
 
 Through all these examples we show that this task planning approach, which separates human and robot beliefs and action models, can be suitable for multiple problems. We are able to plan for robot unknown human beliefs, to rely on the human planning process while keeping inherent uncertainties (\textit{i.e.} not making choices for them, without communicating them) and also to plan diverging beliefs and balance the actions of realigning them with plans containing mistakes. In the next section, we present a \acrshort{hri} task, inspired from psychology, that has never been tackled in robotics and we show how our planner is integrated in a fully functional robotic architecture dedicated for this task.
 
-\section{Conclusion and Future Works}
-In this chapter we proposed a new task planning approach for human robot interaction. This approach not only explicitly represent and plan upon both the human and the robot beliefs but also use two separate action models as \acrshortpl{htn} for the human and the robot.
+\section{Conclusion and Future Work}
+In this chapter we have proposed a new task planning approach for human robot interaction. This approach not only explicitly represent and plan upon both the human and the robot beliefs but also use two separate action models as \acrshortpl{htn} for the human and the robot.
 
 We proposed a formalism along with an algorithm allowing to plan for robot actions, while considering the possible human actions according to their task model. By doing so, we are able to represent and to account for the human planning and reaction processes.
 
-Then, we presented a successful implementation of this approach in Python and showed first results along two examples. These examples highlighted both the features of the prototype planner and the rationale behind the action models crafting. The planner is able to represent and to plan for robot unknown human knowledge, human reactions to robot actions, multiple human possible plans and intricate human robot tasks. It is also capable of balancing between communicating, letting the human perform a mistake and attributing different roles to the robot or the human.
+Then, we presented a successful implementation of this approach in Python called \acrfull{hatpehda} and showed first results along two examples. These examples highlighted both the features of \acrshort{hatpehda} and the rationale behind the action models crafting. The planner is able to represent and to plan for robot unknown human knowledge, human reactions to robot actions, multiple human possible plans and intricate human robot tasks. It is also capable of balancing between communicating, letting the human perform a mistake and attributing different roles to the robot or the human.
 
 We look forward to continue exploring this approach, find its benefits and its limits. More importantly we aspire at improving it, especially on the following topics.
 
@@ -655,13 +679,13 @@ Besides, even if we plan that the human will do one action or the other at one p
 %\subsection{Leveling-up the theory of mind}
 
 \subsection{Pruning During the Search Space Exploration}
-For now, all the search space is explored to find valid plans, and only then the cost of actions are evaluated to select the optimal conditional plan. However, even if the search is guided by the \acrshortpl{htn}, the branching factor can become large, especially if the planning process is executed in a robotic architecture while interacting with a human. Thus, it is possible to evaluate the plan cost during exploration and to prune some branches in the search space according to the best plan found so far. Yet, doing so would prevent from applying plan wide costs, as they could change the optimality of the plan used during in the search.
+For now, all the search space is explored to find valid plans, and only then the cost of actions are evaluated to select the optimal conditional plan. However, even if the search is guided by the \acrshortpl{htn}, the branching factor can become large, especially if the planning process is executed in a robotic architecture while interacting with a human. Thus, it is possible to evaluate the plan cost during exploration and to prune some branches in the search space according to the best plan found so far. Yet, doing so would prevent from applying plan wide (social) costs, as they could change the optimality of the plan used during in the search.
 
 Another approach would be to learn which actions a human is more likely to perform in a certain state. We could then prune all the least probable human actions (still returned by their modeled task tree). Although this approach can be easy to implement, learning must be done per human (as two humans may react differently in the same situation) and on a few learning samples as the same world state seldom appears during specific tasks on typical short term laboratory scenarios and generalization could be difficult.
 
 Finally, we can also imagine that the robot might ask the human which tasks they are likely to perform at a specific step in the plan, while elaborating the plan. This would lead to negotiations with the human making the final plan more acceptable while also reducing the branching factor as only the tasks answered by the human would be explored. However, for long and complex domains, this solution may confuse the human because it would require them to project on the long-term among multiple conditional eventualities.
 
-In the next chapter, we will show how our approach can be integrated in a robotic architecture and introduce a simple to reproduce yet challenging collaborative task inspired from psychology studies: the director task. To be performed by a robot, this task includes several prerequisites such as being able to take the perspective of the human partner and to refer objects in a dynamically evolving environment. Moreover, it involves some challenges by the approach presented in this chapter. The robot architecture which will be presented is built to handle the task allowing us to show how our prototype planner can be used on a real task in a complete robotic architecture.
+In the next chapter, we will show how \acrshort{hatpehda} can be integrated in a robotic architecture and introduce a simple to reproduce yet challenging collaborative task inspired from psychology studies: the director task. To be performed by a robot, this task includes several prerequisites such as being able to take the perspective of the human partner and to refer objects in a dynamically evolving environment. Moreover, it involves some challenges by the approach presented in this chapter. The robot architecture which will be presented is built to handle the task allowing us to show how \acrshort{hatpehda} can be used on a real task in a complete robotic architecture.
 
 \ifdefined\included
 \else
