@@ -64,8 +64,6 @@ When interacting with a robot, the human is no more the only agent taking autono
 \item The agent must be \textit{coordinated}: it should negotiate and deconflict plans, share resources and align beliefs between agents to create a \textit{common ground} if it is required to perform the task.
 \end{itemize}
 
-\unsure{I am afraid of adding thing here concerning the application of these things in task planning, I fear repetitions with "modeling human actions and shared plans...}
-
 Interestingly, in their ``Architecture for autonomy'', Alami \textit{et al.} propose a robotic architecture which defines similar levels as the ones identified by Norman during human action \cite{alami1998architecture}.
 
 
@@ -119,7 +117,8 @@ In order to help to differentiate between the models presented in this thesis, w
 
 \subsection{Task Modeling and Hierarchical Task Networks}
 %, Hamster, Nau
-\unsure{This part may be out of context here and probably shall be in Chapter4 only?}
+Multiple approaches try to model the human activity. It is useful either for psychological studies, or to design a system that integrates gracefully in human tasks, in order to improve their performances. These tasks can be seen as hierarchical, where abstract ones decompose into smaller, more concrete ones. Such a hierarchical approach is also used in order to elaborate plans for autonomous robots. Interestingly the underlying structures share several commonalities.
+
 \subsubsection{Human Task Modeling}
 A common way of representing human activity ($\humanmodel$) and interaction with computer at high abstraction level is by using \textit{task models}. The hierarchical structure of human activity was first exploited by Annett and Duncan \cite{annett1967task}. They state that tasks can be described at several levels of abstraction until a certain criterion is met. Each task can thus be refined into subtasks detailing the procedure followed by the human to achieve the higher level task.
 Task modeling has then evolved to introduce interaction with systems, produced and needed information, potential errors and a wide variety of operators specifying how tasks interacts with each other during their execution. Task models are now commonly used in user-centered and user interface designing processes. Most advanced notations include \textit{ConcurTaskTrees} \cite{paterno2004concurtasktrees} and \textit{HAMSTERS} \cite{martinie2019analysing}.
