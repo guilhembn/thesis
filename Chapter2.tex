@@ -73,7 +73,7 @@ where $fa$, $fb$ and $fc$ represent respectively cost functions associated with 
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width=0.8\textwidth]{figures/chapter2/hateb_graph.png}
+\includegraphics[width=0.9\textwidth]{figures/chapter2/hateb_graph.png}
 \caption{Representation of the hypergraph being optimized from \cite{khambhaita_viewing_2017}. Simple circles represent variables to optimize (poses of agents and duration between two consecutive poses). Double circles represent fixed poses (obstacles). Rectangles are the cost functions linked to the variables they need to be computed. The total cost of the graph is computed using a weighted sum of all the constraints. This approach allows to express constraints not only on the robot trajectory ($\robotmodel$), but also on the human ones (modeling the human behaviors, $\humanmodel$) and more importantly on the interaction between the multiple agents trajectory.}
 \label{fig:hateb_graph}
 \end{figure}
@@ -174,7 +174,7 @@ The user study was a 2 $\times$ 2 within-participants user study to evaluate how
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width=\textwidth]{figures/chapter2/Chap2ExpeReal.png}
+\includegraphics[width=0.95\textwidth]{figures/chapter2/Chap2ExpeReal.png}
 \caption{Two typical crossings. In column (a) the robot behavior is set to the condition \textit{low \acrshort{ttc}} for the trajectory and \textit{continuous} for the head. In column (b) the conditions are \textit{high \acrshort{ttc}} for the trajectory and \textit{alternated} for the head. In (b), thanks to the \acrshort{ttc} cost, the robot starts to move to one side of the corridor very early, whereas in (a) the robot moves almost a the last moment. Moreover, in (b) the robot glances at the human when in enters the corridor, and once again when he is nearby. In (a) the robot only looks at its future position.}
 \label{fig:realttc}
 \end{figure}
@@ -307,7 +307,7 @@ Finally, oculometry results indicate that when the head is recognized as an info
 \improvement{Ajouter limites et future works de l'étude ? Ou le mettre dans la section conclusion ?}
 
 \section{On User Studies in HRI}
-After doing this user study, we wanted to report the experience and to discuss it with the community. Thus, we decided with a PhD student in psychology, Kathleen Belhassein, to participate to a workshop at HRI 2019 entitled \textit{Test Methods and Metrics for Effective \acrshort{hri}}. It seemed interesting to collaborate to have two points of view on user studies, coming from psychology for her, and from \acrshort{hci} and \acrshort{hri} for us. We identified three main challenges concerning user studies in \acrshort{hri}: the users, the evaluation methods and the replication. We concluded by presenting ten recommendations for user studies in HRI \cite{belhassein2019towards}. According to the discussion with the community during the workshop, we updated and submitted a contribution to the \textit{Transactions on Human-Robot Interaction} journal.
+After doing this user study, we wanted to report the experience and to discuss it with the community. Thus, we decided with a PhD student in psychology, Kathleen Belhassein, to participate to a workshop at HRI 2019 entitled \textit{Test Methods and Metrics for Effective \acrshort{hri}}. It seemed interesting to collaborate to have two points of view on user studies, coming from psychology for her, and from \acrshort{hci} and \acrshort{hri} for us. We identified three main challenges concerning user studies in \acrshort{hri}: the users, the evaluation methods and the replication. We concluded by presenting ten recommendations for user studies in HRI \cite{belhassein2019towards}. According to the discussion with the community during the workshop, we updated and submitted a contribution, which has been accepted, to the \textit{Transactions on Human-Robot Interaction} journal.
 
 \subsection{Users in HRI studies}
 When conducting a user study, we obviously recruit today's users, with their past experiences and expectations with robotics. Kuhnert et al. showed the existence of a \textit{gap} between the user's attitude towards existing robots and their expectations about the  ideal everyday social robot \cite{kuhnert2017gap}. Thus, when evaluating a human robot interaction it is important to evaluate the three aspects defined by Desmet and Hekkert: the instrumental interaction (interaction for expected purpose: always evaluated in current user study), the non-instrumental interaction (interacting for other than main purpose: often non evaluated) and the non-physical interaction (expectations: often under evaluated) \cite{desmet2007framework}. Indeed, non-physical interaction refers to all preconceptions of the robot by the user, they could come from past experiences or imagination. Since today's users have almost no past experiences with robot, those anticipations come mainly from imagination and fantasies and can widely vary from one to another. Thus, it is really important to evaluate the mindset of the user before the study. Some tools used in psychology can be useful in this context. For example, the implicit association test \cite{greenwald1998measuring}, used to measure automatic and implicit associations like prejudices, or priming paradigms could be used to control the expectations and beliefs of subjects towards robots.
@@ -361,7 +361,7 @@ Indeed, if the replication crisis begins to appear in \acrshort{hci} \cite{echtl
 Finally, many user studies in \acrshort{hri} used Wizard of Oz technique, because robotic systems are often not robust enough to act autonomously in an environment with humans. The use of Wizard of Oz technique makes very difficult the exact replication of the situation due to the fact that the complete scenario of the study is not available. 
 In the case of \acrshort{hri} evaluation, we can also ask ourselves if humans evaluate the robot or the human controlling the robot.
 
-\subsection{Proposed Guidelines for Better User Studies in \acrshort{hri}}
+\subsection{Proposed Guidelines for Better User Studies in HRI}
 By taking all those issues and solutions coming from different fields we might provide some checkpoints when designing a \acrshort{hri} user study:
 \begin{enumerate}
     \item The \textit{more users} the better. It improves the statistic analysis of the study and could erase some bias.
