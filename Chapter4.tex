@@ -245,8 +245,8 @@ To do so, we define a cost function $cost: \agentsstates \times \operators \maps
 
 Moreover, like in \acrshort{hatp} we allow to define \textit{social costs} functions. These functions take a complete human and robot sequence of actions ($\plan_r$ and $\plan_h$) and return a cost ($\realset^+$) which is added to the cost of the plan previously determined. By doing so, we can penalize non acceptable sequence of robot actions (\textit{e.g.} serving a meal just after taking out the trash) or non satisfactory human required contribution (\textit{e.g.} a plan requiring the human to act after a long series of \textit{IDLE} actions, meaning the human could have disengaged from the task; or requesting the human to perform small task multiple times instead of giving the big picture of the real task to perform).
 
-\subsubsection{Minimizing the Average Cost}
-The first approach we propose for plan selection is to minimize the average cost (Algorithm~\ref{alg:minaverage}). It represents the human potentially selecting any course of actions in their stream (while still respecting the action model defined in their \acrshort{htn}).
+\paragraph{Minimizing the Average Cost}
+The approach we propose for plan selection is to minimize the average cost (Algorithm~\ref{alg:minaverage}). It represents the human potentially selecting any course of actions in their stream (while still respecting the action model defined in their \acrshort{htn}).
 
 The algorithm is given at start the root action of the task network previously generated, and returns the cost of the conditional plan selected while having selected the robot actions in the task network. The functions used in Algorithm~\ref{alg:minaverage} are described hereafter:
 
@@ -298,29 +298,13 @@ While this is a first step and additional work is required for conditional plan 
  \label{alg:minaverage}
 \end{algorithm}
 
-\subsubsection{The Human Planning Process Modeled as a Limited Depth Planner}
-Another method to select the robot actions that yet needs to be implemented is to consider the human as being able to plan a few step ahead. Thus, instead of considering the average cost of all the possible human actions, we could set less importance to the ones failing a few steps ahead and more importance to the ones leading to a smaller cost in the near future.
-
-To do so would require to also store the failing operators in the valid plans tree during the first exploration step. Moreover, it would require a new parameter being the depth at which the human is modeled to foresee in the plan. 
-
-Then, when exploring the valid plans tree, if a failing operator is encountered at a depth smaller than the depth parameter, the cost of the corresponding plan would not be added to the average as we assume the human would not make an action leading to a failure that they can foresee. 
-
-Moreover, the average can be weighted with smaller number for plans being evaluated more costly than others at the depth specified as parameter. This models that the human will not perform actions that they estimate to lead in costly plans.
-
-This approach still needs refinement but is seen as a great improvement over considering only the cost average.
-
-\subsubsection{Guiding Human Choices Towards the Least Costly Solution}
-We also want to add another step between the \acrshortpl{htn} exploration and the conditional plan selection being the addition of communication actions related to the plan. The general idea is to analyze the valid plans tree resulting from the \acrshortpl{htn} exploration and to insert robot communication action before some potential human actions that are leading to a plan failure or a costly plan. These communications would aim at encouraging some human decisions toward less costly plans, or to inform the human about the difference in the plan their actions will induce. To avoid unnecessary communications, the insertion can be conditional on the human prediction depth defined before. If the human can foresee the failure the communication is not needed.
-
-Such communication can hardly be inserted in the \acrshortpl{htn} or during the \acrshortpl{htn} exploration step, as it requires to have the full plan to decide whether they are needed or not. However, analyzing and inserting them during planning rather than after a plan has been selected or at the execution is interesting as it would allow to balance between keeping some uncertainty for non crucial human decisions or accepting the additional cost of these communication actions but reducing the uncertainty in human actions for plans easily risking a failure.
-
-Finally, the decision to add or not such a communication can also depend on the trust the robot has in this human and on the estimated experience the human has in doing this specific task or in working with the robot.
+This method for selecting a conditional plan is quite simple, but is enough to show the principles and how the approach can be useful for planning in \acrshort{hri}. We propose other methods of plan selection, accounting even more on the human modeling, which have yet to be refined in Section~\ref{subsec:chap4selectingplan}.
 
 \section{Implementation}
 The previous section presented the general ideas and concepts behind this new planning paradigm. This short section shows some interesting details about the actual implementation of a prototype of the planner, along with some explanations preparing the following examples presentation. We named this prototype planner \acrfull{hatpehda}. In the next chapter we will also show how it has been integrated with other components to extend its capabilities and be used in a real robotic architecture.
 
 \subsection{A Python Planner}
-We chose to implement the prototype of the planner in Python. It is originally based upon the \acrfull{pyhop} from Nau but has been largely modified, and only remain the general data structures. As in \acrshort{pyhop}, it allows to represent world states as Python objects having dictionary as attributes. For example \verb|s.isReachableBy["cube_23"] = ["human_3", "pr2_robot"]| specifies that the \textit{cube\_23} is reachable by both the \textit{human\_3} and the \textit{pr2\_robot}. 
+We chose to implement \incrshort{hatpehda} in Python. It is originally based upon the \acrfull{pyhop} from Nau but has been largely modified, and only remain the general data structures. As in \acrshort{pyhop}, it allows to represent world states as Python objects having dictionary as attributes. For example \verb|s.isReachableBy["cube_23"] = ["human_3", "pr2_robot"]| specifies that the \textit{cube\_23} is reachable by both the \textit{human\_3} and the \textit{pr2\_robot}. 
 %A more detailed state representation with a beliefs divergence is available in Listing~\ref{list:pystatedef}.
 Moreover, like in \acrshort{pyhop} the planning domains (\acrshortpl{htn} for both the robot and the human) are written using plain Python functions. While using a separate domain specific language (DSL) for writing planning domains enables some optimizations and advanced search algorithms, it tremendously reduces the expressiveness, and makes representing real worlds scenarios them more complex. Besides, Python being an interpreted language, iterating over these domains is quicker as, unlike \acrshort{hatp}, they do not require any compiling before being planned upon.
 The decomposition functions take the world states (beliefs), partial plans of the agents (depending on the type of the agent~Table~\ref{table:function_restrictions}) and any other optional parameters (\textit{e.g.} goals, entities) as arguments, and return a list of tasks with optional parameters to be put in the agent's agenda. Likewise, the actions receive as arguments the world states (beliefs), the partial plans and the agendas of the agents (also depending on the type of the agent~Table~\ref{table:function_restrictions}) and return new world states and agendas.
@@ -404,7 +388,7 @@ In this section, we will present some case studies in which are presented small 
 
 
 The two following cases are set in the same context presented in Figure~\ref{fig:chap4coffeescene}. We envision a super-scenario in a company office where a robot assistant is verbally requested by a human worker to bring her a coffee. The robot must take her mug, go to the coffee machine, manage to fill the mug with coffee and bring back the filled mug to the worker.
-We instantiate this scenario into two precise subtasks highlighting multiple features of the presented planner.
+We instantiate this scenario into two precise subtasks highlighting multiple features of \acrshort{hatpehda}.
 
 \begin{figure}[hbtp]
 \centering
@@ -518,8 +502,8 @@ As we increase the number of mugs $n$, the cost of \verb'verbally_answer_right_m
 
 \improvement{Add link to domain}
 
-In this example we show one really interesting feature of our planner: representing human knowledge that is not known by the robot. While not being tractable when there are a lot of possibilities, which is expected when exploring all the possibilities in non-deterministic planners, it allows to select more or less conservative conditional plans depending on the cost of each actions. Computational times are given in Table~\ref{tab:plannertime}. We see that this task modelling begins to fail at 4 mugs, as a large computation time will spoil the interaction. Although, we think it is still pertinent in \acrshort{hri} as we seldom deal with large amount of objects and long plans. Besides, thanks to the task decomposition being Python functions, we can make a decomposition fail if it would lead to combinatorial explosion. Here we could have made the ``trial and error'' decomposition fail if the number of mug was greater than 4. Moreover, this example allowed to see how updating the human agenda and how triggers can be used to model the agents interaction in the \acrshortpl{htn} planning.
-However, the human model was pretty simple, and we propose to challenge our planner in the next example with a task where the human is more involved.
+In this example we show one really interesting feature of \acrshort{hatpehda}: representing human knowledge that is not known by the robot. While not being tractable when there are a lot of possibilities, which is expected when exploring all the possibilities in non-deterministic planners, it allows to select more or less conservative conditional plans depending on the cost of each actions. Computational times are given in Table~\ref{tab:plannertime}. We see that this task modelling begins to fail at 4 mugs, as a large computation time will spoil the interaction. Although, we think it is still pertinent in \acrshort{hri} as we seldom deal with large amount of objects and long plans. Besides, thanks to the task decomposition being Python functions, we can make a decomposition fail if it would lead to combinatorial explosion. Here we could have made the ``trial and error'' decomposition fail if the number of mug was greater than 4. Moreover, this example allowed to see how updating the human agenda and how triggers can be used to model the agents interaction in the \acrshortpl{htn} planning.
+However, the human model was pretty simple, and we propose to challenge \acrshort{hatpehda} in the next example with a task where the human is more involved.
 
 \subsection{Balance Difficult Communications, Decomposition Cost and Task Attribution}
 The robot is now heading to the coffee machine with the right mug in its gripper. On its way it detects another human taking a break near the coffee machine. The coffee has to be made. To brew coffee, ground coffee and water must be put in the coffee machine, and then the coffee can be served. While water is considered as always available, ground coffee is not. There are two places where ground coffee can be retrieved: either in the kitchen cupboard (close to the coffee machine) or in the pantry cupboard. 
@@ -569,7 +553,7 @@ This simple example shows that our approach can still be used a classical \acrsh
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=\textwidth]{figures/chapter4/Chap4CoopNoDivergence.png}
-\caption{Conditional plan involving the human selected by our planner. The robot chooses to ask for human help. We plan that the human will either get the coffee or fill the water and adapt accordingly, the choice of human actions is not made, but thanks to the conditional plan, both possible solution are planned and it is up to the supervision component to follow the right one depending on the human action detected during execution.}
+\caption{Conditional plan involving the human selected by \acrshort{hatpehda}. The robot chooses to ask for human help. We plan that the human will either get the coffee or fill the water and adapt accordingly, the choice of human actions is not made, but thanks to the conditional plan, both possible solution are planned and it is up to the supervision component to follow the right one depending on the human action detected during execution.}
 \label{fig:chap4coffeecoopnodivergence}
 \end{figure}
 
@@ -660,7 +644,7 @@ With this new decomposition the new plan presented in Figure~\ref{fig:chap4belie
 Depending on the communication cost (estimated using the \acrshort{reg} approach presented in the previous chapter to designate the cupboards), the human disappointment cost (which can be added as a social cost) and the other actions costs any one of the four possible plans can be selected. For example, to minimize the human involvement and if the communication has a high cost, the selected plan would be Figure~\ref{fig:chap4coffeesimplerobotonly}(a) or (b). If the communication is costly but the pantry and kitchen cupboard are not too far away, the selected plan is Figure~\ref{fig:chap4beliefsdivnoalign}, finally, if we represent that the human would be upset if he makes an erroneous action or if the communication for aligning beliefs is not expensive, the plan Figure~\ref{fig:chap4beliefsdivwithalign} would be returned.
 Indeed, the planner may choose to leave the human with their false beliefs as it finds that it does not prevent to successfully perform the task. 
 
-Through all these examples we show that this task planning approach, which separates human and robot beliefs and action models, can be suitable for multiple problems. We are able to plan for robot unknown human beliefs, to rely on the human planning process while keeping inherent uncertainties (\textit{i.e.} not making choices for them, without communicating them) and also to plan diverging beliefs and balance the actions of realigning them with plans containing mistakes. In the next section, we present a \acrshort{hri} task, inspired from psychology, that has never been tackled in robotics and we show how our planner is integrated in a fully functional robotic architecture dedicated for this task.
+Through all these examples we show that this task planning approach, which separates human and robot beliefs and action models, can be suitable for multiple problems. We are able to plan for robot unknown human beliefs, to rely on the human planning process while keeping inherent uncertainties (\textit{i.e.} not making choices for them, without communicating them) and also to plan diverging beliefs and balance the actions of realigning them with plans containing mistakes. In the next chapter, we present a \acrshort{hri} task, inspired from psychology, that has never been tackled in robotics and we show how \acrshort{hatpehda} is integrated in a fully functional robotic architecture dedicated for this task.
 
 \section{Conclusion and Future Work}
 In this chapter we have proposed a new task planning approach for human robot interaction. This approach not only explicitly represent and plan upon both the human and the robot beliefs but also use two separate action models as \acrshortpl{htn} for the human and the robot.
@@ -670,6 +654,28 @@ We proposed a formalism along with an algorithm allowing to plan for robot actio
 Then, we presented a successful implementation of this approach in Python called \acrfull{hatpehda} and showed first results along two examples. These examples highlighted both the features of \acrshort{hatpehda} and the rationale behind the action models crafting. The planner is able to represent and to plan for robot unknown human knowledge, human reactions to robot actions, multiple human possible plans and intricate human robot tasks. It is also capable of balancing between communicating, letting the human perform a mistake and attributing different roles to the robot or the human.
 
 We look forward to continue exploring this approach, find its benefits and its limits. More importantly we aspire at improving it, especially on the following topics.
+
+\subsection{Selecting Conditional Plans Using the Human Model}
+\label{subsec:chap4selectingplan}
+We presented and implemented a method for selecting a conditional plan among the multiple possible ones, by selecting robot actions that minimize the average cost of the plan. This method intends to model the human as being cooperative but maybe not having all the information to be able to project themselves throughout the whole task, and maybe not performing the action leading to the optimal plan. However, this method is quite simple and does not reflect the full complexity of human decision process. We propose two other method for conditional plan selection, which use even more the human model, that have yet to be implemented and tested.
+
+\subsubsection{The Human Planning Process Modeled as a Limited Depth Planner}
+First, we propose to consider the human as being able to plan a few step ahead. Thus, instead of considering the average cost of all the possible human actions, we could set less importance to the ones failing a few steps ahead (as the human is likely to have foreseen the failure, and will probably not perform this action) and more importance to the ones leading to a smaller cost in the near future (as the human is likely to perform a greedy approach on the short horizon we model they can plan to).
+
+To do so would require to also store the failing operators in the valid plans tree during the first exploration step. Moreover, it would require a new parameter being the depth at which the human is modeled to foresee in the plan. 
+
+Then, when exploring the valid plans tree, if a failing operator is encountered at a depth smaller than the depth parameter, the cost of the corresponding plan would not be added to the average as we assume the human would not make an action leading to a failure that they can foresee. 
+
+Moreover, the average can be weighted with smaller number for plans being evaluated more costly than others at the depth specified as parameter. This models that the human will not perform actions that they estimate to lead in costly plans.
+
+This approach still needs refinement but is seen as a great improvement over considering only the cost average.
+
+\subsubsection{Guiding Human Choices Towards the Least Costly Solution}
+Then, we also want to add another step between the \acrshortpl{htn} exploration and the conditional plan selection being the addition of communication actions related to the plan. The general idea is to analyze the valid plans tree resulting from the \acrshortpl{htn} exploration and to insert robot communication action before some potential human actions that are leading to a plan failure or a costly plan. These communications would aim at encouraging some human decisions toward less costly plans, or to inform the human about the difference in the plan their actions will induce. To avoid unnecessary communications, the insertion can be conditional on the human prediction depth defined before. If the human can foresee the failure the communication is not needed.
+
+Such communication can hardly be inserted in the \acrshortpl{htn} or during the \acrshortpl{htn} exploration step, as it requires to have the full plan to decide whether they are needed or not. However, analyzing and inserting them during planning rather than after a plan has been selected or at the execution is interesting as it would allow to balance between keeping some uncertainty for non crucial human decisions or accepting the additional cost of these communication actions but reducing the uncertainty in human actions for plans easily risking a failure.
+
+Finally, the decision to add or not such a communication can also depend on the trust the robot has in this human and on the estimated experience the human has in doing this specific task or in working with the robot.
 
 \subsection{Representing Explicitly Observation Processes}
 A lot of code is common between the primitive tasks not only in a planning domain but also between multiple ones. Indeed, the part where we update the beliefs of the agent performing the action, but also the ones of the other agents in the room is present in almost all the primitive actions. This commonality raises the question of observability of actions. Indeed, even if we can assume that when an agent is planned to do an action they will be aware of its effects, and that if the human is planned to perform an action, even if it is not observable from the planned robot position, we update the beliefs of the robot (as it is emulating the human actions), it is not the case for a robot action and the update of human beliefs. We can represent is coarsely in the primitive task effects by relying on heuristics such as the presence of the agents in the same room. Still, observabilty of actions may need a specific representation for belief update in the planner core.
