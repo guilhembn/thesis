@@ -1,51 +1,451 @@
-\chapter{Résumé en Français : }
-\label{annex:frenchversion}
-Nous fournissons ici un résumé en langue française des travaux présentés dans ce manuscrit de thèse.
+\chapter{HATP/EHDA Domains for the Coffee Bringer Examples}
+\label{annex:codedomains}
 
-\section{Introduction}
-Les outils utilisés par les humains, autrefois simples, ont rapidement gagnés en complexité. Ces outils aujourd'hui devenus robots sont capables d'agir de manière autonomes et nécessitent de moins en moins de supervision humaine. Dans le même temps, les humains sont devenus de plus en plus dépendants de ces machines à la fois pour la vie quotidienne et pour des tâches plus spécifiques. Cependant, dans l'industrie les robots et les humains ont très souvent leurs espaces de travail séparés, lorsque ce n'est pas le cas, les machines voient leurs capacités limités et les humains requièrent une formation poussée pour les utiliser.
+The \acrfull{hatpehda} is presented in Chapter~\ref{chapter:doublehtn} along with illustrative examples allowing to present its features. We propose to report here the interesting parts of the domains in Python, as they were used for running the examples.
 
-Dans cette thèse, nous explorons des méthodes pour rapprocher les humains et les robots afin de leur faire effectuer des tâches collaboratives au sein d’environnements partagés. Pour ce faire, nous soutenons que les robots doivent être capables de prendre des décisions non seulement sur leurs propres connaissances et perception de l’environnement, mais aussi sur leurs estimations des croyances de leur partenaire humain. De plus, le robot doit pouvoir planifier en prenant en compte que l'agent humain va aussi planifier, agir et réagir aux actions du robot.
+\section{Plan for Robot Unknown Human Knowledge}
+\label{annex:domainmugs}
+In this example, the robot has been asked by a human to bring her a coffee. However, multiple mugs are on the table in front of the robot and the human, and the robot does not know which one belongs to the human.
 
-\subsection{Résumé de la Thèse}
-Nous nous intéressons à comment planifier à la fois pour le robot mais aussi pour son partenaire humain permet d'améliorer l'interaction lors de tâches collaboratives. 
+\begin{lstlisting}[language=Python]
+import hatpehda
+from copy import deepcopy
+from hatpehda import gui
+from hatpehda.reg import REGHandler
 
-\paragraph{Chapitre 1: Contexte et défis de l'interaction humain robot}
-Dans le Chapitre~\ref{chapter:sota} nous présentons le contexte de cette thèse en donnant une définition de la planification de tâches et de navigation, quels sont les défis de l'interaction humain robot et comment peut-on modéliser les actions de l'humain et élaborer des plans partagés. 
+regHandler = None
 
-Nous définissons tout d'abord les problèmes de planification de tâches et de navigation en robotique. La planification de tâche consiste à construire une séquence avec des actions données, permettant au robot (à un agent) d'atteindre un but donné. La navigation quant à elle a pour but de générer (et de suivre) une trajectoire menant le robot (l'agent) d'un point A à un point B tout en évitant les obstacles qu'il rencontrera éventuellement sur son chemin.
+### Helpers
 
-Nous déclinons ensuite ces problèmes au contexte particulier de l'interaction humain robot en nous concentrant sur les concepts d'utilisabilité (efficacité, efficience et satisfaction dans la réalisation d'une tâche) et d'automatisation. De plus, nous présentons une liste de fonctionnalités requises par un agent autonome (\textit{e.g.} robot) pour collaborer avec un humain. Ces prérequis sont ensuite mise en contexte par rapport aux capacités déployées par un humain lorsqu'il interagit avec un autre humain telles que décrites dans le domaine de la psychologie cognitive et plus particulièrement de l'étude de l'action jointe.
+def same_last_tasks(plan, n, task=None):
+    """
+    Given a partial 'plan', returns True if the 'n' last tasks of the partial plan are the same (and optionnaly equal to 'task')
+    """
+    if len(plan) < n:
+        return False
+    last_tasks = [plan[-i].name for i in range(1, n + 1)]
+    if task is not None and last_tasks[0] != task:
+        return False
+    return last_tasks.count(last_tasks[0]) == len(last_tasks)
 
-Enfin, plusieurs approches permettant la modélisation de l'activité humaine ainsi que la génération de plan incluant à la fois l'humain et le robot sont présentées.
+### Primitive tasks
 
-\paragraph{Chapitre 2 : Coplanification pour la navigation}
-Dans le Chapitre~\ref{chapter:navigation}, nous explorons une approche à la planification de navigation pour le robot dans laquelle les trajectoires du robot mais aussi de l'humain sont calculées à une fréquence de contrôle en position. Cette approche utilise un schéma d'optimisation permettant de définir des contraintes entre les trajectoires, représentant l'interaction entre elles. Nous nous servons de ces contraintes afin d'améliorer la \textit{manifesteté} mutuelle du robot, notamment en décourageant les mouvements du robots pouvant être perçus comme menaçant par un humain. Ce faisant, le robot expose ses décisions plus tôt dans l'interaction, améliorant ainsi la \textit{lisibilité} de ses mouvements. De plus, nous avons conçu et implémenté un mouvement de la tête du robot, permettant d'encore augmenter la lisibilité de la trajectoire tout en montrant à l'humain qu'il a bien été perçu.
-
-Nous montrons grâce à une étude utilisateur, effectuée en partenariat avec des chercheurs en psychologie cognitive et ergonomie du CLLE que ce comportement permet d'améliorer l’efficience de la navigation du robot dans des scénarios de croisement dans des passages étroits. Cette étude utilisateur a été soumise au journal \textit{IEEE Transactions on Human-Machine Systems} et est en cours de revue. Suite à cette étude utilisateur, nous menons, avec un doctorante en psychologie, une réflexion sur les défis, problèmes et conduites à tenir concernant les études utilisateurs dans le domaine particulier de l'interaction humain robot. Cette discussion a été acceptée en tant qu'article dans le journal \textit{Transactions on Human-Robot Interaction}.
-
-De plus, nous présentons comment nous avons utilisé cette approche sur d'autres robots ainsi que dans un système robotique complet déployé ``dans la nature" en Finlande au cours du projet MuMMER (MultiModal Mall Entertainment Robot\footnote{robot de divertissement multi modal pour centre commerciaux}). Puis, nous continuons d'explorer la planification pour le robot et l'humain dans la planification de tâches.
-
-
-\paragraph{Chapitre~\ref{chapter:comm} : Évaluation des communications pendant la planification de tâches}
-Dans le Chapitre~\ref{chapter:comm}, notre objectif est d'utiliser les observations effectuées au cours du chapitre précédent pour les appliquer dans le domaine symbolique, de manière plus explicite. Le but est de considérer la communication comme actions à part entière que le robot doit planifier pour obtenir la meilleure interaction possible. Planifier de telles communications nécessite bien sûr de planifier pour les deux agents. Ce chapitre contient deux contributions. 
-
-Premièrement, nous présentons on algorithme efficient, utilisant une ontologie, permettant de calculer le contenu d'une communication visant à référencer (désigner) un objet de l’environnement à un autre agent. Ce problème est appelé le problème de la génération d'expression de référence (\textit{referring expression generation}) et, bien qu'il est étudié depuis plus de trente ans, nous montrons que notre approche n'est pas seulement la plus rapide à ce jour mais qu'elle est aussi la plus adaptée pour des scénarios d'interaction humain robot. Notre algorithme se base sur l'exploration de l'ontologie (utilisée en tant que base de connaissances) de l'agent à qui est destiné la communication. Il est capable de prendre en compte le contexte dans lequel s'effectue la tâche ainsi qu'un coût représentant le difficulté de certaines propriétés à être interprétées par rapport à d'autres (\textit{e.g.} la couleur est plus rapide à interpréter que la taille d'un objet).
-
-Enfin, nous utilisons cette approche rapide pour déterminer le contenu d'un communication afin d'estimer la faisabilité et le coût de telles actions de communication durant la phase de planification de tâche. Pour se faire, nous intégrons HATP, un planificateur pour réseaux hiérarchisés de tâches multi-agents, conçu pour l'interaction humain robot avec notre algorithme de génération d'expression de référence. Cette approche permet d'éviter la génération de plans qui auraient pu mener dans des situations irrécupérables durant leur exécution ainsi que de trouver les plans les plus efficients.
-
-\paragraph{Chapitre~\ref{chapter:doublehtn} : Planification de tâches émulant les décisions et les actions de l'humain}
-Dans le Chapitre~\ref{chapter:doublehtn} nous présentons un schéma de planification hiérarchique de tâches qui n'est pas seulement capable de maintenir les croyances du robot et de l'humain séparément durant le processus de planification, mais qui raisonne aussi sur deux modèles de l'action distincts de l'humain et du robot. Tandis que le modèle de l'action du robot est proche de ceux utilisés dans la planification avec réseaux hiérarchisés de tâches, celui de l'humain vise à s'inspirer d'approches de modélisation de tâches telles qu'utilisées dans le domaine de l'interaction humain machine. Les actions sont représentées en tant que fonctions qui opèrent sur les croyances des agents. Nous spécifions aussi des règles concernant les croyances pouvant être mises à jour ou accédées suivant l'agent effectuant l'action. Ainsi, les plans conditionnels générés ne fixent pas d'actions à l'humain mais comportent des actions possibles issues de l'émulation de ses processus décisionnels. Ce schéma a été implémenté dans un planificateur prototype en Python dont nous donnons quelques détails importants d'implémentation.
-
-De plus, au travers de deux exemples que nous construisons de manière incrémentale, nous montrons qu'il permet de représenter et de planifier pour des scénarios d'étroite collaboration entre le robot et l'humain. 
-
-\paragraph{Chapitre~\ref{chapter:integration} : Intégration du planificateur de tâches dans une architecture robotique complète}
-Enfin, dans le Chapitre~\ref{chapter:integration}, nous présentons des détails intéressants concernant l'intégration de ce planificateur prototype dans une architecture robotique. Nous finissons en proposant une nouvelle tâche pour la collaboration humain robot~: la tâche du directeur. Cette tâche inspirée d'expériences de psychologie induit plusieurs défis pour l'interaction humain robot. De plus, à notre connaissance, elle n'a jamais été étudiée dans le cadre de l'interaction humain robot et aucun robot n'a jamais été conçu pour y répondre. Nous présentons donc ensuite une architecture robotique complète capable d'effectuer cette tâche dans son cas nominal et dans laquelle notre planificateur prototype a été intégré.
-
-\paragraph{Conclusion}
-Nous concluons cette thèse en revenant sur les contributions principales. De plus, nous les résumons en les mettant en correspondance avec les prérequis de l'interaction humain agent présentés dans le Chapitre~\ref{chapter:sota}.
-
-Enfin, nous décrivons les limitations de nos approches ainsi que certaines pistes d'amélioration. Deux améliorations nous semblent particulièrement intéressantes~: celle de rapprocher l’exécution et la planification, ce qui est crucial dans des environnements réactifs tels que rencontrés dans l'interaction humain robot; ainsi que celle de non pas raisonner seulement sur le modèle du robot et celui de l'humain, mais aussi sur celui que l'humain se fait du robot durant son utilisation.
+def robot_pick_mug(agents, self_state, self_name, mug):
+    """
+    Checks if the 'mug' is reachable by the agent (robot) and if the agent does not carry anything.
+    Then updates the beliefs of all the agents in the same room as the robot as for the robot having picked the 'mug'
+    """
+    if self_name in self_state.isReachableBy[mug] and self_state.isHolding[self_name] == []:
+        robot_room = self_state.isInRoom[self_name][0]
+        for agent_name in self_state.agentsInRoom[robot_room]:
+            a = agents[agent_name]
+            a.state.isReachableBy[mug] = []
+            a.state.isHolding[self_name] = [mug]
+            a.state.isHeldBy[mug] = [self_name]
+        return agents
+    return False
 
 
+def robot_ask_mug_to_take(agents, self_state, self_name, human):
+    """
+    Asks the 'human' which one is their mug by adding to their agenda that they will answer the question.
+    Note that we could have checked if the communication was feasible
+    """
+    hatpehda.add_tasks(human, [("human_answer_mug_a", self_name)], agents)
+    return agents
+
+def robot_drop_mug(agents, self_state, self_name):
+    """
+    Checks if the robot is holding something.
+    If so, update all the agents in the room beliefs with the fact that the robot as dropped what they thought it was holding.
+    """
+    if self_state.isHolding[self_name] != []:
+        robot_room = self_state.isInRoom[self_name][0]
+        for agent_name in self_state.agentsInRoom[robot_room]:
+            a = agents[agent_name]
+            mug = a.state.isHolding[self_name]
+            if mug != []:
+                mug, = mug
+                a.state.isReachableBy[mug] = [self_name]
+                a.state.isHolding[self_name] = []
+                a.state.isHeldBy[mug] = []
+        return agents
+    return False
+
+def robot_go_to_coffee_machine(agents, self_state, self_name):
+    """
+    This action has no effect nor preconditions. It only represents the robot leaving the room (for the example)
+    """
+    return agents
+
+def human_verbally_answer_right_mug(agents, self_state, self_name, robot, mug):
+    """
+
+    """
+    # We make a REG request to check if we estimate that the human will be able to refer to their mug
+    ctx = [("?0", "isAbove", "table_1")]
+    symbols = {"?0": mug}
+    # This function copy the ontology of 'self_name' (human), update it with beliefs from 'self_state' and runs
+    # a REG request with 'ctx' and 'symbols' as context with the target entity 'mug'
+    reg = regHandler.get_re(self_name, self_state, ctx, symbols, mug)
+    if not reg.success:
+        return False
+
+    human_room = self_state.isInRoom[self_name][0]
+    for agent_name in self_state.agentsInRoom[human_room]:
+        a = agents[agent_name]
+        a.state.isOwnedBy[mug] = self_name
+    return agents
+
+def human_complain_mug(agents, self_state, self_name, robot):
+    """
+    This primitive task models the human complaining about the mug that the robot is 'holding' not being theirs. 
+    We update all the agents in the room beliefs, with the mug held by the 'robot' not being the one 'self_name' (human)
+    """
+    human_room = self_state.isInRoom[self_name][0]
+    for agent_name in self_state.agentsInRoom[human_room]:
+        a = agents[agent_name]
+        mug = a.state.isHolding[robot]
+        if mug is not None and mug != []:
+            mug, = mug
+            a.state.isNotOwnedBy[mug] = self_name
+    return agents
+    
+# As we don't know the agents name in advance, we store the operators here, until a plan request
+ctrl_operators = [robot_pick_mug, robot_drop_mug, robot_ask_mug_to_take, robot_go_to_coffee_machine]
+unctrl_operators = [human_verbally_answer_right_mug, human_complain_mug]
+    
+    
+### Abstract tasks decompositions
+
+def robot_ask_take_mug(agents, self_state, self_name, human):
+    if same_last_tasks(agents[human].plan, 3, "WAIT"):
+        return False
+    for mug, h in self_state.isOwnedBy.items():
+        if h == human:
+            return [("robot_pick_mug", mug)]
+    for mug in self_state.individuals["Mug"]:
+        if mug not in self_state.isNotOwnedBy or human not in self_state.isNotOwnedBy[mug]:
+            return [("robot_ask_mug_to_take", human), ("robot_get_right_mug", human)]
+    return False
+
+# This decorator informs the planner that this decomposition return several disjunctive sequences of tasks
+# (typically for multiple possible parameter instantiation
+@hatpehda.multi_decomposition
+def robot_take_one_random_mug(agents, self_state, self_name, human):
+    if same_last_tasks(agents[human].plan, 3, "WAIT"):
+        return False
+    for mug, h in self_state.isOwnedBy.items():
+        if h == human:
+            return False
+    task_list = []
+    for mug in self_state.individuals["Mug"]:
+        if mug not in self_state.isNotOwnedBy or human not in self_state.isNotOwnedBy[mug]:
+            task_list.append([("robot_pick_mug", mug)])
+    if task_list == []:
+        return False
+    return task_list
+
+
+def human_agree_mug_taken(agents, self_state, self_name, robot, mug):
+    return []
+
+def human_disagree_mug_taken(agents, self_state, self_name, robot, mug):
+    return [("human_complain_mug", robot)]
+
+@hatpehda.multi_decomposition
+def human_answer_mug(agents, self_state, self_name, robot):
+    for mug, h in self_state.isOwnedBy.items():
+        if h == self_name:
+            return [[("human_verbally_answer_right_mug", robot, mug)]]
+    task_list = []
+    for mug in self_state.individuals["Mug"]:
+        if mug not in self_state.isNotOwnedBy or self_name not in self_state.isNotOwnedBy[mug]:
+            task_list.append([("human_verbally_answer_right_mug", robot, mug)])
+    if task_list == []:
+        return False
+    return task_list
+
+
+# We don't know the agents name beforehand so we store them here, until we can add the proper agents
+# Syntax: ('abstract_task_name', decompo1, decompo2, ...)
+ctrl_methods = [("robot_get_right_mug", robot_take_one_random_mug, robot_ask_take_mug)]
+unctrl_methods = [("human_answer_mug_a", human_answer_mug), ("human_check_mug_taken", human_agree_mug_taken, human_disagree_mug_taken)]
+    
+
+# Triggers
+def human_check_mug(agents, self_state, self_name):
+    if agents["robot"].plan[-1].name == "robot_pick_mug":
+        mug = self_state.isHolding["robot"][0]
+        if mug in self_state.isNotOwnedBy and self_state.isNotOwnedBy[mug] == self_name:
+            return False
+        for action in agents[self_name].plan:
+            if action.name == "human_verbally_answer_right_mug" and action.parameters[1] == mug:
+                return False
+        return [("human_check_mug_taken", "robot", mug)]
+    return False
+
+def robot_check_wrong_mug(agents, self_state, self_name):
+    if self_state.isHolding[self_name] is not None and self_state.isHolding[self_name] != []:
+        heldMug = self_state.isHolding[self_name][0]
+        if heldMug in self_state.isNotOwnedBy and "human" == self_state.isNotOwnedBy[heldMug]:
+            return [("robot_drop_mug", ), ("robot_get_right_mug", "human")]
+    return False
+    
+    
+if __name__ == "__main__":
+    regHandler = REGHandler()
+
+    n_mug = 2
+
+    state = hatpehda.State("robot_init")
+    state.types = {"Agent": ["isHolding"], "Mug": ["isHeldBy", "isReachableBy"]}
+    state.individuals = {'Mug': ["mug_{}".format(i) for i in range(n_mug)]}
+    state.isHeldBy = {m: [] for m in state.individuals["Mug"]}
+    state.isHolding = {"human": [], "robot": []}
+    state.isOwnedBy = {}
+    state.isNotOwnedBy = {}
+    state.isReachableBy = {m: ["human", "robot"] for m in state.individuals["Mug"]}
+    state.agentsInRoom = {"office": ["human", "robot"]}
+    state.isInRoom = {"human": ["office"], "robot": ["office"]}
+
+    hatpehda.declare_operators("robot", *ctrl_operators)
+    for me in ctrl_methods:
+        hatpehda.declare_methods("robot", *me)
+    hatpehda.declare_triggers("robot", *ctrl_triggers)
+    hatpehda.declare_operators("human", *unctrl_operators)
+    for me in unctrl_methods:
+        hatpehda.declare_methods("human", *me)
+    hatpehda.declare_triggers("human", *unctrl_triggers)
+
+    hatpehda.set_state("robot", state)
+    hatpehda.add_tasks("robot", [("robot_get_right_mug", "human"), ("robot_go_to_coffee_machine", )])  # Agenda initialization
+
+    human_state = deepcopy(state)  # No beliefs divergence (detected) in this example
+    human_state.__name__ = "human_init"
+    hatpehda.set_state("human", human_state)
+
+
+    sols = []
+    fails = []
+    hatpehda.seek_plan_robot(hatpehda.agents, "robot", sols, "human", fails)
+
+    cost, cplan = select_plan(sols)
+    gui.show_plan(cplan, "robot", "human")
+\end{lstlisting}
+
+\section{Balance Difficult Communications, Decomposition Cost and Task Attribution}
+\label{annex:domaincoffee}
+In this example, the robot has to prepare coffee. It detects a human nearby, who does not appear to be performing a task. To prepare coffee, coffee needs to be retrieved from one of the two cupboards (one is closer than the other) and put in the machine; and water must be poured in the machine. We want the robot to balance between doing all on its own or asking the human for help. Moreover, we estimate that the human thinks there are some coffee in the nearest cupboard, while the robot knows there is not. Thus, we also want the robot to balance between aligning these beliefs or letting the human potentially make the mistake.
+
+\begin{lstlisting}[language=Python]
+import hatpehda
+from copy import deepcopy
+from hatpehda import gui
+
+### Helpers
+
+def agent_plan_contains(plan, task_name):
+    for p in plan:
+        if p.name == task_name:
+            return True
+    return False
+
+### Primitive tasks
+
+def robot_get_water(agents, self_state, self_name):
+    if self_state.isHolding[self_name] is not None and self_state.isHolding[self_name] != []:
+        return False
+    for ag in agents.values():
+       ag.state.isHolding[self_name] = ["water"]
+    return agents
+
+def robot_pour_water_in_machine(agents, self_state, self_name):
+    if self_state.isHolding[self_name] is None or self_state.isHolding[self_name] == []:
+        return False
+    for ag in agents.values():
+        ag.state.contains["coffee_machine"].append(ag.state.isHolding[self_name][0])
+        ag.state.isHolding[self_name] = []
+    return agents
+
+def robot_pick_coffee(agents, self_state, self_name, closet):
+    if self_state.isHolding[self_name] is not None and self_state.isHolding[self_name] != []:
+        return False
+    if self_state.contains[closet] is None or self_state.contains[closet] == []:
+        return False
+    for ag in agents.values():
+       ag.state.isHolding[self_name] = ["coffee"]
+    return agents
+
+def robot_put_coffee_in_machine(agents, self_state, self_name):
+    if self_state.isHolding[self_name] is None or self_state.isHolding[self_name] == []:
+        return False
+    for ag in agents.values():
+        ag.state.contains["coffee_machine"].append(ag.state.isHolding[self_name][0])
+        ag.state.isHolding[self_name] = []
+    return agents
+
+def robot_ask_human_for_help(agents, self_state, self_name, human):
+    hatpehda.add_tasks(human, [("human_help_make_coffee", self_name)], agents)
+    return agents
+
+def robot_serve_coffee(agents, _, __):
+    return agents
+
+def robot_update_human_inventory(agents, self_state, self_name, human, closet):
+    agents[human].state.contains[closet] = self_state.contains[closet]
+    return agents
+
+def human_get_water(agents, self_state, self_name):
+    if self_state.isHolding[self_name] is not None and self_state.isHolding[self_name] != []:
+        return False
+    for ag in agents.values():
+        ag.state.isHolding[self_name] = ["water"]
+    return agents
+
+def human_pour_water_in_machine(agents, self_state, self_name):
+    if self_state.isHolding[self_name] is None or self_state.isHolding[self_name] == []:
+        return False
+    for ag in agents.values():
+        ag.state.contains["coffee_machine"].append(ag.state.isHolding[self_name][0])
+        ag.state.isHolding[self_name] = []
+    return agents
+
+def human_try_pick_coffee(agents, self_state, self_name, closet):
+    if self_state.isHolding[self_name] is not None and self_state.isHolding[self_name] != []:
+        return False
+    if agents["robot"].state.contains[closet] is None or agents["robot"].state.contains[closet] == []:
+        self_state.contains[closet] = agents["robot"].state.contains[closet]
+        return agents
+    for ag in agents.values():
+        ag.state.isHolding[self_name] = ["coffee"]
+    return agents
+
+def human_put_coffee_in_machine(agents, self_state, self_name):
+    if self_state.isHolding[self_name] is None or self_state.isHolding[self_name] == []:
+        return False
+    for ag in agents.values():
+        ag.state.contains["coffee_machine"].append(ag.state.isHolding[self_name][0])
+        ag.state.isHolding[self_name] = []
+    return agents
+
+
+# As we don't know the agents name in advance, we store the operators here, until a ros plan call
+ctrl_operators = [robot_get_water, robot_pour_water_in_machine, robot_pick_coffee, robot_put_coffee_in_machine,
+                  robot_update_human_inventory, robot_ask_human_for_help, robot_serve_coffee]
+unctrl_operators = [human_get_water, human_pour_water_in_machine, human_try_pick_coffee, human_put_coffee_in_machine]
+
+### Abstract Tasks
+
+@hatpehda.multi_decomposition
+def robot_make_coffee_alone(agents, self_state, self_name):
+    return [[("robot_get_water",), ('robot_pour_water_in_machine',), ("robot_get_coffee", ), ("robot_put_coffee_in_machine", )],
+            [("robot_get_coffee",), ("robot_put_coffee_in_machine",), ("robot_get_water",), ('robot_pour_water_in_machine',)]]
+
+def robot_collaborate_make_coffee_no_comm(agents, self_state, self_name):
+    return [("robot_ask_human_for_help", "human"), ("robot_help_make_coffee", "human")]
+
+@hatpehda.multi_decomposition
+def robot_collaborate_make_coffee_with_belief_update(agents, self_state, self_name):
+    tasks = []
+    for cupboard in self_state.individuals["Cupboard"]:
+        if agents['human'].state.contains[cupboard] != self_state.contains[cupboard]:
+            tasks.append([("robot_update_human_inventory", "human", cupboard), ("robot_ask_human_for_help", "human"), ("robot_help_make_coffee", "human")])
+    if tasks == []:
+        return False # Another decomposition handles it
+    return tasks
+
+@hatpehda.multi_decomposition
+def robot_help_make_coffee(agents, self_state, self_name, human):
+    if "water" in self_state.isHolding[human] and "coffee" not in self_state.contains["coffee_machine"]:
+        return [[("robot_get_coffee",), ("robot_put_coffee_in_machine",)]]
+    if agent_plan_contains(agents[human].plan, "human_try_pick_coffee") and "water" not in self_state.contains["coffee_machine"]:
+        return [[("robot_get_water",), ("robot_pour_water_in_machine",)]]
+    tasks = []
+    if "coffee" not in self_state.contains["coffee_machine"]:
+        tasks.append([("robot_get_coffee",), ("robot_put_coffee_in_machine",), ("robot_help_make_coffee", human)])
+    if "water" not in self_state.contains["coffee_machine"]:
+        tasks.append([("robot_get_water",), ("robot_pour_water_in_machine",), ("robot_help_make_coffee", human)])
+    return tasks
+
+def robot_get_coffee(agents, self_state, self_name):
+    if "coffee" in self_state.isHolding[self_name]:
+        return []
+    min_cupboard = None
+    min_dist = 999999.0
+    for cupboard in self_state.individuals["Cupboard"]:
+        if "coffee" in self_state.contains[cupboard] and self_state.distances[cupboard][0] < min_dist:
+            min_dist = self_state.distances[cupboard][0]
+            min_cupboard = cupboard
+    if min_cupboard is None:
+        return False
+    return [("robot_pick_coffee", min_cupboard), ("robot_get_coffee", )]
+
+@hatpehda.multi_decomposition
+def human_help_make_coffee(agents, self_state, self_name, robot):
+    if "water" in self_state.isHolding[robot] and "coffee" not in self_state.contains["coffee_machine"]:
+        return [[("human_get_coffee",), ("human_put_coffee_in_machine",)]]
+    if "coffee" in self_state.isHolding[robot] and "water" not in self_state.contains["coffee_machine"]:
+        return [[("human_get_water",), ("human_pour_water_in_machine",)]]
+    tasks = []
+    if "coffee" not in self_state.contains["coffee_machine"]:
+        tasks.append( [("human_get_coffee",), ("human_put_coffee_in_machine",), ("human_help_make_coffee", robot)])
+    if "water" not in self_state.contains["coffee_machine"]:
+        tasks.append([("human_get_water",), ("human_pour_water_in_machine",), ("human_help_make_coffee", robot)])
+    return tasks
+
+
+def human_get_coffee(agents, self_state, self_name):
+    if "coffee" in self_state.isHolding[self_name]:
+        return []
+    min_cupboard = None
+    min_dist = 999999.0
+    for cupboard in self_state.individuals["Cupboard"]:
+        if "coffee" in self_state.contains[cupboard] and self_state.distances[cupboard][0] < min_dist:
+            min_dist = self_state.distances[cupboard][0]
+            min_cupboard = cupboard
+    if min_cupboard is None:
+        return False
+    return [("human_try_pick_coffee", min_cupboard), ("human_get_coffee",)]
+
+
+# We don't know the agents name in advance so we store them here, until we can add the proper agents
+ctrl_methods = [("robot_make_coffee", robot_make_coffee_alone, robot_collaborate_make_coffee_no_comm, robot_collaborate_make_coffee_with_belief_update),
+                ("robot_help_make_coffee", robot_help_make_coffee),
+                ("robot_get_coffee", robot_get_coffee)]
+unctrl_methods = [("human_help_make_coffee", human_help_make_coffee), ("human_get_coffee", human_get_coffee)]
+
+
+if __name__ == "__main__":
+    state = hatpehda.State("robot_init")
+    state.types = {"Agent": ["isHolding"]}
+    state.individuals = { "Cupboard": ["kitchen_cupboard", "pantry_cupboard"]}
+    state.isHolding = {"human": [], "robot": []}
+    state.contains = {"coffee_machine": [], "kitchen_cupboard": [], "pantry_cupboard": ["coffee"]}
+    state.distances = {"kitchen_cupboard": [2.0], "pantry_cupboard": [4.0]}
+
+    hatpehda.declare_operators("robot", *ctrl_operators)
+    for me in ctrl_methods:
+        hatpehda.declare_methods("robot", *me)
+    hatpehda.declare_operators("human", *unctrl_operators)
+    for me in unctrl_methods:
+        hatpehda.declare_methods("human", *me)
+    hatpehda.set_state("robot", state)
+    hatpehda.add_tasks("robot", [("robot_make_coffee", ), ("robot_serve_coffee", )])  # Agenda initialization
+
+    human_state = deepcopy(state)
+    human_state.__name__ = "human_init"
+    human_state.contains = {"coffee_machine": [], "kitchen_cupboard": ["coffee"], "pantry_cupboard": ["coffee"]}
+    # Belief divergence: while the robot knows that kitchen_cupboard does not contain anything, the human thinks it is
+    # containing coffee
+    hatpehda.set_state("human", human_state)
+
+
+    sols = []
+    fails = []
+    hatpehda.seek_plan_robot(hatpehda.agents, "robot", sols, "human", fails)
+
+    cost, cplan = select_policies(sols)
+    gui.show_plan(cplan, "robot", "human", with_abstract=True)
+\end{lstlisting}
 
