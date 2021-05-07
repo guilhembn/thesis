@@ -500,8 +500,6 @@ As we increase the number of mugs $n$, the cost of \verb'verbally_answer_right_m
 \label{tab:plannertime}
 \end{table}
 
-\improvement{Add link to domain}
-
 In this example we show one really interesting feature of \acrshort{hatpehda}: representing human knowledge that is not known by the robot. While not being tractable when there are a lot of possibilities, which is expected when exploring all the possibilities in non-deterministic planners, it allows to select more or less conservative conditional plans depending on the cost of each actions. Computational times are given in Table~\ref{tab:plannertime}. We see that this task modelling begins to fail at 4 mugs, as a large computation time will spoil the interaction. Although, we think it is still pertinent in \acrshort{hri} as we seldom deal with large amount of objects and long plans. Besides, thanks to the task decomposition being Python functions, we can make a decomposition fail if it would lead to combinatorial explosion. Here we could have made the ``trial and error'' decomposition fail if the number of mug was greater than 4. Moreover, this example allowed to see how updating the human agenda and how triggers can be used to model the agents interaction in the \acrshortpl{htn} planning.
 However, the human model was pretty simple, and we propose to challenge \acrshort{hatpehda} in the next example with a task where the human is more involved. The complete domain and Python code is presented as supplementary material in Annex~\ref{annex:domaincoffee}.
 
