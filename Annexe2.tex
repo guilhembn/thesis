@@ -1,4 +1,5 @@
 \chapter{HATP/EHDA Domains for the Coffee Bringer Examples}
+\chaptermark{HATP/EHDA Example Domains}
 \label{annex:codedomains}
 
 The \acrfull{hatpehda} is presented in Chapter~\ref{chapter:doublehtn} along with illustrative examples allowing to present its features. We propose to report here the interesting parts of the domains in Python, as they were used for running the examples.
@@ -235,6 +236,7 @@ if __name__ == "__main__":
 \end{lstlisting}
 
 \section{Balance Difficult Communications, Decomposition Cost and Task Attribution}
+\sectionmark{Balancing Decompositions Costs}
 \label{annex:domaincoffee}
 In this example, the robot has to prepare coffee. It detects a human nearby, who does not appear to be performing a task. To prepare coffee, coffee needs to be retrieved from one of the two cupboards (one is closer than the other) and put in the machine; and water must be poured in the machine. We want the robot to balance between doing all on its own or asking the human for help. Moreover, we estimate that the human thinks there are some coffee in the nearest cupboard, while the robot knows there is not. Thus, we also want the robot to balance between aligning these beliefs or letting the human potentially make the mistake.
 

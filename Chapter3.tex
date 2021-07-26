@@ -118,7 +118,8 @@ It is interesting to note that in the presented work, the communication costs ar
 Finally, it appears clear in the presented studies that planning for communication can only be done if the robot plans for both agents.
 
 
-\section[Referring Expression Generation for HRI]{Ontology-Based Referring Expression Generation for Human Robot Interaction}
+\section{Ontology-Based Referring Expression Generation for Human Robot Interaction}
+\sectionmark{Referring Expression Generation for HRI}
 To estimate the feasibility and the cost of communication action during task planning, we need to be able to quickly find if a communication is feasible and what is its content. To further study verbal communication planning we restrain ourselves to only one type of verbal communication: referring expressions.
 In this section, we present an efficient algorithm that is able to generate referring expressions for human-robot interaction based on ontologies. We first introduce the ontology representation and argue about its use in human-robot interaction scenarios. Then we propose a list of features needed for \acrshort{reg} in human-robot interaction. Next, we formally define the problem of ontology-based \acrshort{reg} for \acrshort{hri}, and present an efficient algorithm to solve it. Finally, we show the results of this approach both in terms of found solutions and time complexity.
 
@@ -626,7 +627,8 @@ Finally, a supervision component was built by another PhD. student Amandine Mayi
 The task involves six objects on a table (Figure~\ref{fig:setupintegrationreg}). A commented video is available at \url{https://youtu.be/mKDLvDbHfvk}. The entity to reference is \textit{obj\_4} (a white mug). The robot generates the solution ``\textit{The white circular object}'' since there are other non-white circular objects and other white non-circular objects (Figure~\ref{fig:setupintegrationreg}(a)). Then, a human adds a new object which is a white and circular milk bottle (\textit{obj\_5}) (Figure~\ref{fig:setupintegrationreg}(b)). When the robot is asked to describe the white cup, it generates the sentence ``\textit{The white small circular object}''. With this simple task, we show that our REG algorithm can be used within a robotic architecture, can deal with a dynamic environment and can adapt its explanation to the current situation.
 
 
-\section[Using REG in Task Planning]{Planning Communication Actions Using Referring Expression Generation}
+\section{Planning Communication Actions Using Referring Expression Generation}
+\sectionmark{Using REG in Task Planning}
 
 We are now able to determine efficiently the content needed for the robot to refer to an object to a human based on an ontology as knowledge base. Moreover, this algorithm is able to determine if such a communication is feasible (whether it fails or not to find a solution) and gives an estimation of the cost of interpreting the referring expression. In what follows we integrate this approach in a task planner, allowing to evaluate the feasibility and the cost of verbal referring communication actions during task planning.
 
