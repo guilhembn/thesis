@@ -631,6 +631,8 @@
 \RequirePackage{graphicx}         % Use graphics
 \RequirePackage{eso-pic}          % Make background texture (picture and page style)
 \RequirePackage{pgffor}           % Make loop for in LaTeX
+\RequirePackage{geometry}         % Change geometry
+\RequirePackage{fancyhdr}         % Nive header
 \@ifpackageloaded{geometry}{%
   \PassOptionsToPackage{pass}{geometry}
 }{%
@@ -781,7 +783,7 @@
             \blanksheet[nonum]
         \fi
         % Flyleaf
-        \pagestyle{empty}
+        \thispagestyle{empty}
         \newgeometry{centering, vmargin=2cm, hmargin=3cm}
         \AddToShipoutPictureBG*{\MakeBackground} %% Add Colored frame box and picture background
         \begin{center}
@@ -914,7 +916,7 @@
             \vfill
         \end{center}
         \restoregeometry
-        \pagestyle{headings}
+        %\pagestyle{plain}
         % White page
         \if@emptypageafter
             \blanksheet[nonum]

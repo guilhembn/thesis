@@ -9,7 +9,7 @@
 
 \chapter*{Conclusion}
 \addstarredchapter{Conclusion} %Sinon cela n'apparait pas dans la table des matières
-\markboth{CONCLUSION}{}
+\markboth{Conclusion}{}
 
 In this thesis, we presented several contributions focusing on endowing the robot with the ability to plan explicitly for itself and for the human. Indeed, several approaches to human-aware navigation planning (and motion planning in general) account for human presence by including social costs influencing the trajectory, but only plan a course of actions for the robot. While being successful when humans are static or when evolving in large environments, these approaches are challenged when the interaction becomes intricate, where the robot and the human must collaborate to solve a problem. In robotic task planning, where human robot intricate interactions are easier to explore, some approaches do include planning for both the human and the robot. However, these approaches seldom maintain different beliefs for both agents during the planning process, whereas it is what a human is expecting according to joint action theory. Moreover, these approaches consider the human as a totally controllable agent, close to what is done in multi robot planning. They do not account for communications needed to align beliefs or to share the plan.
 
@@ -24,7 +24,7 @@ In Chapter~\ref{chapter:doublehtn} we propose a new task planning scheme enrichi
 Finally, in Chapter~\ref{chapter:integration}, we presented how this new task planning scheme can be integrated into a complete robotic architecture dedicated to \acrshort{hri}. Moreover, we introduced a new task for \acrshort{hri} inspired by psychology experiments along with an implemented robotic architecture including our planning scheme, allowing to tackle some of the challenges of this task.
 
 \section*{On the Human Agent Interaction Guidelines}
-\markright{HUMAN-AGENT INTERACTION GUIDELINES}
+\markright{On the Human-Agent Interaction Guidelines}
 We presented in Chapter~\ref{chapter:sota} maxims coined by Bradshaw \textit{et al.}~\cite{bradshaw2011human} for human-agent interaction. We propose here to sum up which maxims have guided the work presented in this thesis and to what extent we were able to implement them.
 
 By completely exploring the search space with the proposed planning method of Chapter~\ref{chapter:doublehtn}, we can increase the \textit{progress appraisal} of the robot. Indeed, by returning the complete conditional plan to the supervision it can compute how much the task is progressing, and communicate it to the human if needed. Besides, we proposed a plan post-processing step where robot actions are added to guide human actions away from potential errors and to the optimal plan.
@@ -42,7 +42,7 @@ Besides, we allowed making the robot more \textit{selective} as we showed in Cha
 Finally, we showed in Chapter~\ref{chapter:navigation} that planning navigation for both the human and the robot allows to make the robot deconflict the trajectories earlier increasing the robot \textit{predictability}. Moreover, we implemented a head behavior for the navigation aiming at showing its future trajectory while acknowledging the human presence.
 
 \section*{Limitations and Future Work}
-\markright{LIMITATIONS AND FUTURE WORK}
+\markright{Limitations and Future Work}
 We think there is plenty of potential for the task planning approach presented in Chapter~\ref{chapter:doublehtn} and it must be refined and enriched. While it seems promising, as it allows to represent and find plans for intricate interaction scenarios, has been integrated with a domain-specific communication planner and used in a robotic architecture, limitations can be identified. First, the turn-taking approach used does not translate the duration of actions. Indeed, some actions will be longer than others, and not accounting for it may lead to suboptimal plans and wrong prediction of human actions. Then, by not pruning some part of the exploration graph during the search, the approach is not efficient for large \acrshort{htn} domains. Efficiency can also be gained by a better implementation in C++ rather than in Python. However, pruning while searching would prevent applying plan-wide costs.
 
 
