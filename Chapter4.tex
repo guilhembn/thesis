@@ -189,7 +189,7 @@ The robot \acrshort{htn} exploration is a pretty standard depth-first algorithm 
 \end{algorithm}
 
 \subsubsection{Uncontrollable Agent HTN Exploration}
-The human \acrshort{htn} exploration differs from classical HTN planner as the goal is not to produce a complete plan, but rather to list all the actions the human is likely to perform in a given agents state. As presented in Algorithm~\ref{alg:gethactions}, we recursively decompose the first task of the human agenda $\agenda_{human}$ with every applicable method, until we reach an applicable operator. All the operators from all the applicable decompositions are returned to the robot \acrshort{htn} exploration and applied.
+The human \acrshort{htn} exploration differs from classical \acrshort{htn} planners as the goal is not to produce a complete plan, but rather to list all the actions the human is likely to perform in a given agents state. As presented in Algorithm~\ref{alg:gethactions}, we recursively decompose the first task of the human agenda $\agenda_{human}$ with every applicable method, until we reach an applicable operator. All the operators from all the applicable decompositions are returned to the robot \acrshort{htn} exploration and applied.
 
 \begin{algorithm}[htb!]
 \begin{algorithmic}[1]
