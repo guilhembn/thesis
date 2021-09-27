@@ -11,7 +11,7 @@
 
 \chapter{Emulating the Human Decision and Action Processes During Task Planning}
 \label{chapter:doublehtn}
-\chaptermark{Planning accounting for human decisions}
+\chaptermark{Planning Accounting For Human Decisions}
 \minitoc
 
 \section{Introduction}
@@ -130,7 +130,7 @@ Some constraints on the operator, method and trigger functions must be respected
 Our planner operates in a turn-taking scheme, based on the update of the agents' beliefs states, the \acrshortpl{htn} of the robot and the human are explored successively.
 
 \subsubsection{Controllable Agent HTN Exploration}
-The robot \acrshort{htn} exploration is a pretty standard depth-first algorithm presented in Algorithm~\ref{alg:seek_plans}. The first task $\lambda$ from its agenda $\agenda_{robot}$ its popped, then if it is an abstract task $\lambda \in \abstracttasks$, all the applicable methods are applied, and their results are prepended to the agenda, thus giving new agents states (with the same beliefs as the previous ones but with the robot agenda updated) and branching our search space. We iterate with the new task popped from the new robot agenda. Eventually, the popped task will be a primitive one $\lambda \in \operators$, its function will then be applied to the currently explored agent states. If it returns \textit{false}($\bot$), the action is not applicable, and the exploration backtracks to another decomposition of an abstract task. However, if the action is applicable (returns a new agents state), the triggers are run for each agent, updating their agenda if necessary. Then, we question the human \acrshort{htn} to get their possible next actions from this new agents state, and, for each possible new agents state, we apply the triggers of each agent then we continue the robot \acrshort{htn} exploration. This exploration continues until the robot agenda is empty, or all the branches return \textit{false}.
+The robot \acrshort{htn} exploration is a pretty standard depth-first algorithm presented in Algorithm~\ref{alg:seek_plans}. The first task $\lambda$ from its agenda $\agenda_{robot}$ is popped, then if it is an abstract task $\lambda \in \abstracttasks$, all the applicable methods are applied, and their results are prepended to the agenda, thus giving new agents states (with the same beliefs as the previous ones but with the robot agenda updated) and branching our search space. We iterate with the new task popped from the new robot agenda. Eventually, the popped task will be a primitive one $\lambda \in \operators$, its function will then be applied to the currently explored agent states. If it returns \textit{false}($\bot$), the action is not applicable, and the exploration backtracks to another decomposition of an abstract task. However, if the action is applicable (returns a new agents state), the triggers are run for each agent, updating their agenda if necessary. Then, we question the human \acrshort{htn} to get their possible next actions from this new agents state, and, for each possible new agents state, we apply the triggers of each agent then we continue the robot \acrshort{htn} exploration. This exploration continues until the robot agenda is empty, or all the branches return \textit{false}.
 
 \begin{algorithm}[htb!]
 \begin{algorithmic}[1]
